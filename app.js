@@ -16,26 +16,34 @@ const AppUI = {
     // قراءة روابط الدعوة إن وجدت
     this._inviteContext = this._parseInviteParams();
 
-    if (this._inviteContext && !auth.isLoggedIn()) {
+    if (this._inviteContext) {
       const ctx = this._inviteContext;
-      this.showLoginScreen();
+
+      if (!auth.isLoggedIn()) {
+        this.showLoginScreen();
+      } else {
+        this.showAppScreen();
+        this.navigateTo(ctx.type === "student" ? "students" : "teachers", false);
+      }
+
+      // فتح نافذة التسجيل المخصصة فوراً مع قفل الحقول المحددة
       setTimeout(() => {
         if (ctx.type === "student") {
           StudentsModule.openAddModal(ctx.teacherId);
         } else if (ctx.type === "teacher") {
           TeachersModule.openAddModal(ctx.supervisorId, ctx.role);
         }
-      }, 150);
-    } else if (!auth.isLoggedIn()) {
-      this.showLoginScreen();
-    } else {
-      // إزالة معلمات الدعوة من شريط الرابط حتى لا تؤثر على التحديث
+      }, 200);
+
+      // تنظيف شريط العنوان بعد معالجة الرابط حتى لا يتكرر عند التحديث
       if (window.location.search) {
         try {
           window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
         } catch (_) {}
       }
-
+    } else if (!auth.isLoggedIn()) {
+      this.showLoginScreen();
+    } else {
       this.showAppScreen();
 
       // قراءة الشاشة المستهدفة من عنوان URL (Hash)
