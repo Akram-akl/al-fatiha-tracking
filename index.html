@@ -194,8 +194,8 @@
       position: fixed; inset: 0; z-index: 50;
       background: var(--color-bg);
       background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2.5L22.5 16h2.5l-2.5 2.5v2.5H40v2H20v2.5L17.5 24h-2.5l2.5-2.5v-1zM0 38h20v2H0v-2zm0-36h20v2H0V2z' fill='%235F7053' fill-opacity='0.04' fill-rule='evenodd'/%3E%3C/svg%3E");
-      display: flex; align-items: center; justify-content: center;
-      padding: 1rem; overflow-y: auto;
+      display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+      padding: 2rem 1rem; overflow-y: auto;
     }
     #view-login-page.hidden { display: none !important; }
 
@@ -205,6 +205,7 @@
       border-radius: 1.5rem;
       padding: 2rem;
       width: 100%; max-width: 480px;
+      margin: auto 0; flex-shrink: 0;
       box-shadow: 0 20px 60px rgba(81,100,71,0.12);
       display: flex; flex-direction: column; gap: 1.25rem;
     }
@@ -326,6 +327,7 @@
       .card { padding: 1rem; border-radius: 1rem; }
       .student-portal-hero { padding: 1rem; flex-direction: column; align-items: stretch; text-align: center; }
       .student-portal-hero .flex-center { flex-direction: column; }
+      .login-card { padding: 1.25rem; gap: 1rem; }
     }
     @media (min-width: 481px) and (max-width: 639px) {
       .grid-2 { grid-template-columns: 1fr; }
@@ -419,23 +421,25 @@
       background: rgba(0,0,0,0.5);
       backdrop-filter: blur(4px);
       -webkit-backdrop-filter: blur(4px);
-      display: flex; align-items: flex-end; justify-content: center;
+      display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+      padding-top: 2rem;
     }
     .modal-overlay.hidden { display: none; }
 
     @media (min-width: 640px) {
-      .modal-overlay { align-items: center; padding: 1rem; }
+      .modal-overlay { justify-content: center; padding: 2rem 1rem; overflow-y: auto; }
     }
 
     .modal-panel {
       background: var(--color-surface);
-      width: 100%; max-height: 92vh;
+      width: 100%; max-height: 85vh; /* Safer height for mobile browsers with toolbars */
       overflow-y: auto; -webkit-overflow-scrolling: touch;
       border-radius: 1.5rem 1.5rem 0 0;
       padding: 1.5rem;
+      margin-top: auto; flex-shrink: 0;
     }
     @media (min-width: 640px) {
-      .modal-panel { max-width: 520px; border-radius: 1.5rem; }
+      .modal-panel { max-width: 520px; border-radius: 1.5rem; margin-top: auto; margin-bottom: auto; }
     }
     .modal-panel-lg {
       @media (min-width: 640px) { max-width: 760px; }
