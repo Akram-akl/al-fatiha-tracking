@@ -13,10 +13,10 @@ const AppUI = {
     this.initTheme();
     this.initFontSize();
 
-    // قراءة روابط الدعوة قبل أي شيء
+    // قراءة روابط الدعوة إن وجدت
     this._inviteContext = this._parseInviteParams();
 
-    if (this._inviteContext) {
+    if (this._inviteContext && !auth.isLoggedIn()) {
       const ctx = this._inviteContext;
       this.showLoginScreen();
       setTimeout(() => {
@@ -29,14 +29,31 @@ const AppUI = {
     } else if (!auth.isLoggedIn()) {
       this.showLoginScreen();
     } else {
-      this.showAppScreen();
-      if (auth.isStudent()) {
-        this.navigateTo("student-portal");
-      } else {
-        this.navigateTo(this.currentView);
-        this.updateDashboardStats();
+      // إزالة معلمات الدعوة من شريط الرابط حتى لا تؤثر على التحديث
+      if (window.location.search) {
+        try {
+          window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
+        } catch (_) {}
       }
+
+      this.showAppScreen();
+
+      // قراءة الشاشة المستهدفة من عنوان URL (Hash)
+      const hashView = (window.location.hash || "").replace("#", "").split("?")[0];
+      const validViews = ["dashboard", "student-portal", "students", "teachers", "geo", "leaderboard", "reports", "analytics", "settings"];
+      let startView = validViews.includes(hashView) ? hashView : (auth.isStudent() ? "student-portal" : "dashboard");
+      
+      this.navigateTo(startView, true);
     }
+
+    // دعم أزرار التقدم والرجوع في المتصفح والهاتف
+    window.addEventListener("hashchange", () => {
+      if (!auth.isLoggedIn()) return;
+      const hash = (window.location.hash || "").replace("#", "").split("?")[0];
+      if (hash && hash !== this.currentView && document.getElementById(`view-${hash}`)) {
+        this.navigateTo(hash, false);
+      }
+    });
 
     db.subscribe(() => {
       this.populateGlobalDropdowns();
@@ -92,13 +109,17 @@ const AppUI = {
 
   // ==================== التنقل ====================
 
-  navigateTo(viewId) {
+  navigateTo(viewId, updateHash = true) {
     if (!auth.isLoggedIn()) { this.showLoginScreen(); return; }
 
     if (auth.isStudent()) viewId = "student-portal";
     else if (viewId === "student-portal") viewId = "dashboard";
 
     this.currentView = viewId;
+
+    if (updateHash) {
+      window.location.hash = viewId;
+    }
 
     // إخفاء كل الشاشات
     document.querySelectorAll(".spa-view").forEach(el => el.classList.remove("active"));
@@ -132,6 +153,9 @@ const AppUI = {
     const pass = document.getElementById("login-page-admin-password").value;
     const res  = auth.loginAsAdmin(pass);
     if (res.success) {
+      if (window.location.search) {
+        try { window.history.replaceState({}, document.title, window.location.pathname); } catch(_) {}
+      }
       this.showAppScreen();
       this.navigateTo("dashboard");
       this.showToast("تم تسجيل الدخول كمشرف عام بنجاح", "success");
@@ -396,13 +420,13 @@ const AppUI = {
       this.charts.masteryDist = new Chart(ctxMas, {
         type: "doughnut",
         data: {
-          labels: ["ممتاز", "جيد جداً", "جيد", "يحتاج متابعة"],
+          labels: ["ممتاز (95% - 100%)", "جيد جداً (80% - 94%)", "جيد (65% - 79%)", "يحتاج متابعة (أقل من 65%)"],
           datasets: [{
             data: [
-              students.filter(s => s.mastery >= 95).length,
-              students.filter(s => s.mastery >= 80 && s.mastery < 95).length,
-              students.filter(s => s.mastery >= 65 && s.mastery < 80).length,
-              students.filter(s => s.mastery < 65).length
+              students.filter(s => (s.mastery || 0) >= 95).length,
+              students.filter(s => (s.mastery || 0) >= 80 && (s.mastery || 0) < 95).length,
+              students.filter(s => (s.mastery || 0) >= 65 && (s.mastery || 0) < 80).length,
+              students.filter(s => (s.mastery || 0) < 65).length
             ],
             backgroundColor: ["#2e7d32", "#516447", "#d97706", "#ba1a1a"]
           }]
@@ -412,16 +436,11 @@ const AppUI = {
           onClick: (e, elements) => {
             if (elements.length > 0) {
               const idx = elements[0].index;
-              let targetStatus = "";
-              if (idx === 0) targetStatus = "completed"; // ممتاز = متقنة
-              else if (idx === 1) targetStatus = "near_completion"; // جيد جدا = قاربت
-              else if (idx === 2) targetStatus = "in_progress"; // جيد = في مرحلة الحفظ
-              else if (idx === 3) targetStatus = "needs_help"; // يحتاج متابعة = تحتاج لمتابعة
-              
-              if (targetStatus) {
-                AppUI.navigateTo("students");
-                StudentsModule.setFilter("status", targetStatus);
-              }
+              AppUI.navigateTo("students");
+              if (idx === 0) StudentsModule.setMasteryRangeFilter(95, 100, "ممتاز (95% - 100%)");
+              else if (idx === 1) StudentsModule.setMasteryRangeFilter(80, 94.9, "جيد جداً (80% - 94%)");
+              else if (idx === 2) StudentsModule.setMasteryRangeFilter(65, 79.9, "جيد (65% - 79%)");
+              else if (idx === 3) StudentsModule.setMasteryRangeFilter(0, 64.9, "يحتاج متابعة (أقل من 65%)");
             }
           }
         }

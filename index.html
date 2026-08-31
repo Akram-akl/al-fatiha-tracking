@@ -10,11 +10,12 @@
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
 
-  <!-- Fonts: local (no Google CDN dependency) -->
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet"/>
-  <!-- Material Symbols: self-hosted for instant loading -->
+  
   <style>
     @font-face {
       font-family: 'Material Symbols Outlined';
@@ -23,7 +24,6 @@
       font-display: block;
       src: url('./material-symbols.woff2') format('woff2');
     }
-    /* أيقونات جاهزة فورياً - لا تأخير */
     .material-symbols-outlined {
       font-family: 'Material Symbols Outlined' !important;
       font-weight: normal;
@@ -1309,26 +1309,31 @@
 <!-- 3. شاشة المتابعة والتصحيح اللحظي -->
 <div id="student-profile-modal" class="modal-overlay hidden">
   <div class="modal-panel" style="max-width:760px;border-radius:1.5rem;">
-    <div class="modal-header">
-      <div class="flex-center gap-3">
-        <div class="avatar-text" style="width:48px;height:48px;background:rgba(81,100,71,0.12);color:var(--color-primary);font-size:1.1rem;">
-          <span class="material-symbols-outlined">person</span>
+    <div class="modal-header" style="flex-direction:column;align-items:stretch;gap:0.75rem;">
+      <div class="flex-between">
+        <div class="flex-center gap-3">
+          <div class="avatar-text" style="width:44px;height:44px;background:rgba(81,100,71,0.12);color:var(--color-primary);font-size:1.1rem;">
+            <span class="material-symbols-outlined">person</span>
+          </div>
+          <div>
+            <div id="profile-student-name" class="modal-title" style="font-size:1.15rem;">-</div>
+            <div id="profile-student-phone" class="text-xs text-muted">-</div>
+          </div>
         </div>
-        <div>
-          <div id="profile-student-name" class="modal-title" style="font-size:1.15rem;">-</div>
-          <div id="profile-student-phone" class="text-xs text-muted">-</div>
-        </div>
+        <button onclick="StudentsModule.closeProfileModal()" class="btn btn-ghost btn-sm" style="display:inline-flex;align-items:center;gap:0.25rem;font-weight:bold;color:var(--color-on-surface);">
+          <span class="material-symbols-outlined" style="font-size:1.2rem;">arrow_forward</span>
+          <span>عودة</span>
+        </button>
       </div>
-      <div class="flex-center gap-2">
-        <select id="profile-quick-status-select" onchange="StudentsModule.handleQuickStatusChange(this.value)" class="form-input btn-sm" style="min-width:200px;"></select>
-        <div class="flex-center gap-1">
-              <button onclick="StudentsModule.sendWhatsAppReport()" class="btn-icon" title="إرسال عبر واتساب" style="color:#25D366;background:rgba(37,211,102,0.1);">
-                <span class="material-symbols-outlined" style="font-size:1.1rem;font-variation-settings:'FILL' 1;">chat</span>
-              </button>
-              <button onclick="StudentsModule.closeProfileModal()" class="btn-icon" style="background:var(--color-surface);border:1px solid var(--color-outline-variant);">
-                <span class="material-symbols-outlined" style="font-size:1.25rem;color:var(--color-on-surface)">close</span>
-              </button>
-            </div>
+      
+      <div class="flex-between gap-2" style="flex-wrap:wrap;padding-top:0.25rem;border-top:1px dashed var(--color-outline-variant);">
+        <div style="flex:1;min-width:180px;">
+          <select id="profile-quick-status-select" onchange="StudentsModule.handleQuickStatusChange(this.value)" class="form-input btn-sm" style="width:100%;"></select>
+        </div>
+        <button onclick="StudentsModule.sendWhatsAppReport()" class="btn btn-sm" title="إرسال عبر واتساب" style="color:#fff;background:#25D366;display:inline-flex;align-items:center;gap:0.3rem;">
+          <span class="material-symbols-outlined" style="font-size:1.1rem;font-variation-settings:'FILL' 1;">chat</span>
+          <span>تقرير واتساب</span>
+        </button>
       </div>
     </div>
 
@@ -1375,9 +1380,17 @@
       سجل توجيهات وملاحظات المعلمة
     </div>
     <div id="profile-notes-list" class="mb-3"></div>
-    <div class="flex-center gap-2">
+    <div class="flex-center gap-2 mb-4">
       <input type="text" id="new-note-input" placeholder="اكتب ملاحظة أو توجيه جديد..." class="form-input" style="flex:1"/>
       <button onclick="StudentsModule.handleAddNote()" class="btn btn-p btn-sm">إضافة</button>
+    </div>
+
+    <!-- زر رجوع وإغلاق سفلي بارز في أسفل النافذة -->
+    <div style="margin-top:1rem;padding-top:0.75rem;border-top:1px solid var(--color-outline-variant);">
+      <button type="button" onclick="StudentsModule.closeProfileModal()" class="btn btn-ghost btn-full" style="display:flex;align-items:center;justify-content:center;gap:0.5rem;min-height:44px;font-weight:bold;">
+        <span class="material-symbols-outlined">arrow_forward</span>
+        <span>إغلاق النافذة والعودة للقائمة</span>
+      </button>
     </div>
   </div>
 </div>

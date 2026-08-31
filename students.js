@@ -4,7 +4,7 @@
  */
 
 const StudentsModule = {
-  activeFilters: { search: "", region: "", status: "", language: "", teacherId: "" },
+  activeFilters: { search: "", region: "", status: "", language: "", teacherId: "", masteryRange: null },
   currentEditingMistakeWordIds: [],
 
   // ==================== الفلترة ====================
@@ -43,13 +43,18 @@ const StudentsModule = {
         if (student.isArabicSpeaker !== (this.activeFilters.language === "true")) return false;
       }
       if (this.activeFilters.teacherId && student.teacherId !== this.activeFilters.teacherId) return false;
+      
+      if (this.activeFilters.masteryRange) {
+        const m = typeof student.mastery === "number" ? student.mastery : 0;
+        if (m < this.activeFilters.masteryRange.min || m > this.activeFilters.masteryRange.max) return false;
+      }
+
       return true;
     });
   },
 
   setFilter(key, value) {
     this.activeFilters[key] = value;
-    // Update the UI select elements if they exist
     if (key === 'region') {
       const el = document.getElementById("students-region-filter");
       if (el) el.value = value;
@@ -60,8 +65,14 @@ const StudentsModule = {
     this.renderStudentsTable();
   },
 
+  setMasteryRangeFilter(min, max, label) {
+    this.activeFilters.masteryRange = { min, max, label };
+    this.renderStudentsTable();
+    AppUI.showToast(`تمت الفلترة: طالبات فئة ${label}`, "info");
+  },
+
   resetFilters() {
-    this.activeFilters = { search: "", region: "", status: "", language: "", teacherId: "" };
+    this.activeFilters = { search: "", region: "", status: "", language: "", teacherId: "", masteryRange: null };
     const si = document.getElementById("students-search-input");
     if (si) si.value = "";
     const rf = document.getElementById("students-region-filter");

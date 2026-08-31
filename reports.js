@@ -1,20 +1,90 @@
 /**
- * محرك التقارير والتصدير (Reports & Data Export Module) — v3.0
+ * محرك التقارير والتصدير (Reports & Data Export Module) — v3.1
  * منظومة "بلغوا عني ولو آية"
  */
 
 const ReportsModule = {
 
+  getScopedData() {
+    const currentUser = auth.getCurrentUser();
+    let allStudents = db.getStudents();
+    let allTeachers = db.getTeachers();
+
+    if (!currentUser) return { students: [], teachers: [], canViewTeachersReport: false };
+
+    if (auth.isAdmin()) {
+      return {
+        students: allStudents,
+        teachers: allTeachers,
+        canViewTeachersReport: true
+      };
+    }
+
+    if (auth.isHeadTeacher()) {
+      // المعلمة الرئيسية: ترى نفسها + المعلمات التابعات لها فقط
+      const subordinateTeachers = allTeachers.filter(
+        t => t.id === currentUser.id || t.supervisorId === currentUser.id
+      );
+      const allowedTeacherIds = subordinateTeachers.map(t => t.id);
+      const subordinateStudents = allStudents.filter(s => allowedTeacherIds.includes(s.teacherId));
+
+      return {
+        students: subordinateStudents,
+        teachers: subordinateTeachers,
+        canViewTeachersReport: true
+      };
+    }
+
+    if (auth.isTeacher()) {
+      // المعلمة العادية: طالباتها فقط ولا تملك صلاحية تقرير أداء المعلمات
+      const myStudents = allStudents.filter(s => s.teacherId === currentUser.id);
+      return {
+        students: myStudents,
+        teachers: [],
+        canViewTeachersReport: false
+      };
+    }
+
+    return { students: [], teachers: [], canViewTeachersReport: false };
+  },
+
+  updateReportOptions() {
+    const typeSelect = document.getElementById("report-type-select");
+    if (!typeSelect) return;
+
+    const { canViewTeachersReport } = this.getScopedData();
+
+    if (!canViewTeachersReport) {
+      typeSelect.innerHTML = `<option value="students">تقرير إنجاز الطالبات</option>`;
+      typeSelect.value = "students";
+    } else {
+      typeSelect.innerHTML = `
+        <option value="students">تقرير إنجاز الطالبات</option>
+        <option value="teachers">تقرير أداء المعلمات (التابعات)</option>
+      `;
+    }
+  },
+
   generateLiveReport() {
     const container = document.getElementById("report-preview-container");
     if (!container) return;
 
-    const reportType   = document.getElementById("report-type-select")?.value || "students";
+    this.updateReportOptions();
+
+    const reportTypeSelect = document.getElementById("report-type-select");
+    let reportType   = reportTypeSelect?.value || "students";
     const regionFilter = document.getElementById("report-region-select")?.value  || "";
     const statusFilter = document.getElementById("report-status-select")?.value  || "";
 
-    let students = db.getStudents();
-    let teachers  = db.getTeachers();
+    const { students: scopedStudents, teachers: scopedTeachers, canViewTeachersReport } = this.getScopedData();
+
+    if (reportType === "teachers" && !canViewTeachersReport) {
+      reportType = "students";
+      if (reportTypeSelect) reportTypeSelect.value = "students";
+    }
+
+    let students = scopedStudents;
+    let teachers = scopedTeachers;
 
     if (regionFilter) {
       students = students.filter(s => s.region === regionFilter);
@@ -72,7 +142,7 @@ const ReportsModule = {
         </div>`;
     } else if (reportType === "teachers") {
       const rows = teachers.length === 0
-        ? `<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--color-on-surface-variant);">لا توجد معلمات مسجلات</td></tr>`
+        ? `<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--color-on-surface-variant);">لا توجد معلمات مسجلات ضمن نطاق صلاحياتك</td></tr>`
         : teachers.map((t, i) => {
             const stats = TeachersModule.getTeacherStats(t.id);
             const spec  = APP_CONFIG.specializations.find(sp => sp.id === t.specialization) || { label: "كلاهما" };
@@ -121,7 +191,7 @@ const ReportsModule = {
       return;
     }
 
-    const students = db.getStudents();
+    const { students } = this.getScopedData();
     if (students.length === 0) {
       AppUI.showToast("لا توجد بيانات طالبات للتصدير حالياً", "warning");
       return;
