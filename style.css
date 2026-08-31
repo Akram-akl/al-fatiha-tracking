@@ -1,0 +1,504 @@
+/**
+ * أنماط التصميم المتكاملة لمنظومة "بلغوا عني ولو آية"
+ * تدعم: خط المصحف، الوضع الداكن الشامل، التجاوب مع الهاتف، اللمس، النوافذ، والطباعة
+ */
+
+@font-face {
+  font-family: "UthmanicHafs";
+  src: url("uthmanic_hafs_v20.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+:root {
+  --color-primary: #516447;
+  --color-primary-light: #8fa382;
+  --color-primary-dark: #3a4c31;
+  --color-primary-container: #d4e9c4;
+  --color-on-primary-container: #101f09;
+
+  --color-secondary: #735c00;
+  --color-secondary-container: #fed65b;
+  --color-on-secondary-container: #241a00;
+
+  --color-tertiary: #775464;
+  --color-tertiary-container: #ffd8e7;
+
+  --color-bg: #fbf9f5;
+  --color-surface: #ffffff;
+  --color-surface-container: #f5f3ef;
+  --color-surface-container-high: #e9e8e4;
+  --color-surface-container-highest: #e4e2de;
+
+  --color-on-surface: #1b1c19;
+  --color-on-surface-variant: #5f635a;
+  --color-outline: #c4c8bd;
+  --color-outline-variant: #e4e2de;
+
+  --color-gold-glow: #f2e2b0;
+  --color-rose-beige: #e5d1c5;
+  --color-ivory: #fdfbf7;
+
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+  --color-success: #2e7d32;
+  --color-success-container: #c8e6c9;
+
+  --sidebar-width: 288px;
+  --header-height: 64px;
+  --touch-min: 44px;
+}
+
+/* ==================== تكبير الخط الحقيقي ==================== */
+html[data-font-size="sm"] { font-size: 13px !important; }
+html[data-font-size="md"] { font-size: 15px !important; }
+html[data-font-size="lg"] { font-size: 17px !important; }
+html[data-font-size="xl"] { font-size: 20px !important; }
+
+/* ==================== أساسيات ==================== */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-on-surface);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* منع تحديد النص غير المقصود عند اللمس */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ==================== الوضع الداكن الكامل ==================== */
+html.dark {
+  --color-bg: #111310;
+  --color-surface: #191c18;
+  --color-surface-container: #222620;
+  --color-surface-container-high: #2c312a;
+  --color-surface-container-highest: #373d34;
+
+  --color-on-surface: #f3f2ed;
+  --color-on-surface-variant: #a9aea3;
+  --color-outline: #52594e;
+  --color-outline-variant: #343a30;
+
+  --color-primary-container: #33442a;
+  --color-on-primary-container: #d4e9c4;
+}
+
+html.dark body {
+  background-color: #111310 !important;
+  color: #f3f2ed !important;
+}
+
+html.dark aside,
+html.dark header,
+html.dark .card-glass,
+html.dark .bg-surface {
+  background-color: #191c18 !important;
+  border-color: #343a30 !important;
+  color: #f3f2ed !important;
+}
+
+html.dark .bg-surface-container,
+html.dark .bg-surface-container-low,
+html.dark .bg-surface-container-high,
+html.dark .bg-surface-container-highest {
+  background-color: #222620 !important;
+  border-color: #343a30 !important;
+  color: #f3f2ed !important;
+}
+
+html.dark input,
+html.dark select,
+html.dark textarea {
+  background-color: #282e25 !important;
+  color: #f3f2ed !important;
+  border-color: #424a3c !important;
+}
+
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: #838a7c !important;
+}
+
+html.dark table { border-color: #343a30 !important; }
+html.dark th { background-color: #222620 !important; color: #c4c9bd !important; }
+html.dark td { border-color: #2d3329 !important; }
+html.dark .text-on-surface { color: #f3f2ed !important; }
+html.dark .text-on-surface-variant { color: #a9aea3 !important; }
+html.dark .text-on-background { color: #f3f2ed !important; }
+html.dark .text-deep-sage { color: #c4dcba !important; }
+html.dark .border-outline-variant,
+html.dark .border-outline-variant\/20,
+html.dark .border-outline-variant\/30,
+html.dark .border-outline-variant\/40 { border-color: #343a30 !important; }
+
+html.dark .nav-link:hover { background-color: #2c312a !important; }
+html.dark .nav-link.active-nav { background-color: rgba(81,100,71,0.2) !important; }
+
+/* ==================== الشريط الجانبي والتخطيط ==================== */
+#app-sidebar {
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: var(--sidebar-width);
+  z-index: 40;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-overflow-scrolling: touch;
+}
+
+/* الشريط الجانبي للهاتف — يختفي خارج الشاشة بدلاً من display:none */
+@media (max-width: 767px) {
+  #app-sidebar {
+    transform: translateX(100%);
+    box-shadow: none;
+  }
+  #app-sidebar.mobile-open {
+    transform: translateX(0);
+    box-shadow: -8px 0 40px rgba(0,0,0,0.3);
+  }
+  #main-content-area {
+    margin-right: 0 !important;
+  }
+  /* طبقة تعتيم خلف الشريط الجانبي في الهاتف */
+  #sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 39;
+  }
+  #sidebar-backdrop.visible {
+    display: block;
+  }
+}
+
+@media (min-width: 768px) {
+  #app-sidebar { transform: translateX(0) !important; }
+  #main-content-area { margin-right: var(--sidebar-width) !important; }
+  #sidebar-backdrop { display: none !important; }
+}
+
+/* ==================== الشريط العلوي ==================== */
+#app-topbar {
+  position: sticky;
+  top: 0;
+  height: var(--header-height);
+  z-index: 30;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* ==================== خط المصحف ==================== */
+.font-quran {
+  font-family: "UthmanicHafs", "Amiri", serif;
+  letter-spacing: 0.02em;
+}
+
+/* ==================== كلمات الفاتحة التفاعلية ==================== */
+.quran-word-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.45rem 0.7rem;
+  margin: 0.2rem;
+  border-radius: 0.75rem;
+  border: 1.5px solid var(--color-outline-variant);
+  background-color: var(--color-surface);
+  color: var(--color-on-surface);
+  font-family: "UthmanicHafs", "Amiri", serif;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  /* منطقة لمس كافية للهاتف */
+  min-height: var(--touch-min);
+  touch-action: manipulation;
+}
+
+.quran-word-btn:hover,
+.quran-word-btn:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--color-primary);
+  outline: none;
+}
+
+/* تأثير اللمس للهاتف */
+.quran-word-btn:active {
+  transform: scale(0.96);
+  opacity: 0.85;
+}
+
+.quran-word-btn.is-mistake {
+  background-color: #fee2e2 !important;
+  border-color: #ef4444 !important;
+  color: #b91c1c !important;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.22);
+}
+
+html.dark .quran-word-btn.is-mistake {
+  background-color: #450a0a !important;
+  border-color: #ef4444 !important;
+  color: #fca5a5 !important;
+}
+
+html.dark .quran-word-btn {
+  background-color: #222620 !important;
+  border-color: #424a3c !important;
+  color: #f3f2ed !important;
+}
+
+.quran-word-highlight-mistake {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #dc2626;
+  padding: 0.15rem 0.45rem;
+  border-radius: 0.5rem;
+  border-bottom: 2px solid #ef4444;
+  font-weight: bold;
+}
+
+html.dark .quran-word-highlight-mistake {
+  background-color: rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+  border-bottom: 2px solid #f87171;
+}
+
+/* ==================== الأزرار العامة ==================== */
+.btn-primary {
+  background-color: var(--color-primary);
+  color: #ffffff !important;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  min-height: var(--touch-min);
+  touch-action: manipulation;
+}
+.btn-primary:hover { background-color: var(--color-primary-dark); transform: translateY(-1px); }
+.btn-primary:active { transform: scale(0.97); }
+
+.btn-secondary {
+  background-color: var(--color-surface-container);
+  color: var(--color-on-surface);
+  border: 1px solid var(--color-outline-variant);
+  font-weight: 600;
+  transition: all 0.2s ease;
+  min-height: var(--touch-min);
+  touch-action: manipulation;
+}
+.btn-secondary:hover { background-color: var(--color-surface-container-high); }
+
+/* روابط التنقل الجانبية */
+.nav-link {
+  min-height: var(--touch-min);
+  touch-action: manipulation;
+  border-right: 4px solid transparent;
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  color: var(--color-on-surface-variant);
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+.nav-link:hover {
+  background-color: var(--color-surface-container);
+  color: var(--color-on-surface);
+}
+.nav-link.active-nav {
+  background-color: rgba(81,100,71,0.12);
+  color: var(--color-primary);
+  border-right-color: var(--color-primary);
+}
+
+/* ==================== شارات الحالة ==================== */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.status-completed   { background-color: rgba(46,125,50,0.15);  color: var(--color-success); }
+.status-in_progress { background-color: rgba(81,100,71,0.15);  color: var(--color-primary); }
+.status-near_completion { background-color: rgba(81,100,71,0.1); color: #516447; }
+.status-tajweed     { background-color: rgba(115,92,0,0.12);   color: #735c00; }
+.status-needs_help  { background-color: rgba(186,26,26,0.15);  color: var(--color-error); }
+.status-new         { background-color: rgba(119,84,100,0.12); color: #775464; }
+.status-stopped     { background-color: rgba(95,99,90,0.12);   color: #5f635a; }
+.status-absent_stopped { background-color: rgba(95,99,90,0.12); color: #5f635a; }
+
+/* ==================== زخرفة بصرية ==================== */
+.arabesque-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2.5L22.5 16h2.5l-2.5 2.5v2.5H40v2H20v2.5L17.5 24h-2.5l2.5-2.5v-1zM0 38h20v2H0v-2zm0-36h20v2H0V2z' fill='%235F7053' fill-opacity='0.03' fill-rule='evenodd'/%3E%3C/svg%3E");
+}
+
+.soft-shadow { box-shadow: 0 4px 24px -4px rgba(95, 112, 83, 0.08); }
+
+.card-glass {
+  background: var(--color-surface);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* ==================== الجداول — تجاوب للهاتف ==================== */
+@media (max-width: 767px) {
+  .responsive-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 1rem;
+  }
+  .responsive-table-wrap table {
+    min-width: 640px;
+  }
+}
+
+/* ==================== النوافذ التفاعلية (Modals) ==================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-end; /* في الهاتف تظهر من الأسفل */
+  justify-content: center;
+  padding: 0;
+}
+
+@media (min-width: 640px) {
+  .modal-overlay {
+    align-items: center;
+    padding: 1rem;
+  }
+}
+
+.modal-panel {
+  background: var(--color-surface);
+  width: 100%;
+  max-height: 92vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 1.5rem 1.5rem 0 0;
+}
+
+@media (min-width: 640px) {
+  .modal-panel {
+    max-width: 36rem;
+    border-radius: 1.5rem;
+    max-height: 90vh;
+  }
+}
+
+.modal-panel-lg {
+  max-width: 52rem;
+}
+
+/* ==================== نظام Toast ==================== */
+#toast-container {
+  position: fixed;
+  bottom: 5rem; /* أعلى قليلاً في الهاتف حتى لا يغطي شريط الهاتف */
+  left: 1rem;
+  right: 1rem;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+
+@media (min-width: 640px) {
+  #toast-container {
+    bottom: 1.5rem;
+    left: 1.5rem;
+    right: auto;
+  }
+}
+
+.custom-toast {
+  pointer-events: auto;
+  width: 100%;
+  max-width: 400px;
+  padding: 0.85rem 1.25rem;
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  animation: toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+@media (min-width: 640px) {
+  .custom-toast { min-width: 280px; }
+}
+
+.toast-success { background-color: #2e7d32; color: #ffffff; }
+.toast-warning { background-color: #d97706; color: #ffffff; }
+.toast-error   { background-color: #ba1a1a; color: #ffffff; }
+.toast-info    { background-color: #516447; color: #ffffff; }
+
+@keyframes toastSlideIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ==================== حقول الإدخال — تجاوب اللمس ==================== */
+input, select, textarea {
+  min-height: var(--touch-min);
+  touch-action: manipulation;
+  font-size: 16px !important; /* منع تكبير الصفحة عند الضغط في iOS */
+}
+
+/* ==================== شاشة حماية عرض الرابط file:// ==================== */
+#file-protocol-warning {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #fbf9f5;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+  gap: 1rem;
+}
+
+/* ==================== الطباعة ==================== */
+@media print {
+  aside, header, #toast-container, .no-print, button:not(.print-include),
+  #sidebar-backdrop {
+    display: none !important;
+  }
+  main { margin-right: 0 !important; width: 100% !important; }
+  body { background: #ffffff !important; color: #000000 !important; font-size: 12pt; }
+  .card-glass, .soft-shadow { box-shadow: none !important; border: 1px solid #ddd !important; }
+}
