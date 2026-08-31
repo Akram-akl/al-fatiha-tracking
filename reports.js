@@ -1,5 +1,5 @@
 /**
- * محرك التقارير والتصدير (Reports & Data Export Module) — v3.1
+ * محرك التقارير والتصدير (Reports & Data Export Module) — v3.2
  * منظومة "بلغوا عني ولو آية"
  */
 
@@ -21,22 +21,22 @@ const ReportsModule = {
     }
 
     if (auth.isHeadTeacher()) {
-      // المعلمة الرئيسية: ترى نفسها + المعلمات التابعات لها فقط
-      const subordinateTeachers = allTeachers.filter(
+      // المعلمة الرئيسية: ترى نفسها + المعلمات المسجلات بإشرافها فقط
+      const myTeachers = allTeachers.filter(
         t => t.id === currentUser.id || t.supervisorId === currentUser.id
       );
-      const allowedTeacherIds = subordinateTeachers.map(t => t.id);
-      const subordinateStudents = allStudents.filter(s => allowedTeacherIds.includes(s.teacherId));
+      const allowedTeacherIds = myTeachers.map(t => t.id);
+      const myStudents = allStudents.filter(s => allowedTeacherIds.includes(s.teacherId));
 
       return {
-        students: subordinateStudents,
-        teachers: subordinateTeachers,
+        students: myStudents,
+        teachers: myTeachers,
         canViewTeachersReport: true
       };
     }
 
     if (auth.isTeacher()) {
-      // المعلمة العادية: طالباتها فقط ولا تملك صلاحية تقرير أداء المعلمات
+      // المعلمة: طالباتها فقط
       const myStudents = allStudents.filter(s => s.teacherId === currentUser.id);
       return {
         students: myStudents,
@@ -58,10 +58,12 @@ const ReportsModule = {
       typeSelect.innerHTML = `<option value="students">تقرير إنجاز الطالبات</option>`;
       typeSelect.value = "students";
     } else {
+      const cur = typeSelect.value;
       typeSelect.innerHTML = `
         <option value="students">تقرير إنجاز الطالبات</option>
-        <option value="teachers">تقرير أداء المعلمات (التابعات)</option>
+        <option value="teachers">تقرير أداء المعلمات</option>
       `;
+      if (cur) typeSelect.value = cur;
     }
   },
 
@@ -83,8 +85,8 @@ const ReportsModule = {
       if (reportTypeSelect) reportTypeSelect.value = "students";
     }
 
-    let students = scopedStudents;
-    let teachers = scopedTeachers;
+    let students = [...scopedStudents];
+    let teachers = [...scopedTeachers];
 
     if (regionFilter) {
       students = students.filter(s => s.region === regionFilter);
@@ -120,29 +122,36 @@ const ReportsModule = {
           }).join("");
 
       html = `
-        <div>
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:1px solid var(--color-outline-variant);">
+        <div id="pdf-report-content" style="padding:1rem;background:#fff;color:#1b1c19;direction:rtl;font-family:'Cairo',sans-serif;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:2px solid #516447;">
             <div>
-              <div style="font-weight:800;font-size:1.05rem;">تقرير متابعة الطالبات وإتقان سورة الفاتحة</div>
-              <div style="font-size:0.75rem;color:var(--color-on-surface-variant);">تاريخ الاستخراج: ${today} | إجمالي الطالبات: ${students.length}</div>
+              <div style="font-weight:900;font-size:1.2rem;color:#516447;">منظومة بلغوا عني ولو آية - تقرير إنجاز الطالبات</div>
+              <div style="font-size:0.8rem;color:#5f635a;margin-top:0.25rem;">تاريخ الاستخراج: ${today} | إجمالي الطالبات: ${students.length}</div>
             </div>
+            <div style="font-size:0.75rem;text-align:left;color:#5f635a;">سورة الفاتحة (29 كلمة)</div>
           </div>
           <div class="table-wrap">
-            <table>
-              <thead><tr>
-                <th>#</th><th>الطالبة</th><th>المنطقة</th><th>المعلمة</th><th>اللغة</th>
-                <th style="text-align:center">أخطاء</th>
-                <th style="text-align:center">الإتقان</th>
-                <th style="text-align:center">التجويد</th>
-                <th style="text-align:center">الحالة</th>
-              </tr></thead>
+            <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+              <thead>
+                <tr style="background:#f5f3ef;border-bottom:2px solid #516447;">
+                  <th style="padding:8px;text-align:right;">#</th>
+                  <th style="padding:8px;text-align:right;">الطالبة</th>
+                  <th style="padding:8px;text-align:right;">المنطقة</th>
+                  <th style="padding:8px;text-align:right;">المعلمة</th>
+                  <th style="padding:8px;text-align:right;">اللغة</th>
+                  <th style="padding:8px;text-align:center;">أخطاء</th>
+                  <th style="padding:8px;text-align:center;">الإتقان</th>
+                  <th style="padding:8px;text-align:center;">التجويد</th>
+                  <th style="padding:8px;text-align:center;">الحالة</th>
+                </tr>
+              </thead>
               <tbody>${rows}</tbody>
             </table>
           </div>
         </div>`;
     } else if (reportType === "teachers") {
       const rows = teachers.length === 0
-        ? `<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--color-on-surface-variant);">لا توجد معلمات مسجلات ضمن نطاق صلاحياتك</td></tr>`
+        ? `<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--color-on-surface-variant);">لا توجد معلمات مسجلات</td></tr>`
         : teachers.map((t, i) => {
             const stats = TeachersModule.getTeacherStats(t.id);
             const spec  = APP_CONFIG.specializations.find(sp => sp.id === t.specialization) || { label: "كلاهما" };
@@ -160,22 +169,28 @@ const ReportsModule = {
           }).join("");
 
       html = `
-        <div>
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:1px solid var(--color-outline-variant);">
+        <div id="pdf-report-content" style="padding:1rem;background:#fff;color:#1b1c19;direction:rtl;font-family:'Cairo',sans-serif;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:2px solid #516447;">
             <div>
-              <div style="font-weight:800;font-size:1.05rem;">تقرير أداء المعلمات وإنجاز الحلقات</div>
-              <div style="font-size:0.75rem;color:var(--color-on-surface-variant);">تاريخ الاستخراج: ${today} | إجمالي المعلمات: ${teachers.length}</div>
+              <div style="font-weight:900;font-size:1.2rem;color:#516447;">منظومة بلغوا عني ولو آية - تقرير أداء المعلمات</div>
+              <div style="font-size:0.8rem;color:#5f635a;margin-top:0.25rem;">تاريخ الاستخراج: ${today} | إجمالي المعلمات: ${teachers.length}</div>
             </div>
+            <div style="font-size:0.75rem;text-align:left;color:#5f635a;">متابعة إنجاز الحلقات</div>
           </div>
           <div class="table-wrap">
-            <table>
-              <thead><tr>
-                <th>#</th><th>المعلمة</th><th>المنطقة</th><th>التخصص</th>
-                <th style="text-align:center">إجمالي الطالبات</th>
-                <th style="text-align:center">المتقنات</th>
-                <th style="text-align:center">متوسط الإتقان</th>
-                <th style="text-align:center">نقاط التميز</th>
-              </tr></thead>
+            <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+              <thead>
+                <tr style="background:#f5f3ef;border-bottom:2px solid #516447;">
+                  <th style="padding:8px;text-align:right;">#</th>
+                  <th style="padding:8px;text-align:right;">المعلمة</th>
+                  <th style="padding:8px;text-align:right;">المنطقة</th>
+                  <th style="padding:8px;text-align:right;">التخصص</th>
+                  <th style="padding:8px;text-align:center;">إجمالي الطالبات</th>
+                  <th style="padding:8px;text-align:center;">المتقنات</th>
+                  <th style="padding:8px;text-align:center;">متوسط الإتقان</th>
+                  <th style="padding:8px;text-align:center;">نقاط التميز</th>
+                </tr>
+              </thead>
               <tbody>${rows}</tbody>
             </table>
           </div>
@@ -225,10 +240,43 @@ const ReportsModule = {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "طالبات الفاتحة");
     XLSX.writeFile(wb, `تقرير_طالبات_الفاتحة_${new Date().toISOString().split("T")[0]}.xlsx`);
-    AppUI.showToast("تم تصدير ملف Excel بنجاح", "success");
+    AppUI.showToast("تم تنزيل ملف Excel بنجاح", "success");
   },
 
   exportToPDF() {
-    window.print();
+    const reportElement = document.getElementById("pdf-report-content") || document.getElementById("report-preview-container");
+    if (!reportElement || !reportElement.innerHTML.trim()) {
+      AppUI.showToast("يرجى استعراض التقرير أولاً قبل التنزيل", "warning");
+      return;
+    }
+
+    if (typeof html2pdf === "undefined") {
+      AppUI.showToast("جاري فتح نافذة الطباعة والحفظ كـ PDF...", "info");
+      window.print();
+      return;
+    }
+
+    AppUI.showToast("جاري تحويل وتنزيل ملف PDF...", "info");
+
+    const reportType = document.getElementById("report-type-select")?.value || "students";
+    const filename = reportType === "teachers"
+      ? `تقرير_أداء_المعلمات_${new Date().toISOString().split("T")[0]}.pdf`
+      : `تقرير_إنجاز_الطالبات_${new Date().toISOString().split("T")[0]}.pdf`;
+
+    const opt = {
+      margin:       [8, 8, 8, 8],
+      filename:     filename,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
+    };
+
+    html2pdf().set(opt).from(reportElement).save().then(() => {
+      AppUI.showToast("تم تنزيل ملف PDF بنجاح", "success");
+    }).catch(err => {
+      console.error("html2pdf error:", err);
+      AppUI.showToast("تم فتح خيار الطباعة للتحميل المباشر", "info");
+      window.print();
+    });
   }
 };

@@ -214,8 +214,9 @@ const TeachersModule = {
 
   /**
    * @param {string|null} inviteSupervisorId — يُقفل حقل المشرفة عند الدعوة
+   * @param {string|null} inviteRole — يُقفل حقل الدور إذا كان محدداً في رابط الدعوة
    */
-  openAddModal(inviteSupervisorId = null) {
+  openAddModal(inviteSupervisorId = null, inviteRole = null) {
     const modal = document.getElementById("teacher-form-modal");
     if (!modal) return;
 
@@ -246,8 +247,8 @@ const TeachersModule = {
 
         const roleSelect = document.getElementById("teacher-role-select");
         if (roleSelect) {
-          roleSelect.value    = "teacher";
-          roleSelect.disabled = true; // معلمة عادية دائماً عند الدعوة
+          roleSelect.value    = inviteRole || "teacher";
+          roleSelect.disabled = true; // مقفول حسب رابط الدعوة
         }
 
         const regionSelect = document.getElementById("teacher-region-select");
@@ -259,6 +260,14 @@ const TeachersModule = {
         if (modalTitle) modalTitle.textContent = `تسجيل معلمة — إشراف: ${supervisor.name}`;
         AppUI.showToast(`ستُسجَّلين تحت إشراف الأستاذة: ${supervisor.name}`, "info");
       }
+    } else if (inviteRole) {
+      // رابط دعوة مباشر بدون مشرفة ولكن بدور محدد
+      const roleSelect = document.getElementById("teacher-role-select");
+      if (roleSelect) {
+        roleSelect.value    = inviteRole;
+        roleSelect.disabled = true; // مقفول حسب الرابط
+      }
+      if (modalTitle) modalTitle.textContent = inviteRole === "head_teacher" ? "تسجيل معلمة رئيسية" : "تسجيل معلمة";
     } else {
       // إضافة عادية — المشرف فقط يتحكم
       ["teacher-supervisor-select", "teacher-role-select", "teacher-region-select"].forEach(id => {

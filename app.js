@@ -23,7 +23,7 @@ const AppUI = {
         if (ctx.type === "student") {
           StudentsModule.openAddModal(ctx.teacherId);
         } else if (ctx.type === "teacher") {
-          TeachersModule.openAddModal(ctx.supervisorId);
+          TeachersModule.openAddModal(ctx.supervisorId, ctx.role);
         }
       }, 150);
     } else if (!auth.isLoggedIn()) {
@@ -605,11 +605,11 @@ const AppUI = {
     const teachers = db.getTeachers();
 
     if (type === "head_teacher") {
-      teacherSelect.innerHTML = '<option value="">لا يوجد (المعلمة الرئيسية غير تابعة لأحد)</option>';
+      teacherSelect.innerHTML = '<option value="">معلمة رئيسية مستقلة (إشراف عام)</option>';
       teacherSelect.disabled = true;
     } else {
       teacherSelect.disabled = false;
-      let html = '<option value="">-- بدون ارتباط --</option>';
+      let html = '<option value="">-- بدون إشراف مباشر --</option>';
       teachers.forEach(t => {
         if (t.role === "head_teacher" || type === "student") {
           html += `<option value="${t.id}">${t.name} (${t.region})</option>`;
@@ -629,26 +629,39 @@ const AppUI = {
     const type = document.getElementById("admin-invite-type").value;
     const teacherId = document.getElementById("admin-invite-teacher-select").value;
     
-    // الحل الأمثل للعمل مع بروتوكول file:// بدون إظهار null
-    let url = window.location.href.split('?')[0];
+    let base = window.location.href.split('#')[0].split('?')[0];
+    let url = base;
     
     if (type === "student") {
       url += "?invite=student";
       if (teacherId) url += "&teacher=" + encodeURIComponent(teacherId);
-    } else if (type === "teacher" || type === "head_teacher") {
-      url += "?invite=teacher";
-      if (type === "head_teacher") url += "&role=head_teacher";
-      if (teacherId && type === "teacher") url += "&supervisor=" + encodeURIComponent(teacherId);
+    } else if (type === "teacher") {
+      url += "?invite=teacher&role=teacher";
+      if (teacherId) url += "&supervisor=" + encodeURIComponent(teacherId);
+    } else if (type === "head_teacher") {
+      url += "?invite=teacher&role=head_teacher";
     }
 
-    document.getElementById("admin-invite-link-result").value = url;
+    const input = document.getElementById("admin-invite-link-result");
+    if (input) {
+      input.value = url;
+      input.focus();
+      input.select();
+    }
+    this.showToast("تم توليد الرابط بنجاح، يمكنك نسخه الآن", "success");
   },
 
   copyAdminInviteLink() {
     const link = document.getElementById("admin-invite-link-result").value;
-    if (!link) return;
-    navigator.clipboard.writeText(link).then(() => {
-      this.showToast("تم نسخ الرابط بنجاح", "success");
+    if (!link) {
+      this.generateAdminInviteLink();
+    }
+    const finalLink = document.getElementById("admin-invite-link-result").value;
+    if (!finalLink) return;
+    navigator.clipboard.writeText(finalLink).then(() => {
+      this.showToast("تم نسخ رابط الدعوة بنجاح", "success");
+    }).catch(() => {
+      this.showToast("يرجى نسخ الرابط يدوياً من المربع", "info");
     });
   },
 

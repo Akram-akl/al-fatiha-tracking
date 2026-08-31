@@ -298,6 +298,21 @@ const StudentsModule = {
 
     if (!name) { AppUI.showToast("يرجى إدخال اسم الطالبة", "warning"); return; }
 
+    // التحقق من توافق التخصص واللغة
+    if (teacherId) {
+      const teacher = db.getTeacherById(teacherId);
+      if (teacher && teacher.specialization) {
+        if (teacher.specialization === "arabic" && !isArabicSpeaker) {
+          AppUI.showToast("المعلمة المختارة متخصصة في (الناطقين بالعربية فقط)، يرجى اختيار معلمة تقبل غير الناطقين", "error");
+          return;
+        }
+        if (teacher.specialization === "non_arabic" && isArabicSpeaker) {
+          AppUI.showToast("المعلمة المختارة متخصصة في (غير الناطقين بالعربية فقط)، يرجى اختيار معلمة أخرى", "error");
+          return;
+        }
+      }
+    }
+
     // إعادة تفعيل الحقول المقفولة قبل القراءة
     ["student-add-region-select", "student-add-teacher-select"].forEach(id => {
       const el = document.getElementById(id);
@@ -379,7 +394,10 @@ const StudentsModule = {
 
     teacherSelect.innerHTML =
       '<option value="">-- اختر المعلمة المشرفة --</option>' +
-      teachers.map(t => `<option value="${t.id}">${t.name} (${t.region})</option>`).join("");
+      teachers.map(t => {
+        const specText = t.specialization === 'arabic' ? 'ناطقين بالعربية' : t.specialization === 'non_arabic' ? 'غير ناطقين' : 'شامل';
+        return `<option value="${t.id}">${t.name} [${specText}] (${t.region})</option>`;
+      }).join("");
 
     if (currentTeacherId) teacherSelect.value = currentTeacherId;
   },
@@ -398,6 +416,21 @@ const StudentsModule = {
     const status   = document.getElementById("student-edit-status-select").value;
 
     if (!name) { AppUI.showToast("يرجى إدخال اسم الطالبة", "warning"); return; }
+
+    // التحقق من توافق التخصص واللغة
+    if (teacherId) {
+      const teacher = db.getTeacherById(teacherId);
+      if (teacher && teacher.specialization) {
+        if (teacher.specialization === "arabic" && !isArabicSpeaker) {
+          AppUI.showToast("المعلمة المختارة متخصصة في (الناطقين بالعربية فقط)، يرجى اختيار معلمة تقبل غير الناطقين", "error");
+          return;
+        }
+        if (teacher.specialization === "non_arabic" && isArabicSpeaker) {
+          AppUI.showToast("المعلمة المختارة متخصصة في (غير الناطقين بالعربية فقط)، يرجى اختيار معلمة أخرى", "error");
+          return;
+        }
+      }
+    }
 
     db.updateStudent(id, { name, phone, password, region, teacherId, isArabicSpeaker, tajweedScore, status });
     this.closeEditModal();
