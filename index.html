@@ -24,6 +24,11 @@
       font-display: block;
       src: url('./material-symbols.woff2') format('woff2');
     }
+    /* إخفاء النص الإنجليزي تماماً قبل اكتمال تهيئة الخط لمنع ظهوره إطلاقاً */
+    html:not(.fonts-loaded) .material-symbols-outlined {
+      visibility: hidden !important;
+      opacity: 0 !important;
+    }
     .material-symbols-outlined {
       font-family: 'Material Symbols Outlined' !important;
       font-weight: normal;
@@ -39,8 +44,24 @@
       -webkit-font-feature-settings: 'liga';
       font-feature-settings: 'liga';
       -webkit-font-smoothing: antialiased;
+      transition: opacity 0.1s ease;
     }
   </style>
+
+  <script>
+    (function() {
+      function markLoaded() {
+        document.documentElement.classList.add('fonts-loaded');
+      }
+      if (document.fonts && document.fonts.load) {
+        document.fonts.load('24px "Material Symbols Outlined"').then(markLoaded).catch(markLoaded);
+        document.fonts.ready.then(markLoaded);
+      } else {
+        markLoaded();
+      }
+      setTimeout(markLoaded, 120);
+    })();
+  </script>
 
   <!-- مكتبات الإنتاج فقط (بدون Tailwind CDN) -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
