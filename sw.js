@@ -16,7 +16,8 @@ const STATIC_ASSETS = [
   "./reports.js",
   "./app.js",
   "./manifest.json",
-  "./uthmanic_hafs_v20.ttf"
+  "./uthmanic_hafs_v20.ttf",
+  "./material-symbols.woff2"
 ];
 
 // ======================== تثبيت ========================
