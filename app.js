@@ -221,9 +221,9 @@ const AppUI = {
       if (cur) el.value = cur;
     };
 
-    populateSelect("students-region-filter", '<option value="">-- كافة المناطق --</option>', regions);
-    populateSelect("report-region-select",   '<option value="">-- كل المناطق --</option>', regions);
-    populateSelect("leaderboard-region-filter", '<option value="">-- كل المناطق --</option>', regions);
+    populateSelect("students-region-filter", '<option value="">-- كافة المكاتب --</option>', regions);
+    populateSelect("report-region-select",   '<option value="">-- كل المكاتب --</option>', regions);
+    populateSelect("leaderboard-region-filter", '<option value="">-- كل المكاتب --</option>', regions);
 
     // حالات الإتقان
     const statusOptions = APP_CONFIG.studentStatuses
@@ -483,7 +483,7 @@ const AppUI = {
           <div class="space-y-2 text-sm text-muted">
             <div class="flex-between"><span>المعلمات النشطات</span><strong style="color:var(--color-on-surface)">${rt.length}</strong></div>
             <div class="flex-between"><span>المتقنات</span><strong style="color:var(--color-success)">${completed}</strong></div>
-            <div class="flex-between"><span>متوسط إتقان المنطقة</span><strong style="color:var(--color-primary)">${avgMastery}%</strong></div>
+            <div class="flex-between"><span>متوسط إتقان المكتب</span><strong style="color:var(--color-primary)">${avgMastery}%</strong></div>
           </div>
           <button onclick="AppUI.navigateTo('students'); StudentsModule.setFilter('region','${region}')" class="btn btn-ghost btn-sm btn-full">
             استعراض طالبات ${region}

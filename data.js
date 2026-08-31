@@ -40,6 +40,8 @@ class DataStore {
             regions: [...APP_CONFIG.defaultRegions]
           }
         };
+        this._migrateRegions();
+        this.save();
       } else {
         this.save();
       }
@@ -47,6 +49,35 @@ class DataStore {
       console.error("خطأ في قراءة البيانات المحلية:", e);
       this.data = this._getInitialStructure();
       this.save();
+    }
+  }
+
+  _migrateRegions() {
+    const regionMap = {
+      "المنطقة الوسطى": "مكتب الوسط",
+      "المنطقة الشرقية": "مكتب الشرق",
+      "المنطقة الشمالية": "مكتب الشمال",
+      "المنطقة الجنوبية": "مكتب الجنوب",
+      "المنطقة الغربية": "مكتب الوسط",
+      "الوسطى": "مكتب الوسط",
+      "الشرقية": "مكتب الشرق",
+      "الشمالية": "مكتب الشمال",
+      "الجنوبية": "مكتب الجنوب",
+      "الغربية": "مكتب الوسط"
+    };
+
+    if (Array.isArray(this.data.teachers)) {
+      this.data.teachers.forEach(t => {
+        if (regionMap[t.region]) t.region = regionMap[t.region];
+        else if (!APP_CONFIG.defaultRegions.includes(t.region)) t.region = APP_CONFIG.defaultRegions[0];
+      });
+    }
+
+    if (Array.isArray(this.data.students)) {
+      this.data.students.forEach(s => {
+        if (regionMap[s.region]) s.region = regionMap[s.region];
+        else if (!APP_CONFIG.defaultRegions.includes(s.region)) s.region = APP_CONFIG.defaultRegions[0];
+      });
     }
   }
 

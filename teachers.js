@@ -199,7 +199,7 @@ const TeachersModule = {
         <table>
           <thead><tr>
             <th style="text-align:center;width:60px;">الترتيب</th>
-            <th>المعلمة</th><th>المنطقة</th>
+            <th>المعلمة</th><th>المكتب</th>
             <th style="text-align:center">إجمالي الطالبات</th>
             <th style="text-align:center">المتقنات</th>
             <th style="text-align:center">متوسط الإتقان</th>

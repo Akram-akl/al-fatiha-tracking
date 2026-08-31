@@ -181,7 +181,7 @@ const StudentsModule = {
       <div class="table-wrap">
         <table>
           <thead><tr>
-            <th>الطالبة</th><th>المنطقة</th><th>المعلمة</th><th>اللغة</th>
+            <th>الطالبة</th><th>المكتب</th><th>المعلمة</th><th>اللغة</th>
             <th style="text-align:center">أخطاء</th>
             <th style="text-align:center">الإتقان</th>
             <th style="text-align:center">التجويد</th>
@@ -268,7 +268,7 @@ const StudentsModule = {
     }
 
     if (teachers.length === 0) {
-      teacherSelect.innerHTML = `<option value="">-- لا توجد معلمات في ${selectedRegion} --</option>`;
+      teacherSelect.innerHTML = `<option value="">-- لا توجد معلمات في هذا المكتب --</option>`;
       teacherSelect.disabled = lockField;
       return;
     }
@@ -388,7 +388,7 @@ const StudentsModule = {
     const teachers = db.getTeachersByRegion(selectedRegion);
 
     if (teachers.length === 0) {
-      teacherSelect.innerHTML = `<option value="">-- لا توجد معلمات في ${selectedRegion} --</option>`;
+      teacherSelect.innerHTML = `<option value="">-- لا توجد معلمات في هذا المكتب --</option>`;
       return;
     }
 

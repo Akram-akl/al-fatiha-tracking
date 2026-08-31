@@ -136,7 +136,7 @@ const ReportsModule = {
                 <tr style="background:#f5f3ef;border-bottom:2px solid #516447;">
                   <th style="padding:8px;text-align:right;">#</th>
                   <th style="padding:8px;text-align:right;">الطالبة</th>
-                  <th style="padding:8px;text-align:right;">المنطقة</th>
+                  <th style="padding:8px;text-align:right;">المكتب</th>
                   <th style="padding:8px;text-align:right;">المعلمة</th>
                   <th style="padding:8px;text-align:right;">اللغة</th>
                   <th style="padding:8px;text-align:center;">أخطاء</th>
@@ -183,7 +183,7 @@ const ReportsModule = {
                 <tr style="background:#f5f3ef;border-bottom:2px solid #516447;">
                   <th style="padding:8px;text-align:right;">#</th>
                   <th style="padding:8px;text-align:right;">المعلمة</th>
-                  <th style="padding:8px;text-align:right;">المنطقة</th>
+                  <th style="padding:8px;text-align:right;">المكتب</th>
                   <th style="padding:8px;text-align:right;">التخصص</th>
                   <th style="padding:8px;text-align:center;">إجمالي الطالبات</th>
                   <th style="padding:8px;text-align:center;">المتقنات</th>
@@ -220,7 +220,7 @@ const ReportsModule = {
         "الرقم":            i + 1,
         "اسم الطالبة":     s.name,
         "رقم الهاتف":      s.phone || "",
-        "المنطقة":          s.region,
+        "المكتب":            s.region,
         "المعلمة المشرفة": teacher ? teacher.name : "غير محددة",
         "اللغة":            s.isArabicSpeaker ? "ناطقة بالعربية" : "غير ناطقة",
         "أخطاء الكلمات":   `${mistakes} من 29`,

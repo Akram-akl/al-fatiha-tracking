@@ -834,7 +834,7 @@
                   <span class="badge badge-primary">طالبة</span>
                 </div>
                 <div class="text-xs text-muted mt-1">
-                  معلمتكِ: <strong id="portal-teacher-name">-</strong> &bull; المنطقة: <span id="portal-student-region">-</span>
+                  معلمتكِ: <strong id="portal-teacher-name">-</strong> &bull; المكتب: <span id="portal-student-region">-</span>
                 </div>
               </div>
             </div>
@@ -939,7 +939,7 @@
 
             <div class="stat-card">
               <div class="stat-card-top">
-                <div class="stat-label">المنطقة المتصدرة</div>
+                <div class="stat-label">المكتب المتصدر</div>
                 <div class="icon-box" style="background:rgba(119,84,100,0.12);color:var(--color-tertiary)">
                   <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">emoji_events</span>
                 </div>
@@ -1085,8 +1085,8 @@
         <div id="view-geo" class="spa-view">
           <div class="page-header">
             <div>
-              <div class="page-title">التوزيع الجغرافي للمبادرة</div>
-              <div class="page-sub">متابعة إنجاز الحلقات والمعلمات والطالبات بحسب المناطق الجغرافية.</div>
+              <div class="page-title">توزيع المكاتب للمبادرة</div>
+              <div class="page-sub">متابعة إنجاز الحلقات والمعلمات والطالبات بحسب المكاتب.</div>
             </div>
           </div>
           <div id="geo-regions-container" class="grid-auto"></div>
@@ -1101,7 +1101,7 @@
             </div>
             <div class="page-actions">
               <select id="leaderboard-region-filter" onchange="TeachersModule.renderLeaderboard()" class="form-input btn-sm">
-                <option value="">-- كل المناطق --</option>
+                <option value="">-- كل المكاتب --</option>
               </select>
             </div>
           </div>
@@ -1135,9 +1135,9 @@
                 </select>
               </div>
               <div>
-                <label class="form-label">المنطقة</label>
+                <label class="form-label">المكتب</label>
                 <select id="report-region-select" onchange="ReportsModule.generateLiveReport()" class="form-input">
-                  <option value="">-- كل المناطق --</option>
+                  <option value="">-- كل المكاتب --</option>
                 </select>
               </div>
               <div>
@@ -1161,7 +1161,7 @@
           </div>
           <div class="grid-2">
             <div class="card">
-              <div class="font-bold mb-4">متوسط نسبة الإتقان حسب المناطق</div>
+              <div class="font-bold mb-4">متوسط نسبة الإتقان حسب المكاتب</div>
               <canvas id="chart-region-mastery" height="220"></canvas>
             </div>
             <div class="card">
@@ -1181,8 +1181,8 @@
           </div>
           <div class="grid-2">
             <div class="card">
-              <div class="font-bold mb-1">المناطق الجغرافية المعتمدة</div>
-              <div class="text-xs text-muted mb-3">مناطق النظام لتوزيع الحلقات.</div>
+              <div class="font-bold mb-1">المكاتب المعتمدة</div>
+              <div class="text-xs text-muted mb-3">المكاتب الأربعة المعتمدة في المنظومة.</div>
               <div id="settings-regions-list" class="space-y-2"></div>
             </div>
             <div class="card space-y-5">
@@ -1236,7 +1236,7 @@
       </div>
       <div class="grid-2">
         <div>
-          <label class="form-label">المنطقة الجغرافية</label>
+          <label class="form-label">المكتب</label>
           <select id="student-add-region-select" onchange="StudentsModule.updateAddFormTeachersByRegion(this.value)" class="form-input"></select>
         </div>
         <div>
@@ -1294,7 +1294,7 @@
       </div>
       <div class="grid-2">
         <div>
-          <label class="form-label">المنطقة الجغرافية</label>
+          <label class="form-label">المكتب</label>
           <select id="student-edit-region-select" onchange="StudentsModule.updateEditFormTeachersByRegion(this.value)" class="form-input"></select>
         </div>
         <div>
@@ -1362,7 +1362,7 @@
     <!-- بطاقات الإتقان -->
     <div class="grid-4" style="margin-bottom:1rem;">
       <div class="card-sm text-center bg-surface-c">
-        <div class="text-xs text-muted">المنطقة</div>
+        <div class="text-xs text-muted">المكتب</div>
         <div id="profile-student-region" class="font-bold text-sm mt-1">-</div>
       </div>
       <div class="card-sm text-center bg-surface-c">
@@ -1442,7 +1442,7 @@
       </div>
       <div class="grid-2">
         <div>
-          <label class="form-label">المنطقة الجغرافية</label>
+          <label class="form-label">المكتب</label>
           <select id="teacher-region-select" class="form-input"></select>
         </div>
         <div>
