@@ -2,7 +2,8 @@
  * Service Worker للعمل دون اتصال بالإنترنت (Offline First PWA)
  */
 
-const CACHE_NAME = "al-fatiha-cache-v1";
+const CACHE_NAME = "al-fatiha-cache-v2";
+
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",
@@ -41,28 +42,24 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
-// الاستجابة للطلبات من الكاش أولاً ثم الشبكة
+// الاستجابة للطلبات من الشبكة أولاً، ثم الكاش عند انقطاع الإنترنت (Network First)
 self.addEventListener("fetch", (event) => {
-  // تجاهل طلبات غير الـ HTTP
   if (!event.request.url.startsWith("http")) return;
 
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
+    fetch(event.request).then((networkResponse) => {
+      // تخزين نسخة حديثة في الكاش دائماً إذا كان الطلب ناجحاً
+      if (networkResponse && networkResponse.status === 200) {
+        const responseClone = networkResponse.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, responseClone);
+        });
       }
-      return fetch(event.request).then((networkResponse) => {
-        // تخزين نسخة في الكاش إذا كان الطلب ناجحاً
-        if (networkResponse && networkResponse.status === 200) {
-          const responseClone = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseClone);
-          });
-        }
-        return networkResponse;
-      }).catch(() => {
-        // إذا انقطع الإنترنت ولم يكن الملف موجوداً بالكاش
-        return caches.match("./index.html");
+      return networkResponse;
+    }).catch(() => {
+      // إذا انقطع الإنترنت، جلب الملف من الكاش
+      return caches.match(event.request).then((cachedResponse) => {
+        return cachedResponse || caches.match("./index.html");
       });
     })
   );
