@@ -21,7 +21,7 @@ const ReportsModule = {
     }
 
     if (auth.isHeadTeacher()) {
-      // المعلمة الرئيسية: ترى نفسها + المعلمات المسجلات بإشرافها فقط
+      // المبلّغة الرئيسية: ترى نفسها + المبلّغات المسجلات بإشرافها فقط
       const myTeachers = allTeachers.filter(
         t => t.id === currentUser.id || t.supervisorId === currentUser.id
       );
@@ -36,7 +36,7 @@ const ReportsModule = {
     }
 
     if (auth.isTeacher()) {
-      // المعلمة: طالباتها فقط
+      // المبلّغة: متعلماتها فقط
       const myStudents = allStudents.filter(s => s.teacherId === currentUser.id);
       return {
         students: myStudents,
@@ -55,13 +55,13 @@ const ReportsModule = {
     const { canViewTeachersReport } = this.getScopedData();
 
     if (!canViewTeachersReport) {
-      typeSelect.innerHTML = `<option value="students">تقرير إنجاز الطالبات</option>`;
+      typeSelect.innerHTML = `<option value="students">تقرير إنجاز المتعلمات</option>`;
       typeSelect.value = "students";
     } else {
       const cur = typeSelect.value;
       typeSelect.innerHTML = `
-        <option value="students">تقرير إنجاز الطالبات</option>
-        <option value="teachers">تقرير أداء المعلمات</option>
+        <option value="students">تقرير إنجاز المتعلمات</option>
+        <option value="teachers">تقرير أداء المبلّغات</option>
       `;
       if (cur) typeSelect.value = cur;
     }
@@ -125,8 +125,8 @@ const ReportsModule = {
         <div id="pdf-report-content" style="padding:1rem;background:#fff;color:#1b1c19;direction:rtl;font-family:'Cairo',sans-serif;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:2px solid #516447;">
             <div>
-              <div style="font-weight:900;font-size:1.2rem;color:#516447;">منظومة بلغوا عني ولو آية - تقرير إنجاز الطالبات</div>
-              <div style="font-size:0.8rem;color:#5f635a;margin-top:0.25rem;">تاريخ الاستخراج: ${today} | إجمالي الطالبات: ${students.length}</div>
+              <div style="font-weight:900;font-size:1.2rem;color:#516447;">منظومة بلغوا عني ولو آية - تقرير إنجاز المتعلمات</div>
+              <div style="font-size:0.8rem;color:#5f635a;margin-top:0.25rem;">تاريخ الاستخراج: ${today} | إجمالي المتعلمات: ${students.length}</div>
             </div>
             <div style="font-size:0.75rem;text-align:left;color:#5f635a;">سورة الفاتحة (29 كلمة)</div>
           </div>
@@ -135,9 +135,9 @@ const ReportsModule = {
               <thead>
                 <tr style="background:#f5f3ef;border-bottom:2px solid #516447;">
                   <th style="padding:8px;text-align:right;">#</th>
-                  <th style="padding:8px;text-align:right;">الطالبة</th>
+                  <th style="padding:8px;text-align:right;">المتعلمة</th>
                   <th style="padding:8px;text-align:right;">المكتب</th>
-                  <th style="padding:8px;text-align:right;">المعلمة</th>
+                  <th style="padding:8px;text-align:right;">المبلّغة</th>
                   <th style="padding:8px;text-align:right;">اللغة</th>
                   <th style="padding:8px;text-align:center;">أخطاء</th>
                   <th style="padding:8px;text-align:center;">الإتقان</th>
@@ -151,7 +151,7 @@ const ReportsModule = {
         </div>`;
     } else if (reportType === "teachers") {
       const rows = teachers.length === 0
-        ? `<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--color-on-surface-variant);">لا توجد معلمات مسجلات</td></tr>`
+        ? `<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--color-on-surface-variant);">لا توجد مبلّغات مسجلات</td></tr>`
         : teachers.map((t, i) => {
             const stats = TeachersModule.getTeacherStats(t.id);
             const spec  = APP_CONFIG.specializations.find(sp => sp.id === t.specialization) || { label: "كلاهما" };
@@ -172,8 +172,8 @@ const ReportsModule = {
         <div id="pdf-report-content" style="padding:1rem;background:#fff;color:#1b1c19;direction:rtl;font-family:'Cairo',sans-serif;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:2px solid #516447;">
             <div>
-              <div style="font-weight:900;font-size:1.2rem;color:#516447;">منظومة بلغوا عني ولو آية - تقرير أداء المعلمات</div>
-              <div style="font-size:0.8rem;color:#5f635a;margin-top:0.25rem;">تاريخ الاستخراج: ${today} | إجمالي المعلمات: ${teachers.length}</div>
+              <div style="font-weight:900;font-size:1.2rem;color:#516447;">منظومة بلغوا عني ولو آية - تقرير أداء المبلّغات</div>
+              <div style="font-size:0.8rem;color:#5f635a;margin-top:0.25rem;">تاريخ الاستخراج: ${today} | إجمالي المبلّغات: ${teachers.length}</div>
             </div>
             <div style="font-size:0.75rem;text-align:left;color:#5f635a;">متابعة إنجاز الحلقات</div>
           </div>
@@ -182,10 +182,10 @@ const ReportsModule = {
               <thead>
                 <tr style="background:#f5f3ef;border-bottom:2px solid #516447;">
                   <th style="padding:8px;text-align:right;">#</th>
-                  <th style="padding:8px;text-align:right;">المعلمة</th>
+                  <th style="padding:8px;text-align:right;">المبلّغة</th>
                   <th style="padding:8px;text-align:right;">المكتب</th>
                   <th style="padding:8px;text-align:right;">التخصص</th>
-                  <th style="padding:8px;text-align:center;">إجمالي الطالبات</th>
+                  <th style="padding:8px;text-align:center;">إجمالي المتعلمات</th>
                   <th style="padding:8px;text-align:center;">المتقنات</th>
                   <th style="padding:8px;text-align:center;">متوسط الإتقان</th>
                   <th style="padding:8px;text-align:center;">نقاط التميز</th>
@@ -208,7 +208,7 @@ const ReportsModule = {
 
     const { students } = this.getScopedData();
     if (students.length === 0) {
-      AppUI.showToast("لا توجد بيانات طالبات للتصدير حالياً", "warning");
+      AppUI.showToast("لا توجد بيانات متعلمات للتصدير حالياً", "warning");
       return;
     }
 
@@ -218,10 +218,10 @@ const ReportsModule = {
       const mistakes  = Array.isArray(s.mistakeWordIds) ? s.mistakeWordIds.length : (s.errorsCount || 0);
       return {
         "الرقم":            i + 1,
-        "اسم الطالبة":     s.name,
+        "اسم المتعلمة":     s.name,
         "رقم الهاتف":      s.phone || "",
         "المكتب":            s.region,
-        "المعلمة المشرفة": teacher ? teacher.name : "غير محددة",
+        "المبلّغة المشرفة": teacher ? teacher.name : "غير محددة",
         "اللغة":            s.isArabicSpeaker ? "ناطقة بالعربية" : "غير ناطقة",
         "أخطاء الكلمات":   `${mistakes} من 29`,
         "نسبة الإتقان":     `${s.mastery}%`,
@@ -238,8 +238,8 @@ const ReportsModule = {
     ws["!views"].push({ RTL: true });
 
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "طالبات الفاتحة");
-    XLSX.writeFile(wb, `تقرير_طالبات_الفاتحة_${new Date().toISOString().split("T")[0]}.xlsx`);
+    XLSX.utils.book_append_sheet(wb, ws, "متعلمات الفاتحة");
+    XLSX.writeFile(wb, `تقرير_متعلمات_الفاتحة_${new Date().toISOString().split("T")[0]}.xlsx`);
     AppUI.showToast("تم تنزيل ملف Excel بنجاح", "success");
   },
 
@@ -260,8 +260,8 @@ const ReportsModule = {
 
     const reportType = document.getElementById("report-type-select")?.value || "students";
     const filename = reportType === "teachers"
-      ? `تقرير_أداء_المعلمات_${new Date().toISOString().split("T")[0]}.pdf`
-      : `تقرير_إنجاز_الطالبات_${new Date().toISOString().split("T")[0]}.pdf`;
+      ? `تقرير_أداء_المبلّغات_${new Date().toISOString().split("T")[0]}.pdf`
+      : `تقرير_إنجاز_المتعلمات_${new Date().toISOString().split("T")[0]}.pdf`;
 
     const opt = {
       margin:       [8, 8, 8, 8],

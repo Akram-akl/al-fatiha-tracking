@@ -501,4 +501,235 @@ input, select, textarea {
   main { margin-right: 0 !important; width: 100% !important; }
   body { background: #ffffff !important; color: #000000 !important; font-size: 12pt; }
   .card-glass, .soft-shadow { box-shadow: none !important; border: 1px solid #ddd !important; }
+  .certificate-page { box-shadow: none !important; border: none !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
 }
+
+/* ==================== شهادات الإتقان النسائية الفاخرة ==================== */
+.certificate-page {
+  background: #fdfbf7;
+  color: #1b1c19;
+  padding: 1.5rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  direction: rtl;
+  font-family: 'Cairo', sans-serif;
+  max-width: 860px;
+  margin: 0 auto 1.5rem auto;
+  box-sizing: border-box;
+}
+
+.cert-outer-border {
+  border: 4px double #bcaaa4;
+  padding: 8px;
+  border-radius: 1.25rem;
+  background: radial-gradient(circle at center, #ffffff 60%, #faf6f0 100%);
+}
+
+.cert-inner-border {
+  border: 2px solid #516447;
+  padding: 1.75rem 2rem;
+  border-radius: 1rem;
+  position: relative;
+  text-align: center;
+}
+
+.cert-header {
+  margin-bottom: 1.25rem;
+}
+
+.cert-bismillah {
+  font-size: 1.6rem;
+  color: #516447;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.cert-org-title {
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: #735c00;
+  letter-spacing: 0.5px;
+}
+
+.cert-sub-title {
+  font-size: 0.85rem;
+  color: #5f635a;
+  margin-top: 0.2rem;
+}
+
+.cert-badge-wrap {
+  display: inline-block;
+  margin: 1rem auto 1.25rem auto;
+  padding: 0.5rem 2rem;
+  background: linear-gradient(135deg, #516447, #3a4c31);
+  color: #ffffff;
+  border-radius: 2rem;
+  box-shadow: 0 4px 12px rgba(81,100,71,0.25);
+}
+
+.cert-badge-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.cert-intro {
+  font-size: 1.05rem;
+  color: #444;
+  margin-bottom: 0.75rem;
+}
+
+.cert-student-name {
+  font-size: 1.85rem;
+  font-weight: 900;
+  color: #516447;
+  padding: 0.4rem 1.5rem;
+  display: inline-block;
+  border-bottom: 2px dashed #bcaaa4;
+  margin-bottom: 1rem;
+  font-family: 'Amiri', serif;
+}
+
+.cert-desc {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: #2c3029;
+  margin-bottom: 1rem;
+}
+
+.cert-score {
+  font-weight: 900;
+  color: #2e7d32;
+  font-size: 1.15rem;
+}
+
+.cert-grade {
+  font-weight: 800;
+  color: #735c00;
+}
+
+.cert-dua {
+  font-size: 1.3rem;
+  color: #516447;
+  margin: 1rem 0;
+  font-weight: 700;
+}
+
+.cert-wish {
+  font-size: 0.9rem;
+  color: #5f635a;
+  margin-bottom: 1.75rem;
+}
+
+.cert-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-top: 1rem;
+  border-top: 1px solid #e4e2de;
+}
+
+.cert-sig-box {
+  text-align: center;
+  min-width: 180px;
+}
+
+.cert-sig-title {
+  font-size: 0.85rem;
+  color: #5f635a;
+  margin-bottom: 0.35rem;
+}
+
+.cert-sig-name {
+  font-weight: 800;
+  font-size: 1rem;
+  color: #1b1c19;
+}
+
+.cert-sig-line {
+  width: 120px;
+  height: 1px;
+  background: #c4c8bd;
+  margin: 0.5rem auto 0 auto;
+}
+
+.cert-sig-date {
+  font-size: 0.75rem;
+  color: #777;
+  margin-top: 0.25rem;
+}
+
+.cert-seal-box {
+  text-align: center;
+}
+
+.cert-seal {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  border: 2px dashed #516447;
+  background: #d4e9c4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.cert-serial {
+  font-size: 0.75rem;
+  color: #5f635a;
+  margin-top: 0.35rem;
+  font-family: monospace;
+}
+
+/* ==================== بطاقات التفسير والغريب التفاعلية ==================== */
+.tafseer-interactive-box {
+  border: 1px solid var(--color-outline-variant);
+  border-radius: 1rem;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  background: var(--color-surface);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  user-select: none;
+}
+
+.tafseer-interactive-box:hover {
+  border-color: var(--color-primary);
+  background: var(--color-surface-container);
+}
+
+.tafseer-interactive-box.is-mistake {
+  border: 2px solid #ba1a1a !important;
+  background: #ffdad6 !important;
+  color: #410002 !important;
+}
+
+.ghareeb-word-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.85rem;
+  background: var(--color-surface-container);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: 2rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  margin: 0.25rem;
+}
+
+.ghareeb-word-pill:hover {
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+.ghareeb-word-pill.is-mistake {
+  border-color: #ba1a1a !important;
+  background: #ffdad6 !important;
+  color: #ba1a1a !important;
+  font-weight: 700;
+}
+

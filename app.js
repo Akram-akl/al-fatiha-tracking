@@ -175,7 +175,7 @@ const AppUI = {
   handleLoginTeacherFromPage() {
     const select = document.getElementById("login-page-teacher-select");
     const code   = document.getElementById("login-page-teacher-password").value;
-    if (!select || !select.value) { this.showToast("يرجى اختيار المعلمة من القائمة", "warning"); return; }
+    if (!select || !select.value) { this.showToast("يرجى اختيار المبلّغة من القائمة", "warning"); return; }
 
     const res = auth.loginAsTeacher(select.value, code);
     if (res.success) {
@@ -190,7 +190,7 @@ const AppUI = {
   handleLoginStudentFromPage() {
     const select = document.getElementById("login-page-student-select");
     const pass   = document.getElementById("login-page-student-password").value;
-    if (!select || !select.value) { this.showToast("يرجى اختيار اسم الطالبة من القائمة", "warning"); return; }
+    if (!select || !select.value) { this.showToast("يرجى اختيار اسم المتعلمة من القائمة", "warning"); return; }
 
     const res = auth.loginAsStudent(select.value, pass);
     if (res.success) {
@@ -242,18 +242,18 @@ const AppUI = {
     const teacherSelect = document.getElementById("login-page-teacher-select");
     if (teacherSelect) {
       teacherSelect.innerHTML = teachers.length
-        ? '<option value="">-- اختر حساب المعلمة --</option>' +
+        ? '<option value="">-- اختر حساب المبلّغة --</option>' +
           teachers.map(t => `<option value="${t.id}">${t.name} (${t.region})</option>`).join("")
-        : '<option value="">-- لا توجد معلمات مسجلات --</option>';
+        : '<option value="">-- لا توجد مبلّغات مسجلات --</option>';
     }
 
     const students = db.getStudents();
     const studentSelect = document.getElementById("login-page-student-select");
     if (studentSelect) {
       studentSelect.innerHTML = students.length
-        ? '<option value="">-- اختر حساب الطالبة --</option>' +
+        ? '<option value="">-- اختر حساب المتعلمة --</option>' +
           students.map(s => `<option value="${s.id}">${s.name} (${s.region})</option>`).join("")
-        : '<option value="">-- لا توجد طالبات مسجلات --</option>';
+        : '<option value="">-- لا توجد متعلمات مسجلات --</option>';
     }
   },
 
@@ -318,7 +318,7 @@ const AppUI = {
 
     const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
     set("stat-target-progress", `${pct}%`);
-    set("stat-target-label", `نسبة المتقنات من الإجمالي (${total} طالبة)`);
+    set("stat-target-label", `نسبة المتقنات من الإجمالي (${total} متعلمة)`);
     const bar = document.getElementById("stat-target-bar");
     if (bar) bar.style.width = `${pct}%`;
 
@@ -384,7 +384,7 @@ const AppUI = {
 
     const completed = db.getStudents(s => s.status === "completed").slice(0, 6);
     if (completed.length === 0) {
-      container.innerHTML = `<div class="text-center text-xs text-muted" style="padding:2rem;grid-column:1/-1">لا توجد طالبات أتممن الإتقان حتى الآن.</div>`;
+      container.innerHTML = `<div class="text-center text-xs text-muted" style="padding:2rem;grid-column:1/-1">لا توجد متعلمات أتممن الإتقان حتى الآن.</div>`;
       return;
     }
 
@@ -478,15 +478,15 @@ const AppUI = {
               <span class="material-symbols-outlined text-primary" style="font-size:1.5rem;">location_on</span>
               <span class="font-black text-lg" style="color:var(--color-on-surface)">${region}</span>
             </div>
-            <span class="badge badge-primary">${rs.length} طالبة</span>
+            <span class="badge badge-primary">${rs.length} متعلمة</span>
           </div>
           <div class="space-y-2 text-sm text-muted">
-            <div class="flex-between"><span>المعلمات النشطات</span><strong style="color:var(--color-on-surface)">${rt.length}</strong></div>
+            <div class="flex-between"><span>المبلّغات النشطات</span><strong style="color:var(--color-on-surface)">${rt.length}</strong></div>
             <div class="flex-between"><span>المتقنات</span><strong style="color:var(--color-success)">${completed}</strong></div>
             <div class="flex-between"><span>متوسط إتقان المكتب</span><strong style="color:var(--color-primary)">${avgMastery}%</strong></div>
           </div>
           <button onclick="AppUI.navigateTo('students'); StudentsModule.setFilter('region','${region}')" class="btn btn-ghost btn-sm btn-full">
-            استعراض طالبات ${region}
+            استعراض متعلمات ${region}
           </button>
         </div>
       `;
@@ -545,8 +545,8 @@ const AppUI = {
     const roleEl = document.getElementById("header-user-role");
     if (nameEl) nameEl.textContent = u.name;
     if (roleEl) roleEl.textContent = {
-      admin: "مشرف عام", head_teacher: "معلمة رئيسية",
-      teacher: "معلمة", student: "طالبة"
+      admin: "مشرف عام", head_teacher: "مبلّغة رئيسية",
+      teacher: "مبلّغة", student: "متعلمة"
     }[u.role] || u.role;
   },
 
@@ -592,7 +592,7 @@ const AppUI = {
   handleResetAllData() {
     this.showConfirmModal(
       "مسح شامل لكافة البيانات",
-      "تحذير: هل أنت متأكد من مسح جميع الطالبات والمعلمات والإحصائيات وإعادة تعيين النظام بالكامل؟",
+      "تحذير: هل أنت متأكد من مسح جميع المتعلمات والمبلّغات والإحصائيات وإعادة تعيين النظام بالكامل؟",
       () => { db.resetAllData(); this.updateDashboardStats(); this.showToast("تمت إعادة ضبط المنظومة بنجاح", "info"); }
     );
   },
@@ -613,7 +613,7 @@ const AppUI = {
     const teachers = db.getTeachers();
 
     if (type === "head_teacher") {
-      teacherSelect.innerHTML = '<option value="">معلمة رئيسية مستقلة (إشراف عام)</option>';
+      teacherSelect.innerHTML = '<option value="">مبلّغة رئيسية مستقلة (إشراف عام)</option>';
       teacherSelect.disabled = true;
     } else {
       teacherSelect.disabled = false;
@@ -625,7 +625,7 @@ const AppUI = {
       });
       teacherSelect.innerHTML = html;
 
-      // للمعلمة الرئيسية، الخيار محدد تلقائياً لنفسها
+      // للمبلّغة الرئيسية، الخيار محدد تلقائياً لنفسها
       if (auth.isHeadTeacher()) {
         teacherSelect.value = auth.getCurrentUser().id;
         teacherSelect.disabled = true;

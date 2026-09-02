@@ -1,5 +1,5 @@
 /**
- * محرك إدارة ومتابعة الطالبات، التقييم اللحظي للأخطاء، وروابط التسجيل الذاتي
+ * محرك إدارة ومتابعة المتعلمات، التقييم اللحظي للأخطاء، وروابط التسجيل الذاتي
  * منظومة "بلغوا عني ولو آية" — v3.0
  */
 
@@ -68,7 +68,7 @@ const StudentsModule = {
   setMasteryRangeFilter(min, max, label) {
     this.activeFilters.masteryRange = { min, max, label };
     this.renderStudentsTable();
-    AppUI.showToast(`تمت الفلترة: طالبات فئة ${label}`, "info");
+    AppUI.showToast(`تمت الفلترة: متعلمات فئة ${label}`, "info");
   },
 
   resetFilters() {
@@ -82,7 +82,7 @@ const StudentsModule = {
     this.renderStudentsTable();
   },
 
-  // ==================== جدول الطالبات ====================
+  // ==================== جدول المتعلمات ====================
 
   renderStudentsTable() {
     if (auth.isStudent()) { AppUI.navigateTo("student-portal"); return; }
@@ -92,16 +92,16 @@ const StudentsModule = {
 
     const students = this.getFilteredStudents();
     const badge = document.getElementById("students-count-badge");
-    if (badge) badge.textContent = `${students.length} طالبة`;
+    if (badge) badge.textContent = `${students.length} متعلمة`;
 
     if (students.length === 0) {
       container.innerHTML = `
         <div class="card text-center" style="padding:3rem 1rem">
           <span class="material-symbols-outlined" style="font-size:3.5rem;color:var(--color-on-surface-variant);opacity:0.4;">person_search</span>
-          <div class="font-bold mt-2" style="font-size:1.1rem;">لا توجد طالبات مطابقة</div>
-          <div class="text-sm text-muted mt-1 mb-3">يمكنك إضافة طالبة جديدة أو تغيير الفلاتر.</div>
+          <div class="font-bold mt-2" style="font-size:1.1rem;">لا توجد متعلمات مطابقة</div>
+          <div class="text-sm text-muted mt-1 mb-3">يمكنك إضافة متعلمة جديدة أو تغيير الفلاتر.</div>
           <button onclick="StudentsModule.openAddModal()" class="btn btn-p btn-sm" style="display:inline-flex;">
-            <span class="material-symbols-outlined" style="font-size:1rem;">add</span>تسجيل طالبة جديدة
+            <span class="material-symbols-outlined" style="font-size:1rem;">add</span>تسجيل متعلمة جديدة
           </button>
         </div>`;
       return;
@@ -181,7 +181,7 @@ const StudentsModule = {
       <div class="table-wrap">
         <table>
           <thead><tr>
-            <th>الطالبة</th><th>المكتب</th><th>المعلمة</th><th>اللغة</th>
+            <th>المتعلمة</th><th>المكتب</th><th>المبلّغة</th><th>اللغة</th>
             <th style="text-align:center">أخطاء</th>
             <th style="text-align:center">الإتقان</th>
             <th style="text-align:center">التجويد</th>
@@ -193,10 +193,10 @@ const StudentsModule = {
       </div>`;
   },
 
-  // ==================== إضافة طالبة (مع دعم رابط الدعوة وقفل المعلمة) ====================
+  // ==================== إضافة متعلمة (مع دعم رابط الدعوة وقفل المبلّغة) ====================
 
   /**
-   * @param {string|null} inviteTeacherId — إذا جاء من رابط دعوة، يُقفل حقل المعلمة
+   * @param {string|null} inviteTeacherId — إذا جاء من رابط دعوة، يُقفل حقل المبلّغة
    */
   openAddModal(inviteTeacherId = null) {
     if (auth.isStudent()) { AppUI.showToast("لا تملك الصلاحية", "warning"); return; }
@@ -213,7 +213,7 @@ const StudentsModule = {
     const regionSelect = document.getElementById("student-add-region-select");
 
     if (inviteTeacherId) {
-      // رابط الدعوة: اقفل المنطقة والمعلمة ولا تسمح بتعديلهما
+      // رابط الدعوة: اقفل المنطقة والمبلّغة ولا تسمح بتعديلهما
       const teacher = db.getTeacherById(inviteTeacherId);
       if (teacher) {
         if (regionSelect) {
@@ -221,7 +221,7 @@ const StudentsModule = {
           regionSelect.disabled = true; // مقفول
         }
         this.updateAddFormTeachersByRegion(teacher.region, inviteTeacherId, true);
-        AppUI.showToast(`أنت تسجلين تحت إشراف المعلمة: ${teacher.name}`, "info");
+        AppUI.showToast(`أنت تسجلين تحت إشراف المبلّغة: ${teacher.name}`, "info");
       }
     } else {
       if (regionSelect) regionSelect.disabled = false;
@@ -232,7 +232,7 @@ const StudentsModule = {
         const teacherSelect = document.getElementById("student-add-teacher-select");
         if (teacherSelect) {
           teacherSelect.value    = auth.getCurrentUser().id;
-          teacherSelect.disabled = true; // المعلمة لا تغير مُشرفها
+          teacherSelect.disabled = true; // المبلّغة لا تغير مُشرفها
         }
       }
     }
@@ -247,9 +247,9 @@ const StudentsModule = {
   },
 
   /**
-   * تحديث قائمة المعلمات عند تغيير المنطقة
+   * تحديث قائمة المبلّغات عند تغيير المنطقة
    * @param {string}  selectedRegion
-   * @param {string|null} lockedTeacherId — إذا حُدد، يتم تحديد المعلمة وقفلها
+   * @param {string|null} lockedTeacherId — إذا حُدد، يتم تحديد المبلّغة وقفلها
    * @param {boolean} lockField
    */
   updateAddFormTeachersByRegion(selectedRegion, lockedTeacherId = null, lockField = false) {
@@ -258,7 +258,7 @@ const StudentsModule = {
 
     let teachers = db.getTeachersByRegion(selectedRegion);
 
-    // المعلمة الرئيسية ترى معلماتها فقط
+    // المبلّغة الرئيسية ترى مبلّغاتها فقط
     if (auth.isHeadTeacher()) {
       const cu = auth.getCurrentUser();
       teachers = teachers.filter(t => t.id === cu.id || t.supervisorId === cu.id);
@@ -268,20 +268,20 @@ const StudentsModule = {
     }
 
     if (teachers.length === 0) {
-      teacherSelect.innerHTML = `<option value="">-- لا توجد معلمات في هذا المكتب --</option>`;
+      teacherSelect.innerHTML = `<option value="">-- لا توجد مبلّغات في هذا المكتب --</option>`;
       teacherSelect.disabled = lockField;
       return;
     }
 
     teacherSelect.innerHTML =
-      '<option value="">-- اختر المعلمة المشرفة --</option>' +
+      '<option value="">-- اختر المبلّغة المشرفة --</option>' +
       teachers.map(t => `<option value="${t.id}">${t.name} (${t.region})</option>`).join("");
 
     if (lockedTeacherId) {
       teacherSelect.value    = lockedTeacherId;
       teacherSelect.disabled = lockField;
     } else {
-      teacherSelect.disabled = auth.isTeacher() && !auth.isHeadTeacher(); // المعلمة العادية لا تغير مشرفها
+      teacherSelect.disabled = auth.isTeacher() && !auth.isHeadTeacher(); // المبلّغة العادية لا تغير مشرفها
     }
   },
 
@@ -295,19 +295,20 @@ const StudentsModule = {
     const teacherId = document.getElementById("student-add-teacher-select")?.value || null;
     const isArabicSpeaker = document.getElementById("student-add-language-select")?.value === "true";
     const initialNote = document.getElementById("student-add-note-input")?.value.trim() || "";
+    const learningTrack = document.getElementById("student-add-track-select")?.value || "memorize";
 
-    if (!name) { AppUI.showToast("يرجى إدخال اسم الطالبة", "warning"); return; }
+    if (!name) { AppUI.showToast("يرجى إدخال اسم المتعلمة", "warning"); return; }
 
     // التحقق من توافق التخصص واللغة
     if (teacherId) {
       const teacher = db.getTeacherById(teacherId);
       if (teacher && teacher.specialization) {
         if (teacher.specialization === "arabic" && !isArabicSpeaker) {
-          AppUI.showToast("المعلمة المختارة متخصصة في (الناطقين بالعربية فقط)، يرجى اختيار معلمة تقبل غير الناطقين", "error");
+          AppUI.showToast("المبلّغة المختارة متخصصة في (الناطقين بالعربية فقط)، يرجى اختيار مبلّغة تقبل غير الناطقين", "error");
           return;
         }
         if (teacher.specialization === "non_arabic" && isArabicSpeaker) {
-          AppUI.showToast("المعلمة المختارة متخصصة في (غير الناطقين بالعربية فقط)، يرجى اختيار معلمة أخرى", "error");
+          AppUI.showToast("المبلّغة المختارة متخصصة في (غير الناطقين بالعربية فقط)، يرجى اختيار مبلّغة أخرى", "error");
           return;
         }
       }
@@ -319,22 +320,22 @@ const StudentsModule = {
       if (el) el.disabled = false;
     });
 
-    const newStudent = db.addStudent({ name, phone, password, region, teacherId, isArabicSpeaker, mistakeWordIds: [], initialNote, status: "in_progress" });
+    const newStudent = db.addStudent({ name, phone, password, region, teacherId, isArabicSpeaker, mistakeWordIds: [], initialNote, status: "in_progress", learningTrack });
 
     this.closeAddModal();
 
-    // إذا كان تسجيل طالبة مباشرة من رابط دعوة وهي ليست مسجلة دخول
+    // إذا كان تسجيل متعلمة مباشرة من رابط دعوة وهي ليست مسجلة دخول
     if (!auth.isLoggedIn()) {
       auth.loginAsStudent(newStudent.id, password);
       AppUI.showAppScreen();
       AppUI.navigateTo("student-portal");
-      AppUI.showToast(`مرحباً بكِ يا ${newStudent.name}! تم تسجيلكِ بنجاح تحت إشراف المعلمة`, "success");
+      AppUI.showToast(`مرحباً بكِ يا ${newStudent.name}! تم تسجيلكِ بنجاح تحت إشراف المبلّغة`, "success");
       return;
     }
 
     this.renderStudentsTable();
     AppUI.updateDashboardStats();
-    AppUI.showToast("تم تسجيل الطالبة بنجاح — كلمة مرور حسابها: " + password, "success");
+    AppUI.showToast("تم تسجيل المتعلمة بنجاح — كلمة مرور حسابها: " + password, "success");
   },
 
   closeAddModal() {
@@ -347,7 +348,7 @@ const StudentsModule = {
     });
   },
 
-  // ==================== تعديل طالبة ====================
+  // ==================== تعديل متعلمة ====================
 
   openEditModal(id) {
     if (auth.isStudent()) return;
@@ -377,6 +378,8 @@ const StudentsModule = {
       statusSelect.innerHTML = APP_CONFIG.studentStatuses.map(s => `<option value="${s.id}">${s.label}</option>`).join("");
       statusSelect.value = student.status;
     }
+    const trackSelect = document.getElementById("student-edit-track-select");
+    if (trackSelect) trackSelect.value = student.learningTrack || "memorize";
 
     modal.classList.remove("hidden");
   },
@@ -388,12 +391,12 @@ const StudentsModule = {
     const teachers = db.getTeachersByRegion(selectedRegion);
 
     if (teachers.length === 0) {
-      teacherSelect.innerHTML = `<option value="">-- لا توجد معلمات في هذا المكتب --</option>`;
+      teacherSelect.innerHTML = `<option value="">-- لا توجد مبلّغات في هذا المكتب --</option>`;
       return;
     }
 
     teacherSelect.innerHTML =
-      '<option value="">-- اختر المعلمة المشرفة --</option>' +
+      '<option value="">-- اختر المبلّغة المشرفة --</option>' +
       teachers.map(t => {
         const specText = t.specialization === 'arabic' ? 'ناطقين بالعربية' : t.specialization === 'non_arabic' ? 'غير ناطقين' : 'شامل';
         return `<option value="${t.id}">${t.name} [${specText}] (${t.region})</option>`;
@@ -414,29 +417,30 @@ const StudentsModule = {
     const isArabicSpeaker = document.getElementById("student-edit-language-select").value === "true";
     const tajweedScore = parseInt(document.getElementById("student-edit-tajweed-input").value, 10) || 100;
     const status   = document.getElementById("student-edit-status-select").value;
+    const learningTrack = document.getElementById("student-edit-track-select")?.value || "memorize";
 
-    if (!name) { AppUI.showToast("يرجى إدخال اسم الطالبة", "warning"); return; }
+    if (!name) { AppUI.showToast("يرجى إدخال اسم المتعلمة", "warning"); return; }
 
     // التحقق من توافق التخصص واللغة
     if (teacherId) {
       const teacher = db.getTeacherById(teacherId);
       if (teacher && teacher.specialization) {
         if (teacher.specialization === "arabic" && !isArabicSpeaker) {
-          AppUI.showToast("المعلمة المختارة متخصصة في (الناطقين بالعربية فقط)، يرجى اختيار معلمة تقبل غير الناطقين", "error");
+          AppUI.showToast("المبلّغة المختارة متخصصة في (الناطقين بالعربية فقط)، يرجى اختيار مبلّغة تقبل غير الناطقين", "error");
           return;
         }
         if (teacher.specialization === "non_arabic" && isArabicSpeaker) {
-          AppUI.showToast("المعلمة المختارة متخصصة في (غير الناطقين بالعربية فقط)، يرجى اختيار معلمة أخرى", "error");
+          AppUI.showToast("المبلّغة المختارة متخصصة في (غير الناطقين بالعربية فقط)، يرجى اختيار مبلّغة أخرى", "error");
           return;
         }
       }
     }
 
-    db.updateStudent(id, { name, phone, password, region, teacherId, isArabicSpeaker, tajweedScore, status });
+    db.updateStudent(id, { name, phone, password, region, teacherId, isArabicSpeaker, tajweedScore, status, learningTrack });
     this.closeEditModal();
     this.renderStudentsTable();
     AppUI.updateDashboardStats();
-    AppUI.showToast("تم تحديث بيانات الطالبة بنجاح", "success");
+    AppUI.showToast("تم تحديث بيانات المتعلمة بنجاح", "success");
   },
 
   closeEditModal() {
@@ -469,12 +473,33 @@ const StudentsModule = {
     set("profile-student-level",    student.masteryLevel);
     set("profile-student-tajweed",  `${student.tajweedScore || 100}%`);
     set("profile-student-errors",   `${mistakes}/29 كلمة`);
+    const trackLabels = {
+      'both': 'حفظ وتفسير',
+      'memorize': 'حفظ',
+      'tafseer': 'تفسير'
+    };
+    set("profile-student-track", trackLabels[student.learningTrack || 'memorize']);
+    const tErrors = Array.isArray(student.mistakeAyahTafseerNos) ? student.mistakeAyahTafseerNos.length : 0;
+    const gErrors = Array.isArray(student.mistakeGhareebIds) ? student.mistakeGhareebIds.length : 0;
+    set("profile-student-tafseer-errors", `${tErrors + gErrors}/18`);
+
+    const btnPromote = document.getElementById("btn-promote-teacher");
+    const btnCert = document.getElementById("btn-issue-certificate");
+    if (student.mastery >= 95 || student.status === 'completed') {
+      if (btnPromote) btnPromote.style.display = 'inline-flex';
+      if (btnCert) btnCert.style.display = 'inline-flex';
+    } else {
+      if (btnPromote) btnPromote.style.display = 'none';
+      if (btnCert) btnCert.style.display = 'none';
+    }
 
     const statusSelect = document.getElementById("profile-quick-status-select");
     if (statusSelect) {
       statusSelect.innerHTML = APP_CONFIG.studentStatuses.map(s => `<option value="${s.id}">${s.label}</option>`).join("");
       statusSelect.value = student.status;
     }
+    const trackSelect = document.getElementById("student-edit-track-select");
+    if (trackSelect) trackSelect.value = student.learningTrack || "memorize";
 
     this.renderLiveInteractiveAyat(student, "profile-ayat-container");
     this.renderStudentNotes(student, "profile-notes-list");
@@ -483,53 +508,125 @@ const StudentsModule = {
     modal.classList.remove("hidden");
   },
 
-  renderLiveInteractiveAyat(student, containerId) {
+    renderLiveInteractiveAyat(student, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    const mistakeWordIds = Array.isArray(student.mistakeWordIds) ? student.mistakeWordIds : [];
+    const track = student.learningTrack || 'memorize';
     const isEditable = !auth.isStudent();
+    const mistakeWordIds = Array.isArray(student.mistakeWordIds) ? student.mistakeWordIds : [];
+    const mistakeAyahTafseerNos = Array.isArray(student.mistakeAyahTafseerNos) ? student.mistakeAyahTafseerNos : [];
+    const mistakeGhareebIds = Array.isArray(student.mistakeGhareebIds) ? student.mistakeGhareebIds : [];
 
-    let html = `<div style="display:flex;flex-direction:column;gap:0.75rem;">`;
+    let html = `<div style="display:flex;flex-direction:column;gap:1.25rem;">`;
+
     if (isEditable) {
       html += `<div style="font-size:0.75rem;color:var(--color-primary);background:rgba(81,100,71,0.08);padding:0.6rem 0.9rem;border-radius:0.75rem;display:flex;align-items:center;gap:0.5rem;">
         <span class="material-symbols-outlined" style="font-size:1rem;">touch_app</span>
-        <span>انقري على أي كلمة أثناء التسميع لتحديدها كخطأ — انقري مرة أخرى لإلغائه فوراً</span>
+        <span>انقري على أي كلمة، آية، أو معنى أثناء التسميع لتحديدها كخطأ — انقري مرة أخرى لإلغائه فوراً</span>
       </div>`;
     }
 
-    FATIHA_DATA.ayat.forEach(aya => {
-      const ayaWords = FATIHA_DATA.words.filter(w => w.aya_no === aya.aya_no);
-      html += `
-        <div style="padding:0.75rem 1rem;border-radius:1rem;background:var(--color-surface-container);border:1px solid var(--color-outline-variant);display:flex;align-items:center;justify-content:space-between;gap:0.75rem;flex-wrap:wrap;">
-          <span style="font-size:0.7rem;font-family:monospace;color:var(--color-on-surface-variant);background:var(--color-surface);padding:2px 8px;border-radius:6px;border:1px solid var(--color-outline-variant);flex-shrink:0;">الآية ${aya.aya_no}</span>
-          <div style="flex:1;text-align:right;display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;">
-      `;
+    // 1. مسار الحفظ (كلمات التلاوة)
+    if (track === 'memorize' || track === 'both') {
+      html += `<div class="font-bold text-sm" style="color:var(--color-primary);">مصحف التلاوة (29 كلمة)</div>`;
+      FATIHA_DATA.ayat.forEach(aya => {
+        const ayaWords = FATIHA_DATA.words.filter(w => w.aya_no === aya.aya_no);
+        html += `
+          <div style="padding:0.75rem 1rem;border-radius:1rem;background:var(--color-surface-container);border:1px solid var(--color-outline-variant);display:flex;align-items:center;justify-content:space-between;gap:0.75rem;flex-wrap:wrap;">
+            <span style="font-size:0.7rem;font-family:monospace;color:var(--color-on-surface-variant);background:var(--color-surface);padding:2px 8px;border-radius:6px;border:1px solid var(--color-outline-variant);flex-shrink:0;">الآية ${aya.aya_no}</span>
+            <div style="flex:1;text-align:right;display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;">
+        `;
 
-      ayaWords.forEach(word => {
-        const isMistake = mistakeWordIds.includes(word.id);
-        if (isEditable) {
-          html += `
-            <button type="button"
-              onclick="StudentsModule.toggleLiveProfileMistake('${student.id}','${word.id}')"
-              class="quran-word-btn ${isMistake ? 'is-mistake' : ''}"
-              title="${isMistake ? 'انقر لإلغاء الخطأ' : 'انقر لتسجيل خطأ'}">
-              <span>${word.text}</span>
-              ${isMistake ? '<span class="material-symbols-outlined" style="font-size:0.75rem;">cancel</span>' : ''}
-            </button>`;
-        } else {
-          if (isMistake) {
-            html += `<span class="quran-word-highlight-mistake" style="margin:0 0.2rem;font-family:UthmanicHafs,Amiri,serif;font-size:1.35rem;">${word.text}</span>`;
+        ayaWords.forEach(word => {
+          const isMistake = mistakeWordIds.includes(word.id);
+          if (isEditable) {
+            html += `
+              <button type="button"
+                onclick="StudentsModule.toggleLiveProfileMistake('${student.id}','${word.id}')"
+                class="quran-word-btn ${isMistake ? 'is-mistake' : ''}"
+                title="${isMistake ? 'انقر لإلغاء الخطأ' : 'انقر لتسجيل خطأ'}">
+                <span>${word.text}</span>
+                ${isMistake ? '<span class="material-symbols-outlined" style="font-size:0.75rem;">cancel</span>' : ''}
+              </button>`;
           } else {
-            html += `<span style="margin:0 0.2rem;font-family:UthmanicHafs,Amiri,serif;font-size:1.35rem;">${word.text}</span>`;
+            if (isMistake) {
+              html += `<span class="quran-word-highlight-mistake" style="margin:0 0.2rem;font-family:UthmanicHafs,Amiri,serif;font-size:1.35rem;">${word.text}</span>`;
+            } else {
+              html += `<span style="margin:0 0.2rem;font-family:UthmanicHafs,Amiri,serif;font-size:1.35rem;">${word.text}</span>`;
+            }
           }
-        }
-      });
+        });
 
-      html += `<span style="font-family:UthmanicHafs,Amiri,serif;font-size:1.5rem;color:var(--color-primary);margin-right:0.25rem;">${aya.end_glyph}</span>
-          </div>
-        </div>`;
-    });
+        html += `<span style="font-family:UthmanicHafs,Amiri,serif;font-size:1.5rem;color:var(--color-primary);margin-right:0.25rem;">${aya.end_glyph}</span>
+            </div>
+          </div>`;
+      });
+    }
+
+    // 2. مسار التفسير والغريب
+    if (track === 'tafseer' || track === 'both') {
+      html += `<div class="font-bold text-sm" style="color:var(--color-primary);border-top:1px solid var(--color-outline-variant);padding-top:1rem;">فهم التفسير وغريب الكلمات</div>`;
+      
+      // التفسير الميسر
+      if (typeof FATIHA_TAFSEER !== 'undefined') {
+        html += `<div style="font-size:0.85rem;font-weight:700;margin-bottom:0.5rem;">التفسير الميسر للآيات (7 آيات)</div>`;
+        FATIHA_TAFSEER.forEach(tafseer => {
+          const isMistake = mistakeAyahTafseerNos.includes(tafseer.aya_no);
+          const bgClass = isMistake ? 'bg-error-container text-on-error-container' : 'bg-surface-container';
+          const borderClass = isMistake ? 'border-error' : 'border-outline-variant';
+          
+          if (isEditable) {
+            html += `
+              <div onclick="StudentsModule.toggleLiveTafseerMistake('${student.id}', ${tafseer.aya_no})"
+                   class="tafseer-interactive-box ${isMistake ? 'is-mistake' : ''}"
+                   style="margin-bottom:0.75rem;">
+                <div class="flex-between">
+                  <span class="tafseer-aya-no">آية ${tafseer.aya_no}</span>
+                  ${isMistake ? '<span class="material-symbols-outlined text-error" style="font-size:1.2rem;">error</span>' : ''}
+                </div>
+                <div class="tafseer-text mt-1" style="font-size:0.9rem;">${tafseer.text}</div>
+              </div>`;
+          } else {
+            html += `
+              <div style="padding:0.75rem;border-radius:0.75rem;margin-bottom:0.75rem;border:1px solid var(--color-${borderClass});background:var(--color-${bgClass});">
+                <div class="flex-between">
+                  <span class="badge ${isMistake ? 'badge-error' : 'badge-primary'}">آية ${tafseer.aya_no}</span>
+                </div>
+                <div class="mt-1" style="font-size:0.9rem;">${tafseer.text}</div>
+              </div>`;
+          }
+        });
+      }
+
+      // غريب الكلمات
+      if (typeof FATIHA_GHAREEB !== 'undefined') {
+        html += `<div style="font-size:0.85rem;font-weight:700;margin-top:1rem;margin-bottom:0.5rem;">غريب الكلمات (11 كلمة)</div>`;
+        html += `<div style="display:flex;flex-wrap:wrap;gap:0.5rem;">`;
+        FATIHA_GHAREEB.forEach(ghareeb => {
+          const isMistake = mistakeGhareebIds.includes(ghareeb.id);
+          if (isEditable) {
+            html += `
+              <button type="button"
+                onclick="StudentsModule.toggleLiveGhareebMistake('${student.id}', '${ghareeb.id}')"
+                class="ghareeb-word-pill ${isMistake ? 'is-mistake' : ''}"
+                title="${isMistake ? 'إلغاء الخطأ' : 'تسجيل خطأ'}">
+                <span class="ghareeb-word" style="font-weight:bold;color:var(--color-primary);">${ghareeb.word}</span>
+                <span class="ghareeb-meaning" style="font-size:0.75rem;">${ghareeb.meaning}</span>
+                ${isMistake ? '<span class="material-symbols-outlined" style="font-size:0.8rem;">cancel</span>' : ''}
+              </button>`;
+          } else {
+             const style = isMistake ? 'background:#ffdad6;border-color:#ba1a1a;' : 'background:var(--color-surface-container);border-color:var(--color-outline-variant);';
+             html += `
+              <div style="display:inline-flex;flex-direction:column;padding:0.4rem 0.6rem;border-radius:0.5rem;border:1px solid;${style}">
+                <span style="font-weight:bold;color:var(--color-primary);">${ghareeb.word}</span>
+                <span style="font-size:0.75rem;">${ghareeb.meaning}</span>
+              </div>`;
+          }
+        });
+        html += `</div>`;
+      }
+    }
 
     html += `</div>`;
     container.innerHTML = html;
@@ -538,16 +635,7 @@ const StudentsModule = {
   toggleLiveProfileMistake(studentId, wordId) {
     const updated = db.toggleStudentWordMistake(studentId, wordId);
     if (!updated) return;
-
-    const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-    set("profile-student-mastery", `${updated.mastery}%`);
-    set("profile-student-level",   updated.masteryLevel);
-    set("profile-student-errors",  `${updated.mistakeWordIds.length}/29 كلمة`);
-
-    this.renderLiveInteractiveAyat(updated, "profile-ayat-container");
-    this.renderStudentsTable();
-    AppUI.updateDashboardStats();
-
+    this._updateProfileModalUI(updated);
     const isMistake = updated.mistakeWordIds.includes(wordId);
     AppUI.showToast(
       isMistake ? "✕ تم تسجيل خطأ في هذه الكلمة" : "✓ تم إلغاء الخطأ واحتساب الكلمة متقنة",
@@ -555,14 +643,87 @@ const StudentsModule = {
     );
   },
 
-  handleQuickStatusChange(newStatus) {
+  toggleLiveTafseerMistake(studentId, ayahNo) {
+    const updated = db.toggleStudentAyahTafseerMistake(studentId, ayahNo);
+    if (!updated) return;
+    this._updateProfileModalUI(updated);
+    const isMistake = updated.mistakeAyahTafseerNos.includes(ayahNo);
+    AppUI.showToast(isMistake ? "✕ تم تسجيل خطأ في التفسير" : "✓ تم إلغاء خطأ التفسير", isMistake ? "warning" : "success");
+  },
+
+  toggleLiveGhareebMistake(studentId, ghareebId) {
+    const updated = db.toggleStudentGhareebMistake(studentId, ghareebId);
+    if (!updated) return;
+    this._updateProfileModalUI(updated);
+    const isMistake = updated.mistakeGhareebIds.includes(ghareebId);
+    AppUI.showToast(isMistake ? "✕ تم تسجيل خطأ في الغريب" : "✓ تم إلغاء خطأ الغريب", isMistake ? "warning" : "success");
+  },
+
+  _updateProfileModalUI(updated) {
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    set("profile-student-mastery", `${updated.mastery}%`);
+    set("profile-student-level",   updated.masteryLevel);
+    
+    const mistakes = Array.isArray(updated.mistakeWordIds) ? updated.mistakeWordIds.length : 0;
+    set("profile-student-errors",  `${mistakes}/29 كلمة`);
+    
+    const tErrors = Array.isArray(updated.mistakeAyahTafseerNos) ? updated.mistakeAyahTafseerNos.length : 0;
+    const gErrors = Array.isArray(updated.mistakeGhareebIds) ? updated.mistakeGhareebIds.length : 0;
+    set("profile-student-tafseer-errors", `${tErrors + gErrors}/18`);
+
+    // Show/hide buttons
+    const btnPromote = document.getElementById("btn-promote-teacher");
+    const btnCert = document.getElementById("btn-issue-certificate");
+    if (updated.mastery >= 95 || updated.status === 'completed') {
+      if (btnPromote) btnPromote.style.display = 'inline-flex';
+      if (btnCert) btnCert.style.display = 'inline-flex';
+    } else {
+      if (btnPromote) btnPromote.style.display = 'none';
+      if (btnCert) btnCert.style.display = 'none';
+    }
+
+    this.renderLiveInteractiveAyat(updated, "profile-ayat-container");
+    this.renderStudentsTable();
+    AppUI.updateDashboardStats();
+  },
+
+  promoteToTeacher() {
+    const modal = document.getElementById("student-profile-modal");
+    const studentId = this.currentProfileId || modal?.dataset.studentId;
+    if (!studentId) return;
+
+    const student = db.getStudentById(studentId);
+    if (!student) return;
+
+    if (student.promotedToTeacherId) {
+      AppUI.showToast("هذه المتعلمة تم ترقيتها مسبقاً!", "warning");
+      return;
+    }
+
+    AppUI.showConfirmModal(
+      "ترقية المتعلمة إلى مبلّغة",
+      `هل أنت متأكد من ترقية المتعلمة "${student.name}" لتصبح مبلّغة في المنظومة؟
+سيتم الاحتفاظ بكلمة مرورها الحالية لدخولها كمبلّغة، وستُحتسب كخريجة ضمن إنجازاتك.`,
+      () => {
+        const response = db.promoteStudentToTeacher(studentId);
+        if (response && response.success) {
+          this.closeProfileModal();
+          this.renderStudentsTable();
+          AppUI.updateDashboardStats();
+          AppUI.showToast(`تم ترقية ${student.name} إلى مبلّغة بنجاح!`, "success");
+        }
+      }
+    );
+  },
+
+  handleQuickStatusChangehandleQuickStatusChange(newStatus) {
     const modal = document.getElementById("student-profile-modal");
     const studentId = modal?.dataset.studentId;
     if (!studentId) return;
     db.updateStudent(studentId, { status: newStatus });
     this.renderStudentsTable();
     AppUI.updateDashboardStats();
-    AppUI.showToast("تم تحديث حالة إتقان الطالبة", "success");
+    AppUI.showToast("تم تحديث حالة إتقان المتعلمة", "success");
   },
 
   renderStudentNotes(student, containerId) {
@@ -581,7 +742,7 @@ const StudentsModule = {
           const date = note.date ? new Date(note.date).toLocaleDateString("ar-SA") : "";
           return `
             <div style="background:var(--color-surface-container);padding:0.6rem 0.875rem;border-radius:0.75rem;font-size:0.8rem;">
-              <div class="flex-between text-xs text-muted mb-1"><span>${note.author || "المعلمة"}</span><span>${date}</span></div>
+              <div class="flex-between text-xs text-muted mb-1"><span>${note.author || "المبلّغة"}</span><span>${date}</span></div>
               <p style="color:var(--color-on-surface)">${note.text}</p>
             </div>`;
         }).join("")}
@@ -615,7 +776,7 @@ const StudentsModule = {
     const modal = document.getElementById("student-profile-modal");
     const studentId = this.currentProfileId || modal?.dataset.studentId;
     if (!studentId) {
-      AppUI.showToast("لم يتم العثور على ملف الطالبة", "warning");
+      AppUI.showToast("لم يتم العثور على ملف المتعلمة", "warning");
       return;
     }
 
@@ -623,17 +784,17 @@ const StudentsModule = {
     if (!student) return;
 
     if (!student.phone || student.phone.trim() === "") {
-      AppUI.showToast("يرجى تسجيل رقم هاتف الطالبة أولاً لإرسال تقرير الواتساب", "warning");
+      AppUI.showToast("يرجى تسجيل رقم هاتف المتعلمة أولاً لإرسال تقرير الواتساب", "warning");
       return;
     }
 
     const teacher = db.getTeacherById(student.teacherId);
-    const teacherName = teacher ? teacher.name : "المعلمة";
+    const teacherName = teacher ? teacher.name : "المبلّغة";
     const mistakes = Array.isArray(student.mistakeWordIds) ? student.mistakeWordIds.length : (student.errorsCount || 0);
 
     const message = `*منظومة بلغوا عني ولو آية 📖*\n` +
       `السلام عليكم ورحمة الله وبركاته،\n` +
-      `تقرير متابعة الطالبة: *${student.name}*\n` +
+      `تقرير متابعة المتعلمة: *${student.name}*\n` +
       `━━━━━━━━━━━━━━━\n` +
       `🔹 *نسبة الإتقان:* ${student.mastery}%\n` +
       `🔹 *التقييم اللفظي:* ${student.masteryLevel}\n` +
@@ -666,7 +827,7 @@ const StudentsModule = {
     }
   },
 
-  // ==================== بوابة الطالبة ====================
+  // ==================== بوابة المتعلمة ====================
 
   renderStudentPortal() {
     const user = auth.getCurrentUser();
@@ -701,7 +862,7 @@ const StudentsModule = {
     if (!teacher) return;
     const base = window.location.href.split("?")[0];
     const url  = `${base}?invite=student&teacher=${encodeURIComponent(teacher.id)}`;
-    this._copyToClipboard(url, `تم نسخ رابط تسجيل الطالبات للمعلمة "${teacher.name}"`);
+    this._copyToClipboard(url, `تم نسخ رابط تسجيل المتعلمات للمبلّغة "${teacher.name}"`);
   },
 
   copyHeadTeacherInviteLink(headTeacherId) {
@@ -709,7 +870,7 @@ const StudentsModule = {
     if (!teacher) return;
     const base = window.location.href.split("?")[0];
     const url  = `${base}?invite=teacher&supervisor=${encodeURIComponent(teacher.id)}`;
-    this._copyToClipboard(url, `تم نسخ رابط دعوة المعلمات للأستاذة "${teacher.name}"`);
+    this._copyToClipboard(url, `تم نسخ رابط دعوة المبلّغات للأستاذة "${teacher.name}"`);
   },
 
   _copyToClipboard(text, successMsg) {
@@ -739,13 +900,13 @@ const StudentsModule = {
     const student = db.getStudentById(id);
     if (!student) return;
     AppUI.showConfirmModal(
-      "حذف سجل طالبة",
-      `هل أنت متأكد من حذف سجل الطالبة "${student.name}" نهائياً؟`,
+      "حذف سجل متعلمة",
+      `هل أنت متأكد من حذف سجل المتعلمة "${student.name}" نهائياً؟`,
       () => {
         db.deleteStudent(id);
         this.renderStudentsTable();
         AppUI.updateDashboardStats();
-        AppUI.showToast("تم حذف سجل الطالبة بنجاح", "info");
+        AppUI.showToast("تم حذف سجل المتعلمة بنجاح", "info");
       }
     );
   }

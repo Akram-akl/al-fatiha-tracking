@@ -95,5 +95,11 @@ const APP_CONFIG = {
     { id: "both", label: "كلاهما (ناطقين وغير ناطقين بالعربية)" },
     { id: "arabic", label: "ناطقين بالعربية فقط" },
     { id: "non_arabic", label: "غير ناطقين بالعربية فقط" }
+  ],
+
+  learningTracks: [
+    { id: "both", label: "كلاهما (حفظ وتفسير الفاتحة)", icon: "auto_stories" },
+    { id: "memorize", label: "حفظ الفاتحة وتجويدها فقط", icon: "record_voice_over" },
+    { id: "tafseer", label: "فهم التفسير وغريب الكلمات فقط", icon: "menu_book" }
   ]
 };

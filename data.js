@@ -190,7 +190,7 @@ class DataStore {
     return true;
   }
 
-  // ==================== الطالبات (Students) ====================
+  // ==================== المتعلمات (Learners / Students) ====================
 
   getStudents(filterFn) {
     let list = [...(this.data.students || [])];
@@ -204,10 +204,30 @@ class DataStore {
     return this.data.students.find((s) => s.id === id) || null;
   }
 
+  calculateTafseerMastery(mistakeAyahNos = [], mistakeGhareebIds = []) {
+    const totalItems = 7 + 11; // 7 آيات تفسير + 11 مفردة غريب
+    const errors = Math.min(totalItems, (mistakeAyahNos.length || 0) + (mistakeGhareebIds.length || 0));
+    const percentage = Math.max(0, Math.round(((totalItems - errors) / totalItems) * 100));
+    return percentage;
+  }
+
   addStudent(studentData) {
     const mistakeWordIds = Array.isArray(studentData.mistakeWordIds) ? studentData.mistakeWordIds : [];
+    const mistakeAyahTafseerNos = Array.isArray(studentData.mistakeAyahTafseerNos) ? studentData.mistakeAyahTafseerNos : [];
+    const mistakeGhareebIds = Array.isArray(studentData.mistakeGhareebIds) ? studentData.mistakeGhareebIds : [];
+
     const errorsCount = mistakeWordIds.length || 0;
-    const masteryCalc = calculateMastery(errorsCount);
+    const recitationCalc = calculateMastery(errorsCount);
+    const tafseerScore = this.calculateTafseerMastery(mistakeAyahTafseerNos, mistakeGhareebIds);
+    const learningTrack = studentData.learningTrack || "both"; // both, memorize, tafseer
+
+    let overallMastery = recitationCalc.mastery;
+    if (learningTrack === "tafseer") {
+      overallMastery = tafseerScore;
+    } else if (learningTrack === "both") {
+      overallMastery = Math.round((recitationCalc.mastery + tafseerScore) / 2);
+    }
+
     const tajweedScore = studentData.tajweedScore !== undefined ? parseInt(studentData.tajweedScore, 10) : 100;
     const status = studentData.status || "in_progress";
 
@@ -219,20 +239,27 @@ class DataStore {
       teacherId: studentData.teacherId || null,
       region: studentData.region || this.data.settings.regions[0],
       isArabicSpeaker: studentData.isArabicSpeaker === true || studentData.isArabicSpeaker === "true",
+      learningTrack: learningTrack,
       mistakeWordIds: mistakeWordIds,
+      mistakeAyahTafseerNos: mistakeAyahTafseerNos,
+      mistakeGhareebIds: mistakeGhareebIds,
       errorsCount: errorsCount,
-      mastery: masteryCalc.mastery,
-      masteryLevel: masteryCalc.level,
+      recitationMastery: recitationCalc.mastery,
+      tafseerMastery: tafseerScore,
+      mastery: overallMastery,
+      masteryLevel: calculateMastery(29 - Math.round((overallMastery / 100) * 29)).level,
       tajweedScore: tajweedScore,
       status: status,
-      notes: studentData.initialNote ? [{ id: "note_" + Date.now(), text: studentData.initialNote, date: new Date().toISOString(), author: "المعلمة" }] : [],
+      notes: studentData.initialNote ? [{ id: "note_" + Date.now(), text: studentData.initialNote, date: new Date().toISOString(), author: "المبلّغة" }] : [],
+      promotedToTeacherId: null,
+      graduatedUnderTeacherId: null,
       joinedDate: new Date().toISOString().split("T")[0],
       lastFollowUpDate: new Date().toISOString().split("T")[0],
       createdAt: new Date().toISOString()
     };
 
     this.data.students.push(newStudent);
-    this.logAction("إضافة طالبة", `تم تسجيل الطالبة: ${newStudent.name}`);
+    this.logAction("إضافة متعلمة", `تم تسجيل المتعلمة: ${newStudent.name}`);
     this.save();
     return newStudent;
   }
@@ -242,43 +269,145 @@ class DataStore {
     if (index === -1) return null;
 
     const current = this.data.students[index];
+    const learningTrack = updates.learningTrack !== undefined ? updates.learningTrack : (current.learningTrack || "both");
+
     const mistakeWordIds = updates.mistakeWordIds !== undefined
       ? (Array.isArray(updates.mistakeWordIds) ? updates.mistakeWordIds : [])
       : (current.mistakeWordIds || []);
 
+    const mistakeAyahTafseerNos = updates.mistakeAyahTafseerNos !== undefined
+      ? (Array.isArray(updates.mistakeAyahTafseerNos) ? updates.mistakeAyahTafseerNos : [])
+      : (current.mistakeAyahTafseerNos || []);
+
+    const mistakeGhareebIds = updates.mistakeGhareebIds !== undefined
+      ? (Array.isArray(updates.mistakeGhareebIds) ? updates.mistakeGhareebIds : [])
+      : (current.mistakeGhareebIds || []);
+
     let errorsCount = updates.errorsCount !== undefined
       ? parseInt(updates.errorsCount, 10)
-      : (updates.mistakeWordIds !== undefined ? mistakeWordIds.length : current.errorsCount);
+      : (updates.mistakeWordIds !== undefined ? mistakeWordIds.length : (current.errorsCount || 0));
     
     errorsCount = Math.max(0, Math.min(29, errorsCount || 0));
 
-    const masteryCalc = calculateMastery(errorsCount);
+    const recitationCalc = calculateMastery(errorsCount);
+    const tafseerScore = this.calculateTafseerMastery(mistakeAyahTafseerNos, mistakeGhareebIds);
+
+    let overallMastery = recitationCalc.mastery;
+    if (learningTrack === "tafseer") {
+      overallMastery = tafseerScore;
+    } else if (learningTrack === "both") {
+      overallMastery = Math.round((recitationCalc.mastery + tafseerScore) / 2);
+    }
+
     let tajweedScore = updates.tajweedScore !== undefined ? parseInt(updates.tajweedScore, 10) : current.tajweedScore;
     tajweedScore = Math.min(100, Math.max(0, tajweedScore || 0));
 
     let status = updates.status || current.status;
+    if (overallMastery >= 95 && status !== "completed") {
+      status = "completed";
+    }
 
     this.data.students[index] = {
       ...current,
       ...updates,
       id,
       password: updates.password !== undefined ? updates.password.trim() : (current.password || "123456"),
+      learningTrack,
       mistakeWordIds,
+      mistakeAyahTafseerNos,
+      mistakeGhareebIds,
       errorsCount,
-      mastery: masteryCalc.mastery,
-      masteryLevel: masteryCalc.level,
+      recitationMastery: recitationCalc.mastery,
+      tafseerMastery: tafseerScore,
+      mastery: overallMastery,
+      masteryLevel: calculateMastery(29 - Math.round((overallMastery / 100) * 29)).level,
       tajweedScore,
       status,
       lastFollowUpDate: new Date().toISOString().split("T")[0]
     };
 
-    this.logAction("تحديث بيانات طالبة", `تم تعديل سجل: ${this.data.students[index].name}`);
+    this.logAction("تحديث بيانات متعلمة", `تم تعديل سجل: ${this.data.students[index].name}`);
     this.save();
     return this.data.students[index];
   }
 
   /**
-   * تبديل حالة الخطأ لكلمة قرآنية معينة مباشرة في ملف الطالبة وحفظها لحظياً
+   * ترقية متعلمة لتصبح مبلّغة في المنظومة
+   * تحتفظ بنفس كود التحقق/كلمة المرور الخاصة بها، وتُربط بمبلّغتها السابقة إحصائياً
+   */
+  promoteStudentToTeacher(studentId) {
+    const student = this.getStudentById(studentId);
+    if (!student) return { success: false, message: "المتعلمة غير موجودة" };
+    if (student.promotedToTeacherId) {
+      return { success: false, message: "تمت ترقية هذه المتعلمة مسبقاً لمبلّغة" };
+    }
+
+    const code = (student.password || "123456").trim();
+    const newTeacher = this.addTeacher({
+      name: student.name,
+      phone: student.phone || "",
+      verificationCode: code,
+      password: code,
+      region: student.region,
+      specialization: student.isArabicSpeaker ? "arabic" : "both",
+      role: APP_CONFIG.roles.TEACHER,
+      supervisorId: student.teacherId || null,
+      promotedFromStudentId: student.id
+    });
+
+    this.updateStudent(student.id, {
+      promotedToTeacherId: newTeacher.id,
+      graduatedUnderTeacherId: student.teacherId
+    });
+
+    this.logAction("ترقية متعلمة لمبلّغة", `تمت ترقية المتعلمة: ${student.name} لتصبح مبلّغة مستقلة`);
+    return { success: true, teacher: newTeacher };
+  }
+
+  /**
+   * حساب إجمالي من تعلمن وأتقنّ على يد مبلّغة معينة
+   */
+  getGraduatedCountForTeacher(teacherId) {
+    if (!teacherId) return 0;
+    return this.data.students.filter(s => {
+      const isHerStudent = (s.teacherId === teacherId || s.graduatedUnderTeacherId === teacherId);
+      const isMastered = (s.mastery >= 95 || s.status === "completed" || s.promotedToTeacherId);
+      return isHerStudent && isMastered;
+    }).length;
+  }
+
+  _recalculateStudentScores(student) {
+    const recitationCalc = calculateMastery(student.mistakeWordIds?.length || 0);
+    const tafseerScore = this.calculateTafseerMastery(student.mistakeAyahTafseerNos || [], student.mistakeGhareebIds || []);
+    const track = student.learningTrack || "both";
+
+    let overallMastery = recitationCalc.mastery;
+    if (track === "tafseer") {
+      overallMastery = tafseerScore;
+    } else if (track === "both") {
+      overallMastery = Math.round((recitationCalc.mastery + tafseerScore) / 2);
+    }
+
+    student.errorsCount = student.mistakeWordIds?.length || 0;
+    student.recitationMastery = recitationCalc.mastery;
+    student.tafseerMastery = tafseerScore;
+    student.mastery = overallMastery;
+    student.masteryLevel = calculateMastery(29 - Math.round((overallMastery / 100) * 29)).level;
+    student.lastFollowUpDate = new Date().toISOString().split("T")[0];
+
+    if (overallMastery >= 95 && (student.tajweedScore || 100) >= 90) {
+      student.status = "completed";
+    } else if (overallMastery >= 80) {
+      student.status = "near_completion";
+    } else if (overallMastery < 60) {
+      student.status = "needs_help";
+    } else {
+      student.status = "in_progress";
+    }
+  }
+
+  /**
+   * تبديل حالة الخطأ لكلمة قرآنية معينة (تلاوة/حفظ)
    */
   toggleStudentWordMistake(studentId, wordId) {
     const student = this.getStudentById(studentId);
@@ -295,25 +424,53 @@ class DataStore {
       student.mistakeWordIds.splice(idx, 1);
     }
 
-    const errorsCount = student.mistakeWordIds.length;
-    const masteryCalc = calculateMastery(errorsCount);
+    this._recalculateStudentScores(student);
+    this.save();
+    return student;
+  }
 
-    student.errorsCount = errorsCount;
-    student.mastery = masteryCalc.mastery;
-    student.masteryLevel = masteryCalc.level;
-    student.lastFollowUpDate = new Date().toISOString().split("T")[0];
+  /**
+   * تبديل حالة الخطأ في تفسير آية معينة
+   */
+  toggleStudentAyahTafseerMistake(studentId, ayahNo) {
+    const student = this.getStudentById(studentId);
+    if (!student) return null;
 
-    // تحديث الحالة التلقائي بناءً على الأخطاء
-    if (errorsCount === 0 && (student.tajweedScore || 100) >= 95) {
-      student.status = "completed";
-    } else if (errorsCount <= 2) {
-      student.status = "near_completion";
-    } else if (errorsCount >= 10) {
-      student.status = "needs_help";
-    } else {
-      student.status = "in_progress";
+    if (!Array.isArray(student.mistakeAyahTafseerNos)) {
+      student.mistakeAyahTafseerNos = [];
     }
 
+    const idx = student.mistakeAyahTafseerNos.indexOf(ayahNo);
+    if (idx === -1) {
+      student.mistakeAyahTafseerNos.push(ayahNo);
+    } else {
+      student.mistakeAyahTafseerNos.splice(idx, 1);
+    }
+
+    this._recalculateStudentScores(student);
+    this.save();
+    return student;
+  }
+
+  /**
+   * تبديل حالة الخطأ في معنى مفردة غريبة
+   */
+  toggleStudentGhareebMistake(studentId, ghareebId) {
+    const student = this.getStudentById(studentId);
+    if (!student) return null;
+
+    if (!Array.isArray(student.mistakeGhareebIds)) {
+      student.mistakeGhareebIds = [];
+    }
+
+    const idx = student.mistakeGhareebIds.indexOf(ghareebId);
+    if (idx === -1) {
+      student.mistakeGhareebIds.push(ghareebId);
+    } else {
+      student.mistakeGhareebIds.splice(idx, 1);
+    }
+
+    this._recalculateStudentScores(student);
     this.save();
     return student;
   }

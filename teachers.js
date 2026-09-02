@@ -1,49 +1,45 @@
 /**
- * محرك إدارة المعلمات ولوحة الصدارة — v3.0
- * منظومة "بلغوا عني ولو آية"
+ * محرك إدارة المبلّغات (Proclaimers Module)
+ * منظومة "بلغوا عني ولو آية" — v3.5
  */
 
 const TeachersModule = {
 
-  // ==================== عرض قائمة المعلمات ====================
+  // ==================== عرض قائمة المبلّغات ====================
 
   renderTeachersList() {
+    if (auth.isStudent()) { AppUI.navigateTo("student-portal"); return; }
+
     const container = document.getElementById("teachers-list-container");
     if (!container) return;
 
     const currentUser = auth.getCurrentUser();
     let teachers = db.getTeachers();
 
-    // المعلمة الرئيسية ترى نفسها + المعلمات المسجلات تحتها فقط
-    if (auth.isHeadTeacher()) {
+    // فلترة بحسب الصلاحية
+    if (auth.isTeacher() && !auth.isHeadTeacher() && !auth.isAdmin()) {
+      teachers = teachers.filter(t => t.id === currentUser.id);
+    } else if (auth.isHeadTeacher()) {
       teachers = teachers.filter(t => t.id === currentUser.id || t.supervisorId === currentUser.id);
-    }
-    // المعلمة العادية لا ترى شاشة المعلمات أصلاً — لكن كاحتياط
-    else if (auth.isTeacher()) {
-      teachers = [];
     }
 
     const badge = document.getElementById("teachers-count-badge");
-    if (badge) badge.textContent = `${teachers.length} معلمة`;
+    if (badge) badge.textContent = `${teachers.length} مبلّغة`;
 
     if (teachers.length === 0) {
       container.innerHTML = `
-        <div class="card text-center" style="padding:3rem 1rem;">
+        <div class="card text-center" style="padding:3rem 1rem">
           <span class="material-symbols-outlined" style="font-size:3.5rem;color:var(--color-on-surface-variant);opacity:0.4;">school</span>
-          <div class="font-bold mt-2" style="font-size:1.1rem;">لا توجد معلمات مسجلات</div>
-          <div class="text-sm text-muted mt-1 mb-3">أضف المعلمات لتوزيع الحلقات وبدء المتابعة.</div>
+          <div class="font-bold mt-2" style="font-size:1.1rem;">لا توجد مبلّغات مسجلات</div>
+          <div class="text-sm text-muted mt-1 mb-3">يمكنك إضافة مبلّغة جديدة للمنظومة.</div>
           <button onclick="TeachersModule.openAddModal()" class="btn btn-p btn-sm" style="display:inline-flex;">
-            <span class="material-symbols-outlined" style="font-size:1rem;">person_add</span>إضافة معلمة جديدة
+            <span class="material-symbols-outlined" style="font-size:1rem;">person_add</span>إضافة مبلّغة جديدة
           </button>
         </div>`;
       return;
     }
 
-    const specs = {
-      arabic:     "ناطقين بالعربية فقط",
-      non_arabic: "غير ناطقين بالعربية فقط",
-      both:       "كلاهما"
-    };
+    const specs = { both: "كلاهما", arabic: "ناطقين بالعربية فقط", non_arabic: "غير ناطقين بالعربية فقط" };
 
     container.innerHTML = `<div class="grid-auto">` + teachers.map(teacher => {
       const stats      = this.getTeacherStats(teacher.id);
@@ -65,14 +61,14 @@ const TeachersModule = {
               </div>
             </div>
             <span class="badge ${isHead ? 'badge-secondary' : 'badge-neutral'}">
-              ${isHead ? 'رئيسية' : 'معلمة'}
+              ${isHead ? 'مبلّغة رئيسية' : 'مبلّغة'}
             </span>
           </div>
 
           <!-- تفاصيل -->
           <div style="display:flex;flex-direction:column;gap:0.4rem;font-size:0.78rem;color:var(--color-on-surface-variant);padding:0.75rem;background:var(--color-surface-container);border-radius:0.75rem;">
             <div class="flex-between">
-              <span>كود التحقق</span>
+              <span>كود التحقق الخاص بها</span>
               <span class="font-mono font-bold badge badge-primary">${teacher.verificationCode || teacher.password || "123456"}</span>
             </div>
             <div class="flex-between">
@@ -86,15 +82,15 @@ const TeachersModule = {
             </div>
           </div>
 
-          <!-- إحصائيات -->
+          <!-- إحصائيات الإتقان والتخريج -->
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;text-align:center;background:var(--color-surface-container);border-radius:0.75rem;padding:0.75rem;">
             <div>
-              <div class="text-xs text-muted">الطالبات</div>
+              <div class="text-xs text-muted">المتعلمات</div>
               <strong style="font-size:1.1rem;">${stats.totalStudents}</strong>
             </div>
             <div>
-              <div class="text-xs text-muted">المتقنات</div>
-              <strong style="font-size:1.1rem;color:var(--color-success);">${stats.completedStudents}</strong>
+              <div class="text-xs text-muted" style="color:var(--color-primary);font-weight:700;">المتقنات على يدها</div>
+              <strong style="font-size:1.15rem;color:var(--color-success);">${stats.completedStudents}</strong>
             </div>
             <div>
               <div class="text-xs text-muted">متوسط الإتقان</div>
@@ -106,12 +102,12 @@ const TeachersModule = {
           <div style="display:flex;flex-direction:column;gap:0.4rem;">
             <button onclick="StudentsModule.copyTeacherInviteLink('${teacher.id}')" class="btn btn-ghost btn-sm btn-full">
               <span class="material-symbols-outlined" style="font-size:0.9rem;">link</span>
-              نسخ رابط تسجيل الطالبات
+              نسخ رابط تسجيل المتعلمات
             </button>
             ${isHead ? `
               <button onclick="StudentsModule.copyHeadTeacherInviteLink('${teacher.id}')" class="btn btn-ghost btn-sm btn-full" style="color:var(--color-secondary);">
                 <span class="material-symbols-outlined" style="font-size:0.9rem;">group_add</span>
-                نسخ رابط دعوة معلمات
+                نسخ رابط دعوة مبلّغات
               </button>
             ` : ""}
           </div>
@@ -119,7 +115,7 @@ const TeachersModule = {
           <!-- الإجراءات -->
           <div class="flex-between" style="padding-top:0.75rem;border-top:1px solid var(--color-outline-variant);">
             <button onclick="AppUI.navigateTo('students'); StudentsModule.setFilter('teacherId','${teacher.id}')" class="btn btn-ghost btn-sm">
-              استعراض الطالبات
+              استعراض المتعلمات
             </button>
             <div class="flex-center gap-1">
               <button onclick="TeachersModule.openEditModal('${teacher.id}')" class="btn-icon" title="تعديل">
@@ -137,14 +133,17 @@ const TeachersModule = {
   getTeacherStats(teacherId) {
     const students  = db.getStudents(s => s.teacherId === teacherId);
     const total     = students.length;
-    const completed = students.filter(s => s.status === "completed").length;
-    let avgMastery  = 0;
-    if (total > 0) avgMastery = Math.round(students.reduce((a, s) => a + (s.mastery || 0), 0) / total);
-    const score = completed * 10 + avgMastery;
+    const completed = db.getGraduatedCountForTeacher(teacherId);
+    const avgMastery = total > 0
+      ? Math.round(students.reduce((sum, s) => sum + (s.mastery || 0), 0) / total)
+      : 0;
+
+    const score = (completed * 10) + Math.round(avgMastery * 0.5);
+
     return { totalStudents: total, completedStudents: completed, avgMastery, score };
   },
 
-  // ==================== لوحة الصدارة ====================
+  // ==================== لوحة الصدارة والتميز ====================
 
   renderLeaderboard() {
     const container = document.getElementById("leaderboard-container");
@@ -152,7 +151,10 @@ const TeachersModule = {
 
     const regionFilter = document.getElementById("leaderboard-region-filter")?.value || "";
     let teachers = db.getTeachers();
-    if (regionFilter) teachers = teachers.filter(t => t.region === regionFilter);
+
+    if (regionFilter) {
+      teachers = teachers.filter(t => t.region === regionFilter);
+    }
 
     const data = teachers
       .map(t => ({ teacher: t, stats: this.getTeacherStats(t.id) }))
@@ -176,7 +178,7 @@ const TeachersModule = {
         </div>
         <div class="text-center">
           <div class="font-black text-primary" style="font-size:1.25rem;">${item.stats.completedStudents}</div>
-          <div class="text-xs text-muted">متقنة</div>
+          <div class="text-xs text-muted">متقنة على يدها</div>
         </div>
       </div>
     `).join("");
@@ -199,9 +201,9 @@ const TeachersModule = {
         <table>
           <thead><tr>
             <th style="text-align:center;width:60px;">الترتيب</th>
-            <th>المعلمة</th><th>المكتب</th>
-            <th style="text-align:center">إجمالي الطالبات</th>
-            <th style="text-align:center">المتقنات</th>
+            <th>المبلّغة</th><th>المكتب</th>
+            <th style="text-align:center">إجمالي المتعلمات</th>
+            <th style="text-align:center">المتقنات على يدها</th>
             <th style="text-align:center">متوسط الإتقان</th>
             <th style="text-align:center">نقاط التميز</th>
           </tr></thead>
@@ -210,7 +212,7 @@ const TeachersModule = {
       </div>`;
   },
 
-  // ==================== إضافة / تعديل معلمة ====================
+  // ==================== إضافة / تعديل مبلّغة ====================
 
   /**
    * @param {string|null} inviteSupervisorId — يُقفل حقل المشرفة عند الدعوة
@@ -230,13 +232,13 @@ const TeachersModule = {
 
     const modalTitle = document.getElementById("teacher-modal-title");
 
-    // إذا كانت المعلمة الرئيسية هي من تفتح نافذة الإضافة، تُقفل المعلمة الجديدة تحت إشرافها حصراً
+    // إذا كانت المبلّغة الرئيسية هي من تفتح نافذة الإضافة، تُقفل المبلّغة الجديدة تحت إشرافها حصراً
     if (!inviteSupervisorId && auth.isHeadTeacher()) {
       inviteSupervisorId = auth.getCurrentUser().id;
     }
 
     if (inviteSupervisorId) {
-      // رابط دعوة معلمة: قفل حقل المشرفة
+      // رابط دعوة مبلّغة: قفل حقل المشرفة
       const supervisor = db.getTeacherById(inviteSupervisorId);
       if (supervisor) {
         const supSelect = document.getElementById("teacher-supervisor-select");
@@ -257,7 +259,7 @@ const TeachersModule = {
           regionSelect.disabled = true; // نفس منطقة المشرفة
         }
 
-        if (modalTitle) modalTitle.textContent = `تسجيل معلمة — إشراف: ${supervisor.name}`;
+        if (modalTitle) modalTitle.textContent = `تسجيل مبلّغة — إشراف: ${supervisor.name}`;
         AppUI.showToast(`ستُسجَّلين تحت إشراف الأستاذة: ${supervisor.name}`, "info");
       }
     } else if (inviteRole) {
@@ -267,14 +269,14 @@ const TeachersModule = {
         roleSelect.value    = inviteRole;
         roleSelect.disabled = true; // مقفول حسب الرابط
       }
-      if (modalTitle) modalTitle.textContent = inviteRole === "head_teacher" ? "تسجيل معلمة رئيسية" : "تسجيل معلمة";
+      if (modalTitle) modalTitle.textContent = inviteRole === "head_teacher" ? "تسجيل مبلّغة رئيسية" : "تسجيل مبلّغة";
     } else {
       // إضافة عادية — المشرف فقط يتحكم
       ["teacher-supervisor-select", "teacher-role-select", "teacher-region-select"].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.disabled = false;
       });
-      if (modalTitle) modalTitle.textContent = "إضافة معلمة جديدة";
+      if (modalTitle) modalTitle.textContent = "إضافة مبلّغة جديدة";
     }
 
     modal.classList.remove("hidden");
@@ -293,7 +295,7 @@ const TeachersModule = {
     const codeInput = document.getElementById("teacher-code-input");
     if (codeInput) codeInput.value = teacher.verificationCode || teacher.password || "123456";
 
-    document.getElementById("teacher-modal-title").textContent = "تعديل بيانات المعلمة";
+    document.getElementById("teacher-modal-title").textContent = "تعديل بيانات المبلّغة";
 
     this._populateFormSelects(teacher.id);
 
@@ -318,13 +320,13 @@ const TeachersModule = {
   },
 
   _populateFormSelects(currentTeacherId = null) {
-    // المناطق
+    // المناطق والمكاتب
     const regionSelect = document.getElementById("teacher-region-select");
     if (regionSelect) {
       regionSelect.innerHTML = db.getRegions().map(r => `<option value="${r}">${r}</option>`).join("");
     }
 
-    // المعلمات الرئيسيات للإشراف
+    // المبلّغات الرئيسيات للإشراف
     const supSelect = document.getElementById("teacher-supervisor-select");
     if (supSelect) {
       const headTeachers = db.getTeachers()
@@ -348,7 +350,7 @@ const TeachersModule = {
     const role             = document.getElementById("teacher-role-select")?.value || "teacher";
     const supervisorId     = document.getElementById("teacher-supervisor-select")?.value || null;
 
-    if (!name) { AppUI.showToast("يرجى إدخال اسم المعلمة", "warning"); return; }
+    if (!name) { AppUI.showToast("يرجى إدخال اسم المبلّغة", "warning"); return; }
 
     // إعادة تفعيل الحقول المقفولة قبل الحفظ
     ["teacher-supervisor-select", "teacher-role-select", "teacher-region-select"].forEach(id => {
@@ -359,15 +361,15 @@ const TeachersModule = {
     let savedTeacher = null;
     if (id) {
       savedTeacher = db.updateTeacher(id, { name, phone, verificationCode, password: verificationCode, region, specialization, role, supervisorId });
-      AppUI.showToast("تم تحديث بيانات المعلمة بنجاح", "success");
+      AppUI.showToast("تم تحديث بيانات المبلّغة بنجاح", "success");
     } else {
       savedTeacher = db.addTeacher({ name, phone, verificationCode, password: verificationCode, region, specialization, role, supervisorId });
-      AppUI.showToast(`تمت إضافة المعلمة — كود التحقق: ${verificationCode}`, "success");
+      AppUI.showToast(`تمت إضافة المبلّغة — كود التحقق: ${verificationCode}`, "success");
     }
 
     this.closeModal();
 
-    // إذا كان تسجيل معلمة مباشرة من رابط دعوة وهي ليست مسجلة دخول
+    // إذا كان تسجيل مبلّغة مباشرة من رابط دعوة وهي ليست مسجلة دخول
     if (!auth.isLoggedIn() && savedTeacher) {
       auth.loginAsTeacher(savedTeacher.id, verificationCode);
       AppUI.showAppScreen();
@@ -394,13 +396,13 @@ const TeachersModule = {
     const teacher = db.getTeacherById(id);
     if (!teacher) return;
     AppUI.showConfirmModal(
-      "حذف سجل معلمة",
-      `هل أنت متأكد من حذف المعلمة "${teacher.name}"؟ ستبقى طالباتها في النظام دون معلمة.`,
+      "حذف سجل مبلّغة",
+      `هل أنت متأكد من حذف المبلّغة "${teacher.name}"؟ ستبقى متعلماتها في النظام دون مبلّغة.`,
       () => {
         db.deleteTeacher(id);
         this.renderTeachersList();
         AppUI.updateDashboardStats();
-        AppUI.showToast("تم حذف سجل المعلمة بنجاح", "info");
+        AppUI.showToast("تم حذف سجل المبلّغة بنجاح", "info");
       }
     );
   }

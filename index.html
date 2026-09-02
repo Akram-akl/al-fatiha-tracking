@@ -4,7 +4,7 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>بلغوا عني ولو آية - منظومة متابعة وإتقان سورة الفاتحة</title>
-  <meta name="description" content="منظومة رقمية شاملة لمتابعة تسجيل وإتقان سورة الفاتحة للمعلمات والمشرفين والطالبات"/>
+  <meta name="description" content="منظومة رقمية شاملة لمتابعة تسجيل وإتقان سورة الفاتحة للمبلّغات والمشرفين والمتعلمات"/>
   <meta name="theme-color" content="#516447"/>
   <meta name="mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -556,7 +556,7 @@
       #main-content-area { margin-right: 280px; }
     }
 
-    /* ===== بوابة الطالبة ===== */
+    /* ===== بوابة المتعلمة ===== */
     .student-portal-hero {
       background: linear-gradient(135deg, rgba(81,100,71,0.1) 0%, rgba(212,233,196,0.2) 100%);
       border: 1px solid var(--color-outline-variant);
@@ -688,28 +688,28 @@
       </button>
     </div>
 
-    <!-- 2. دخول المعلمة -->
+    <!-- 2. دخول المبلّغة -->
     <div class="login-section">
       <div class="login-section-title teacher">
         <span class="material-symbols-outlined" style="font-size:1.1rem;">school</span>
-        <span>دخول بحساب معلمة</span>
+        <span>دخول بحساب مبلّغة</span>
       </div>
       <select id="login-page-teacher-select" class="form-input"></select>
-      <input type="password" id="login-page-teacher-password" placeholder="أدخل كود التحقق الخاص بالمعلمة" class="form-input"/>
+      <input type="password" id="login-page-teacher-password" placeholder="أدخل كود التحقق الخاص بالمبلّغة" class="form-input"/>
       <button onclick="AppUI.handleLoginTeacherFromPage()" class="btn btn-s btn-full">
         <span class="material-symbols-outlined" style="font-size:1rem;">person_check</span>
-        متابعة كمعلمة
+        متابعة كمبلّغة
       </button>
     </div>
 
-    <!-- 3. دخول الطالبة -->
+    <!-- 3. دخول المتعلمة -->
     <div class="login-section">
       <div class="login-section-title student">
         <span class="material-symbols-outlined" style="font-size:1.1rem;">person</span>
-        <span>دخول الطالبة</span>
+        <span>دخول المتعلمة</span>
       </div>
       <select id="login-page-student-select" class="form-input"></select>
-      <input type="password" id="login-page-student-password" placeholder="أدخل كلمة مرور الطالبة" class="form-input"/>
+      <input type="password" id="login-page-student-password" placeholder="أدخل كلمة مرور المتعلمة" class="form-input"/>
       <button onclick="AppUI.handleLoginStudentFromPage()" class="btn btn-t btn-full">
         <span class="material-symbols-outlined" style="font-size:1rem;">auto_stories</span>
         دخول واستعراض ملفي
@@ -743,10 +743,10 @@
         <span class="material-symbols-outlined">dashboard</span>لوحة التحكم
       </button>
       <button class="nav-item" data-view="students" onclick="AppUI.navigateTo('students')">
-        <span class="material-symbols-outlined">groups</span>إدارة الطالبات
+        <span class="material-symbols-outlined">groups</span>إدارة المتعلمات
       </button>
       <button class="nav-item" data-view="teachers" onclick="AppUI.navigateTo('teachers')">
-        <span class="material-symbols-outlined">school</span>إدارة المعلمات
+        <span class="material-symbols-outlined">school</span>إدارة المبلّغات
       </button>
       <button class="nav-item" data-view="geo" onclick="AppUI.navigateTo('geo')">
         <span class="material-symbols-outlined">public</span>التوزيع الجغرافي
@@ -768,7 +768,7 @@
     <div class="sidebar-footer">
       <button id="sidebar-add-student-btn" onclick="StudentsModule.openAddModal()" class="btn btn-p btn-full">
         <span class="material-symbols-outlined" style="font-size:1.1rem;">person_add</span>
-        تسجيل طالبة جديدة
+        تسجيل متعلمة جديدة
       </button>
       <button onclick="AppUI.handleLogout()" class="btn btn-ghost btn-full btn-sm">
         <span class="material-symbols-outlined" style="font-size:1rem;">logout</span>
@@ -821,7 +821,7 @@
     <div id="views-container">
       <div class="view-inner">
 
-        <!-- ==================== بوابة الطالبة ==================== -->
+        <!-- ==================== بوابة المتعلمة ==================== -->
         <div id="view-student-portal" class="spa-view space-y-5">
           <div class="student-portal-hero">
             <div class="flex-center gap-3">
@@ -831,7 +831,7 @@
               <div>
                 <div class="flex-center gap-2">
                   <span class="text-2xl font-black" style="color:var(--color-on-surface)">أهلاً بكِ يا <span id="portal-student-name" style="color:var(--color-primary)">-</span></span>
-                  <span class="badge badge-primary">طالبة</span>
+                  <span class="badge badge-primary">متعلمة</span>
                 </div>
                 <div class="text-xs text-muted mt-1">
                   معلمتكِ: <strong id="portal-teacher-name">-</strong> &bull; المكتب: <span id="portal-student-region">-</span>
@@ -889,11 +889,11 @@
           <div class="page-header">
             <div>
               <div class="page-title">نظرة عامة على الإتقان</div>
-              <div class="page-sub">متابعة دقيقة لمستوى إتقان الطالبات والتوزيع في كافة المناطق.</div>
+              <div class="page-sub">متابعة دقيقة لمستوى إتقان المتعلمات والتوزيع في كافة المناطق.</div>
             </div>
             <div class="page-actions">
               <button id="dashboard-add-student-btn" onclick="StudentsModule.openAddModal()" class="btn btn-p btn-sm">
-                <span class="material-symbols-outlined" style="font-size:1rem;">add</span>إضافة طالبة
+                <span class="material-symbols-outlined" style="font-size:1rem;">add</span>إضافة متعلمة
               </button>
               <button onclick="AppUI.navigateTo('reports')" class="btn btn-ghost btn-sm">
                 <span class="material-symbols-outlined" style="font-size:1rem;">file_download</span>استخراج تقرير
@@ -910,7 +910,7 @@
                 </div>
               </div>
               <div id="stat-completed-students" class="stat-value text-success">0</div>
-              <div class="stat-sub">من أصل <strong id="stat-total-students">0</strong> طالبة مسجلة</div>
+              <div class="stat-sub">من أصل <strong id="stat-total-students">0</strong> متعلمة مسجلة</div>
             </div>
 
             <div class="stat-card">
@@ -998,7 +998,7 @@
             <div class="flex-between mb-3" style="padding-bottom:0.75rem;border-bottom:1px solid var(--color-outline-variant)">
               <div>
                 <div class="font-bold">أحدث المتقنات لسورة الفاتحة</div>
-                <div class="text-xs text-muted mt-1">سجل بأسماء الطالبات اللاتي أتممن الإتقان</div>
+                <div class="text-xs text-muted mt-1">سجل بأسماء المتعلمات اللاتي أتممن الإتقان</div>
               </div>
               <button onclick="AppUI.navigateTo('students'); StudentsModule.setFilter('status','completed')" class="btn btn-ghost btn-sm">عرض الكل</button>
             </div>
@@ -1006,19 +1006,22 @@
           </div>
         </div>
 
-        <!-- ==================== إدارة الطالبات ==================== -->
+        <!-- ==================== إدارة المتعلمات ==================== -->
         <div id="view-students" class="spa-view">
           <div class="page-header">
             <div>
               <div class="flex-center gap-2">
-                <div class="page-title">سجل ومتابعة الطالبات</div>
-                <span id="students-count-badge" class="badge badge-primary">0 طالبة</span>
+                <div class="page-title">سجل ومتابعة المتعلمات</div>
+                <span id="students-count-badge" class="badge badge-primary">0 متعلمة</span>
               </div>
               <div class="page-sub">تسجيل نسب الإتقان، أخطاء الكلمات الـ 29، وحالات المتابعة.</div>
             </div>
             <div class="page-actions">
               <button onclick="StudentsModule.openAddModal()" class="btn btn-p">
-                <span class="material-symbols-outlined" style="font-size:1rem;">add</span>تسجيل طالبة جديدة
+                <span class="material-symbols-outlined" style="font-size:1rem;">add</span>تسجيل متعلمة جديدة
+              </button>
+              <button onclick="CertificatesModule.openBatchExportModal()" class="btn btn-ghost" style="color:var(--color-primary);">
+                <span class="material-symbols-outlined" style="font-size:1rem;">workspace_premium</span>إصدار شهادات
               </button>
             </div>
           </div>
@@ -1027,7 +1030,7 @@
             <div class="filters-row">
               <div class="filter-item" style="flex:2 1 240px;position:relative;">
                 <span class="material-symbols-outlined" style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);color:var(--color-on-surface-variant);font-size:1.1rem;pointer-events:none;">search</span>
-                <input type="text" id="students-search-input" oninput="StudentsModule.setFilter('search',this.value)" placeholder="بحث بالاسم أو الهاتف أو المعلمة..." class="form-input" style="padding-right:2.5rem;"/>
+                <input type="text" id="students-search-input" oninput="StudentsModule.setFilter('search',this.value)" placeholder="بحث بالاسم أو الهاتف أو المبلّغة..." class="form-input" style="padding-right:2.5rem;"/>
               </div>
               <div class="filter-item">
                 <select onchange="StudentsModule.setFilter('region',this.value)" id="students-region-filter" class="form-input">
@@ -1059,19 +1062,19 @@
           <div id="students-list-container"></div>
         </div>
 
-        <!-- ==================== إدارة المعلمات ==================== -->
+        <!-- ==================== إدارة المبلّغات ==================== -->
         <div id="view-teachers" class="spa-view">
           <div class="page-header">
             <div>
               <div class="flex-center gap-2">
-                <div class="page-title">إدارة وتوزيع المعلمات</div>
-                <span id="teachers-count-badge" class="badge badge-secondary">0 معلمة</span>
+                <div class="page-title">إدارة وتوزيع المبلّغات</div>
+                <span id="teachers-count-badge" class="badge badge-secondary">0 مبلّغة</span>
               </div>
-              <div class="page-sub">تعيين المعلمات المشرفات، أكواد التحقق، التخصصات، وإدارة الحلقات.</div>
+              <div class="page-sub">تعيين المبلّغات المشرفات، أكواد التحقق، التخصصات، وإدارة الحلقات.</div>
             </div>
             <div class="page-actions" style="display:flex;gap:0.5rem;align-items:center;">
                 <button id="add-teacher-main-btn" onclick="TeachersModule.openAddModal()" class="btn btn-p">
-                  <span class="material-symbols-outlined" style="font-size:1rem;">person_add</span>إضافة معلمة جديدة
+                  <span class="material-symbols-outlined" style="font-size:1rem;">person_add</span>إضافة مبلّغة جديدة
                 </button>
                 <button id="admin-invite-btn" onclick="AppUI.openAdminInviteModal()" class="btn btn-ghost" style="display:none;color:var(--color-primary);">
                   <span class="material-symbols-outlined" style="font-size:1rem;">share</span>روابط الدعوة
@@ -1086,7 +1089,7 @@
           <div class="page-header">
             <div>
               <div class="page-title">توزيع المكاتب للمبادرة</div>
-              <div class="page-sub">متابعة إنجاز الحلقات والمعلمات والطالبات بحسب المكاتب.</div>
+              <div class="page-sub">متابعة إنجاز الحلقات والمبلّغات والمتعلمات بحسب المكاتب.</div>
             </div>
           </div>
           <div id="geo-regions-container" class="grid-auto"></div>
@@ -1097,7 +1100,7 @@
           <div class="page-header">
             <div>
               <div class="page-title">لوحة الصدارة والتميز</div>
-              <div class="page-sub">تكريم أكثر المعلمات تفاعلاً وأعلى الحلقات إنجازاً.</div>
+              <div class="page-sub">تكريم أكثر المبلّغات تفاعلاً وأعلى الحلقات إنجازاً.</div>
             </div>
             <div class="page-actions">
               <select id="leaderboard-region-filter" onchange="TeachersModule.renderLeaderboard()" class="form-input btn-sm">
@@ -1130,8 +1133,8 @@
               <div>
                 <label class="form-label">نوع التقرير</label>
                 <select id="report-type-select" onchange="ReportsModule.generateLiveReport()" class="form-input">
-                  <option value="students">تقرير إنجاز الطالبات</option>
-                  <option value="teachers">تقرير أداء المعلمات</option>
+                  <option value="students">تقرير إنجاز المتعلمات</option>
+                  <option value="teachers">تقرير أداء المبلّغات</option>
                 </select>
               </div>
               <div>
@@ -1212,17 +1215,17 @@
 
 <!-- ==================== النوافذ التفاعلية ==================== -->
 
-<!-- 1. إضافة طالبة -->
+<!-- 1. إضافة متعلمة -->
 <div id="student-add-modal" class="modal-overlay hidden">
   <div class="modal-panel">
     <div class="modal-header">
-      <div class="modal-title">تسجيل طالبة جديدة</div>
+      <div class="modal-title">تسجيل متعلمة جديدة</div>
       <button class="btn-icon" onclick="StudentsModule.closeAddModal()"><span class="material-symbols-outlined">close</span></button>
     </div>
     <form id="student-add-form" onsubmit="StudentsModule.handleAddFormSubmit(event)" class="space-y-4">
       <div>
-        <label class="form-label">اسم الطالبة الكامل <span style="color:var(--color-error)">*</span></label>
-        <input type="text" id="student-add-name-input" required class="form-input" placeholder="أدخل اسم الطالبة الكامل"/>
+        <label class="form-label">اسم المتعلمة الكامل <span style="color:var(--color-error)">*</span></label>
+        <input type="text" id="student-add-name-input" required class="form-input" placeholder="أدخل اسم المتعلمة الكامل"/>
       </div>
       <div class="grid-2">
         <div>
@@ -1240,15 +1243,23 @@
           <select id="student-add-region-select" onchange="StudentsModule.updateAddFormTeachersByRegion(this.value)" class="form-input"></select>
         </div>
         <div>
-          <label class="form-label">المعلمة المشرفة</label>
+          <label class="form-label">المبلّغة المشرفة</label>
           <select id="student-add-teacher-select" class="form-input"></select>
         </div>
       </div>
       <div>
-        <label class="form-label">هل الطالبة ناطقة بالعربية؟</label>
+        <label class="form-label">هل المتعلمة ناطقة بالعربية؟</label>
         <select id="student-add-language-select" class="form-input">
           <option value="true">نعم (ناطقة بالعربية)</option>
           <option value="false">لا (غير ناطقة)</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">مسار التعلم</label>
+        <select id="student-add-track-select" class="form-input">
+          <option value="both">كلاهما (حفظ وتفسير الفاتحة)</option>
+          <option value="memorize">حفظ وتجويد الفاتحة فقط</option>
+          <option value="tafseer">فهم التفسير وغريب الكلمات فقط</option>
         </select>
       </div>
       <div>
@@ -1259,7 +1270,7 @@
           <!-- الأزرار -->
           <div style="display:flex;gap:0.5rem;margin-top:1.5rem;">
             <button type="submit" class="btn btn-p btn-full">
-              حفظ بيانات الطالبة
+              حفظ بيانات المتعلمة
             </button>
             <button type="button" onclick="StudentsModule.closeAddModal()" class="btn btn-ghost btn-full">
               إلغاء
@@ -1269,17 +1280,17 @@
   </div>
 </div>
 
-<!-- 2. تعديل بيانات طالبة -->
+<!-- 2. تعديل بيانات متعلمة -->
 <div id="student-edit-modal" class="modal-overlay hidden">
   <div class="modal-panel">
     <div class="modal-header">
-      <div class="modal-title">تعديل البيانات الأساسية للطالبة</div>
+      <div class="modal-title">تعديل البيانات الأساسية للمتعلمة</div>
       <button class="btn-icon" onclick="StudentsModule.closeEditModal()"><span class="material-symbols-outlined">close</span></button>
     </div>
     <form id="student-edit-form" onsubmit="StudentsModule.handleEditFormSubmit(event)" class="space-y-4">
       <input type="hidden" id="student-edit-id-field"/>
       <div>
-        <label class="form-label">اسم الطالبة</label>
+        <label class="form-label">اسم المتعلمة</label>
         <input type="text" id="student-edit-name-input" required class="form-input"/>
       </div>
       <div class="grid-2">
@@ -1288,7 +1299,7 @@
           <input type="text" id="student-edit-phone-input" class="form-input"/>
         </div>
         <div>
-          <label class="form-label">كلمة مرور الطالبة</label>
+          <label class="form-label">كلمة مرور المتعلمة</label>
           <input type="text" id="student-edit-password-input" class="form-input font-mono"/>
         </div>
       </div>
@@ -1298,7 +1309,7 @@
           <select id="student-edit-region-select" onchange="StudentsModule.updateEditFormTeachersByRegion(this.value)" class="form-input"></select>
         </div>
         <div>
-          <label class="form-label">المعلمة المشرفة</label>
+          <label class="form-label">المبلّغة المشرفة</label>
           <select id="student-edit-teacher-select" class="form-input"></select>
         </div>
       </div>
@@ -1315,9 +1326,19 @@
           <input type="number" id="student-edit-tajweed-input" min="0" max="100" class="form-input font-mono"/>
         </div>
       </div>
-      <div>
-        <label class="form-label">حالة إتقان الطالبة</label>
-        <select id="student-edit-status-select" class="form-input"></select>
+      <div class="grid-2">
+        <div>
+          <label class="form-label">مسار التعلم</label>
+          <select id="student-edit-track-select" class="form-input">
+            <option value="both">كلاهما (حفظ وتفسير الفاتحة)</option>
+            <option value="memorize">حفظ وتجويد الفاتحة فقط</option>
+            <option value="tafseer">فهم التفسير وغريب الكلمات فقط</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">حالة إتقان المتعلمة</label>
+          <select id="student-edit-status-select" class="form-input"></select>
+        </div>
       </div>
       <hr class="divider"/>
       <div class="flex-center gap-2" style="justify-content:flex-end">
@@ -1352,6 +1373,14 @@
         <div style="flex:1;min-width:180px;">
           <select id="profile-quick-status-select" onchange="StudentsModule.handleQuickStatusChange(this.value)" class="form-input btn-sm" style="width:100%;"></select>
         </div>
+        <button onclick="StudentsModule.promoteToTeacher()" class="btn btn-sm" id="btn-promote-teacher" title="ترقية المتعلمة إلى مبلّغة" style="color:#fff;background:var(--color-primary);display:inline-flex;align-items:center;gap:0.3rem;display:none;">
+          <span class="material-symbols-outlined" style="font-size:1.1rem;font-variation-settings:'FILL' 1;">stars</span>
+          <span>ترقية إلى مبلّغة</span>
+        </button>
+        <button onclick="CertificatesModule.openCertificateModal()" class="btn btn-sm" id="btn-issue-certificate" title="إصدار شهادة إتقان" style="color:var(--color-primary);background:rgba(81,100,71,0.1);display:inline-flex;align-items:center;gap:0.3rem;border:1px solid var(--color-primary);display:none;">
+          <span class="material-symbols-outlined" style="font-size:1.1rem;font-variation-settings:'FILL' 1;">workspace_premium</span>
+          <span>إصدار شهادة</span>
+        </button>
         <button onclick="StudentsModule.sendWhatsAppReport()" class="btn btn-sm" title="إرسال عبر واتساب" style="color:#fff;background:#25D366;display:inline-flex;align-items:center;gap:0.3rem;">
           <span class="material-symbols-outlined" style="font-size:1.1rem;font-variation-settings:'FILL' 1;">chat</span>
           <span>تقرير واتساب</span>
@@ -1366,7 +1395,7 @@
         <div id="profile-student-region" class="font-bold text-sm mt-1">-</div>
       </div>
       <div class="card-sm text-center bg-surface-c">
-        <div class="text-xs text-muted">المعلمة المشرفة</div>
+        <div class="text-xs text-muted">المبلّغة المشرفة</div>
         <div id="profile-student-teacher" class="font-bold text-sm mt-1">-</div>
       </div>
       <div class="card-sm text-center" style="background:rgba(81,100,71,0.08);">
@@ -1381,25 +1410,20 @@
 
     <div class="flex-between text-xs" style="background:var(--color-surface-container);padding:0.6rem 0.875rem;border-radius:0.75rem;margin-bottom:1rem;">
       <div>التقييم: <strong id="profile-student-level" class="text-primary">-</strong></div>
-      <div>أخطاء الكلمات: <strong id="profile-student-errors" class="text-error font-mono">-</strong></div>
+      <div>أخطاء الحفظ: <strong id="profile-student-errors" class="text-error font-mono">-</strong></div>
+      <div>أخطاء التفسير: <strong id="profile-student-tafseer-errors" class="text-error font-mono">-</strong></div>
+      <div>المسار: <strong id="profile-student-track">-</strong></div>
       <div>اللغة: <strong id="profile-student-language">-</strong></div>
     </div>
 
-    <!-- مصحف التصحيح -->
-    <div class="font-bold text-sm mb-2 flex-between">
-      <div class="flex-center gap-1">
-        <span class="material-symbols-outlined text-primary" style="font-size:1.1rem;">menu_book</span>
-        مصحف المتابعة والتصحيح التفاعلي (29 كلمة)
-      </div>
-      <span class="text-xs text-muted">انقر على الكلمة للتصحيح</span>
-    </div>
-    <div id="profile-ayat-container" style="max-height:260px;overflow-y:auto;padding-bottom:0.5rem;"></div>
+    <!-- مصحف التصحيح / التفسير -->
+    <div id="profile-ayat-container" style="max-height:450px;overflow-y:auto;padding-bottom:0.5rem;"></div>
 
     <!-- الملاحظات -->
     <hr class="divider"/>
     <div class="font-bold text-sm mb-2 flex-center gap-1">
       <span class="material-symbols-outlined" style="color:var(--color-secondary);font-size:1.1rem;">sticky_note_2</span>
-      سجل توجيهات وملاحظات المعلمة
+      سجل توجيهات وملاحظات المبلّغة
     </div>
     <div id="profile-notes-list" class="mb-3"></div>
     <div class="flex-center gap-2 mb-4">
@@ -1417,18 +1441,18 @@
   </div>
 </div>
 
-<!-- 4. نموذج معلمة (إضافة/تعديل) -->
+<!-- 4. نموذج مبلّغة (إضافة/تعديل) -->
 <div id="teacher-form-modal" class="modal-overlay hidden">
   <div class="modal-panel">
     <div class="modal-header">
-      <div id="teacher-modal-title" class="modal-title">إضافة معلمة جديدة</div>
+      <div id="teacher-modal-title" class="modal-title">إضافة مبلّغة جديدة</div>
       <button class="btn-icon" onclick="TeachersModule.closeModal()"><span class="material-symbols-outlined">close</span></button>
     </div>
     <form id="teacher-form" onsubmit="TeachersModule.handleFormSubmit(event)" class="space-y-4">
       <input type="hidden" id="teacher-id-field"/>
       <div>
-        <label class="form-label">اسم المعلمة الكامل <span style="color:var(--color-error)">*</span></label>
-        <input type="text" id="teacher-name-input" required class="form-input" placeholder="أدخل اسم المعلمة"/>
+        <label class="form-label">اسم المبلّغة الكامل <span style="color:var(--color-error)">*</span></label>
+        <input type="text" id="teacher-name-input" required class="form-input" placeholder="أدخل اسم المبلّغة"/>
       </div>
       <div class="grid-2">
         <div>
@@ -1457,18 +1481,18 @@
       <div>
         <label class="form-label">نوع الدور</label>
         <select id="teacher-role-select" class="form-input">
-          <option value="teacher">معلمة</option>
-          <option value="head_teacher">معلمة رئيسية (يمكنها دعوة معلمات)</option>
+          <option value="teacher">مبلّغة</option>
+          <option value="head_teacher">مبلّغة رئيسية (يمكنها دعوة مبلّغات)</option>
         </select>
       </div>
       <div>
-        <label class="form-label">المعلمة المشرفة</label>
+        <label class="form-label">المبلّغة المشرفة</label>
         <select id="teacher-supervisor-select" class="form-input"></select>
       </div>
       <hr class="divider"/>
       <div class="flex-center gap-2" style="justify-content:flex-end">
         <button type="button" onclick="TeachersModule.closeModal()" class="btn btn-ghost btn-sm">إلغاء</button>
-        <button type="submit" class="btn btn-p btn-sm">حفظ المعلمة</button>
+        <button type="submit" class="btn btn-p btn-sm">حفظ المبلّغة</button>
       </div>
     </form>
   </div>
@@ -1503,18 +1527,18 @@
         <div>
           <label class="form-label">نوع الدعوة المطلوب</label>
           <select id="admin-invite-type" class="form-input" onchange="AppUI.updateAdminInviteOptions()">
-            <option value="student">دعوة طالبة</option>
-            <option value="teacher">دعوة معلمة</option>
-            <option value="head_teacher">دعوة معلمة رئيسية (إشراف)</option>
+            <option value="student">دعوة متعلمة</option>
+            <option value="teacher">دعوة مبلّغة</option>
+            <option value="head_teacher">دعوة مبلّغة رئيسية (إشراف)</option>
           </select>
         </div>
 
         <div id="admin-invite-teacher-wrapper">
-          <label class="form-label">المعلمة المُشرفة</label>
+          <label class="form-label">المبلّغة المُشرفة</label>
           <select id="admin-invite-teacher-select" class="form-input">
             <!-- Populated by JS -->
           </select>
-          <div class="text-xs text-muted mt-1">سيتم قفل حساب المدعو تلقائياً بهذه المعلمة.</div>
+          <div class="text-xs text-muted mt-1">سيتم قفل حساب المدعو تلقائياً بهذه المبلّغة.</div>
         </div>
 
         <div>
@@ -1534,11 +1558,66 @@
     </div>
   </div>
 
+<!-- حاويات الشهادات -->
+<div id="certificate-modal" class="modal-overlay hidden">
+  <div class="modal-panel" style="max-width:900px; width:95%; max-height:95vh; overflow-y:auto; border-radius:1.5rem; padding:0;">
+    <div class="modal-header" style="position:sticky; top:0; background:var(--color-surface); z-index:10; padding:1.5rem; border-bottom:1px solid var(--color-outline-variant);">
+      <div class="modal-title">معاينة وإصدار الشهادة</div>
+      <div class="flex-center gap-2">
+        <button onclick="CertificatesModule.downloadCurrentPDF()" class="btn btn-p btn-sm" style="display:flex; align-items:center; gap:0.4rem;">
+          <span class="material-symbols-outlined">download</span>
+          تنزيل PDF
+        </button>
+        <button class="btn-icon" onclick="CertificatesModule.closeModal()"><span class="material-symbols-outlined">close</span></button>
+      </div>
+    </div>
+    <div id="certificate-preview-area" style="background:#f4f6f3; padding:2rem; overflow-x:auto;">
+      <!-- سيتم حقن الشهادة هنا -->
+    </div>
+  </div>
+</div>
+
+<div id="batch-certificates-modal" class="modal-overlay hidden">
+  <div class="modal-panel" style="max-width:600px;">
+    <div class="modal-header">
+      <div class="modal-title">إصدار الشهادات المجمعة (PDF)</div>
+      <button class="btn-icon" onclick="CertificatesModule.closeBatchModal()"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div class="text-sm text-muted mb-3">
+      حددي المتعلمات التي ترغبين بإصدار شهاداتهن في ملف PDF واحد مجمع قابل للطباعة. يظهر هنا المتعلمات اللاتي تجاوزن نسبة 85% أو أتممن الختمة.
+    </div>
+    
+    <div class="flex-between mb-2">
+      <div class="flex-center gap-2">
+        <button type="button" onclick="CertificatesModule.selectAllBatch(true)" class="btn btn-ghost btn-sm">تحديد الكل</button>
+        <button type="button" onclick="CertificatesModule.selectAllBatch(false)" class="btn btn-ghost btn-sm">إلغاء التحديد</button>
+      </div>
+      <div class="text-sm font-bold" style="color:var(--color-primary)">
+        محدد: <span id="batch-selected-count">0</span> متعلمة
+      </div>
+    </div>
+
+    <div id="batch-students-list" style="max-height:300px; overflow-y:auto; background:var(--color-surface); border:1px solid var(--color-outline-variant); border-radius:0.75rem; padding:0.5rem; margin-bottom:1rem;">
+      <!-- سيتم حقن قائمة المتعلمات هنا -->
+    </div>
+
+    <div class="flex-center gap-2">
+      <button onclick="CertificatesModule.exportSelectedBatchPDF()" class="btn btn-p btn-full" style="display:flex; align-items:center; justify-content:center; gap:0.5rem;">
+        <span class="material-symbols-outlined">picture_as_pdf</span>
+        تجهيز وإصدار الشهادات
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- ملفات المنطق -->
 <script src="config.js"></script>
 <script src="fatiha.js"></script>
+<script src="fatiha_tafseer.js"></script>
+<script src="fatiha_ghareeb.js"></script>
 <script src="data.js"></script>
 <script src="auth.js"></script>
+<script src="certificates.js"></script>
 <script src="students.js"></script>
 <script src="teachers.js"></script>
 <script src="reports.js"></script>
