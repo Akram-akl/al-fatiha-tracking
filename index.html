@@ -1333,7 +1333,7 @@
       </div>
       <hr class="divider"/>
       <div class="flex-center gap-2" style="justify-content:flex-end">
-        <button type="button" onclick="StudentsModule.closeEditModal()" class="btn btn-ghost btn-sm">إلغاء</button>
+        <button type="button" onclick="event.preventDefault(); event.stopPropagation(); StudentsModule.closeEditModal(event);" class="btn btn-ghost btn-sm">إلغاء</button>
         <button type="submit" class="btn btn-p btn-sm">تحديث البيانات</button>
       </div>
     </form>
@@ -1361,18 +1361,27 @@
       </div>
       
       <div class="flex-between gap-2" style="flex-wrap:wrap;padding-top:0.25rem;border-top:1px dashed var(--color-outline-variant);">
-        <div style="flex:1;min-width:180px;">
+        <div style="flex:1;min-width:160px;">
+          <label class="text-xs text-muted" style="display:block;margin-bottom:2px;">حالة الإتقان</label>
           <select id="profile-quick-status-select" onchange="StudentsModule.handleQuickStatusChange(this.value)" class="form-input btn-sm" style="width:100%;"></select>
         </div>
-        <button onclick="StudentsModule.promoteToTeacher()" class="btn btn-sm" id="btn-promote-teacher" title="ترقية المتعلمة إلى مبلّغة" style="color:#fff;background:var(--color-primary);display:inline-flex;align-items:center;gap:0.3rem;display:none;">
+        <div style="flex:1;min-width:160px;">
+          <label class="text-xs text-muted" style="display:block;margin-bottom:2px;">مسار التعلم</label>
+          <select id="profile-quick-track-select" onchange="StudentsModule.handleQuickTrackChange(this.value)" class="form-input btn-sm" style="width:100%;">
+            <option value="both">كلاهما (حفظ وتفسير)</option>
+            <option value="memorize">حفظ وتجويد فقط</option>
+            <option value="tafseer">فهم التفسير فقط</option>
+          </select>
+        </div>
+        <button onclick="StudentsModule.promoteToTeacher()" class="btn btn-sm" id="btn-promote-teacher" title="ترقية المتعلمة إلى مبلّغة" style="color:#fff;background:var(--color-primary);display:inline-flex;align-items:center;gap:0.3rem;display:none;margin-top:auto;">
           <span class="material-symbols-outlined" style="font-size:1.1rem;font-variation-settings:'FILL' 1;">stars</span>
           <span>ترقية إلى مبلّغة</span>
         </button>
-        <button onclick="CertificatesModule.openCertificateModal()" class="btn btn-sm" id="btn-issue-certificate" title="إصدار شهادة إتقان" style="color:var(--color-primary);background:rgba(81,100,71,0.1);display:inline-flex;align-items:center;gap:0.3rem;border:1px solid var(--color-primary);display:none;">
+        <button onclick="CertificatesModule.openCertificateModal()" class="btn btn-sm" id="btn-issue-certificate" title="إصدار شهادة إتقان" style="color:var(--color-primary);background:rgba(81,100,71,0.1);display:inline-flex;align-items:center;gap:0.3rem;border:1px solid var(--color-primary);display:none;margin-top:auto;">
           <span class="material-symbols-outlined" style="font-size:1.1rem;font-variation-settings:'FILL' 1;">workspace_premium</span>
           <span>إصدار شهادة</span>
         </button>
-        <button onclick="StudentsModule.sendWhatsAppReport()" class="btn btn-sm" title="إرسال عبر واتساب" style="color:#fff;background:#25D366;display:inline-flex;align-items:center;gap:0.3rem;">
+        <button onclick="StudentsModule.sendWhatsAppReport()" class="btn btn-sm" title="إرسال عبر واتساب" style="color:#fff;background:#25D366;display:inline-flex;align-items:center;gap:0.3rem;margin-top:auto;">
           <span class="material-symbols-outlined" style="font-size:1.1rem;font-variation-settings:'FILL' 1;">chat</span>
           <span>تقرير واتساب</span>
         </button>

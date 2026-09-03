@@ -452,7 +452,10 @@ const StudentsModule = {
     AppUI.showToast("تم تحديث بيانات المتعلمة بنجاح", "success");
   },
 
-  closeEditModal() {
+  closeEditModal(e) {
+    if (e) { e.preventDefault(); e.stopPropagation(); }
+    const form = document.getElementById("student-edit-form");
+    if (form) form.reset();
     const modal = document.getElementById("student-edit-modal");
     if (modal) modal.classList.add("hidden");
   },
@@ -512,7 +515,7 @@ const StudentsModule = {
       statusSelect.innerHTML = APP_CONFIG.studentStatuses.map(s => `<option value="${s.id}">${s.label}</option>`).join("");
       statusSelect.value = student.status;
     }
-    const trackSelect = document.getElementById("student-edit-track-select");
+    const trackSelect = document.getElementById("profile-quick-track-select");
     if (trackSelect) trackSelect.value = student.learningTrack || "memorize";
 
     this.renderLiveInteractiveAyat(student, "profile-ayat-container");
@@ -685,6 +688,21 @@ const StudentsModule = {
     const gErrors = Array.isArray(updated.mistakeGhareebIds) ? updated.mistakeGhareebIds.length : 0;
     set("profile-student-tafseer-errors", `${tErrors + gErrors}/18`);
 
+    // تحديث عرض المسار
+    const track = updated.learningTrack || 'memorize';
+    const trackLabels = { 'both': 'حفظ وتفسير', 'memorize': 'حفظ', 'tafseer': 'تفسير' };
+    set("profile-student-track", trackLabels[track]);
+
+    // إظهار/إخفاء أقسام الأخطاء حسب المسار
+    const errCont = document.getElementById("profile-student-errors-container");
+    const tafErrCont = document.getElementById("profile-student-tafseer-errors-container");
+    if (errCont) errCont.style.display = (track === 'tafseer') ? 'none' : 'block';
+    if (tafErrCont) tafErrCont.style.display = (track === 'memorize') ? 'none' : 'block';
+
+    // تحديث قائمة المسار السريعة
+    const trackSelect = document.getElementById("profile-quick-track-select");
+    if (trackSelect) trackSelect.value = track;
+
     // Show/hide buttons
     const btnPromote = document.getElementById("btn-promote-teacher");
     const btnCert = document.getElementById("btn-issue-certificate");
@@ -730,7 +748,7 @@ const StudentsModule = {
     );
   },
 
-  handleQuickStatusChangehandleQuickStatusChange(newStatus) {
+  handleQuickStatusChange(newStatus) {
     const modal = document.getElementById("student-profile-modal");
     const studentId = modal?.dataset.studentId;
     if (!studentId) return;
@@ -738,6 +756,17 @@ const StudentsModule = {
     this.renderStudentsTable();
     AppUI.updateDashboardStats();
     AppUI.showToast("تم تحديث حالة إتقان المتعلمة", "success");
+  },
+
+  handleQuickTrackChange(newTrack) {
+    const modal = document.getElementById("student-profile-modal");
+    const studentId = modal?.dataset.studentId;
+    if (!studentId) return;
+    const updated = db.updateStudent(studentId, { learningTrack: newTrack });
+    if (!updated) return;
+    this._updateProfileModalUI(updated);
+    const trackLabels = { 'both': 'حفظ وتفسير', 'memorize': 'حفظ', 'tafseer': 'تفسير' };
+    AppUI.showToast(`تم تغيير مسار التعلم إلى: ${trackLabels[newTrack]}`, "success");
   },
 
   renderStudentNotes(student, containerId) {
