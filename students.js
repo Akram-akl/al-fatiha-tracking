@@ -116,6 +116,14 @@ const StudentsModule = {
                          : student.mastery >= 65 ? "var(--color-secondary)"
                          : "var(--color-error)";
 
+      const trackLabels = { 'both': 'حفظ وتفسير', 'memorize': 'حفظ', 'tafseer': 'تفسير' };
+      const track = student.learningTrack || 'memorize';
+      const tErrors = Array.isArray(student.mistakeAyahTafseerNos) ? student.mistakeAyahTafseerNos.length : 0;
+      const gErrors = Array.isArray(student.mistakeGhareebIds) ? student.mistakeGhareebIds.length : 0;
+      let errorsText = `${mistakes}/29`;
+      if (track === 'tafseer') errorsText = `${tErrors + gErrors}/18`;
+      else if (track === 'both') errorsText = `${mistakes}/29 | ${tErrors + gErrors}/18`;
+
       return `
         <tr>
           <td>
@@ -135,13 +143,14 @@ const StudentsModule = {
             </span>
           </td>
           <td style="font-size:0.8rem;font-weight:600;">${teacher ? teacher.name : "غير محددة"}</td>
-          <td>
+          <td style="text-align:center;">
             ${student.isArabicSpeaker
               ? '<span class="badge badge-primary">ناطقة</span>'
               : '<span class="badge badge-secondary">غير ناطقة</span>'}
           </td>
-          <td style="text-align:center;font-family:monospace;font-size:0.8rem;">
-            <span style="color:${mistakes > 0 ? "var(--color-error)" : "var(--color-on-surface-variant)"};font-weight:700;">${mistakes}/29</span>
+          <td style="text-align:center;font-size:0.8rem;">
+            <div style="font-size:0.7rem;color:var(--color-primary);margin-bottom:2px;">${trackLabels[track]}</div>
+            <span style="color:${mistakes > 0 ? "var(--color-error)" : "var(--color-on-surface-variant)"};font-weight:700;font-family:monospace;">${errorsText}</span>
           </td>
           <td style="text-align:center;">
             <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
@@ -151,7 +160,6 @@ const StudentsModule = {
               </div>
             </div>
           </td>
-          <td style="text-align:center;font-weight:700;font-size:0.8rem;">${student.tajweedScore || 100}%</td>
           <td style="text-align:center;">
             <span class="status-badge status-${student.status}">
               <span class="material-symbols-outlined" style="font-size:0.875rem;">${statusObj.icon}</span>
@@ -181,10 +189,9 @@ const StudentsModule = {
       <div class="table-wrap">
         <table>
           <thead><tr>
-            <th>المتعلمة</th><th>المكتب</th><th>المبلّغة</th><th>اللغة</th>
-            <th style="text-align:center">أخطاء</th>
+            <th>المتعلمة</th><th>المكتب</th><th>المبلّغة</th><th style="text-align:center">اللغة</th>
+            <th style="text-align:center">أخطاء ومسار</th>
             <th style="text-align:center">الإتقان</th>
-            <th style="text-align:center">التجويد</th>
             <th style="text-align:center">الحالة</th>
             <th style="text-align:center">الإجراءات</th>
           </tr></thead>
@@ -299,6 +306,7 @@ const StudentsModule = {
 
     if (!name) { AppUI.showToast("يرجى إدخال اسم المتعلمة", "warning"); return; }
     if (!phone) { AppUI.showToast("يرجى إدخال رقم هاتف المتعلمة (مطلوب لتسجيل الدخول)", "warning"); return; }
+    if (!db.isPhoneUnique(phone)) { AppUI.showToast("رقم الهاتف مستخدم بالفعل لمستخدم آخر (مبلّغة أو متعلمة)، يرجى إدخال رقم مختلف.", "error"); return; }
 
     // التحقق من توافق التخصص واللغة
     if (teacherId) {
@@ -372,7 +380,6 @@ const StudentsModule = {
     this.updateEditFormTeachersByRegion(student.region, student.teacherId);
 
     document.getElementById("student-edit-language-select").value = student.isArabicSpeaker ? "true" : "false";
-    document.getElementById("student-edit-tajweed-input").value   = student.tajweedScore || 100;
 
     const statusSelect = document.getElementById("student-edit-status-select");
     if (statusSelect) {
@@ -416,11 +423,12 @@ const StudentsModule = {
     const region   = document.getElementById("student-edit-region-select").value;
     const teacherId = document.getElementById("student-edit-teacher-select").value;
     const isArabicSpeaker = document.getElementById("student-edit-language-select").value === "true";
-    const tajweedScore = parseInt(document.getElementById("student-edit-tajweed-input").value, 10) || 100;
     const status   = document.getElementById("student-edit-status-select").value;
     const learningTrack = document.getElementById("student-edit-track-select")?.value || "memorize";
 
     if (!name) { AppUI.showToast("يرجى إدخال اسم المتعلمة", "warning"); return; }
+    if (!phone) { AppUI.showToast("يرجى إدخال رقم هاتف المتعلمة (مطلوب لتسجيل الدخول)", "warning"); return; }
+    if (!db.isPhoneUnique(phone, id)) { AppUI.showToast("رقم الهاتف مستخدم بالفعل لمستخدم آخر (مبلّغة أو متعلمة)، يرجى إدخال رقم مختلف.", "error"); return; }
 
     // التحقق من توافق التخصص واللغة
     if (teacherId) {
@@ -437,7 +445,7 @@ const StudentsModule = {
       }
     }
 
-    db.updateStudent(id, { name, phone, password, region, teacherId, isArabicSpeaker, tajweedScore, status, learningTrack });
+    db.updateStudent(id, { name, phone, password, region, teacherId, isArabicSpeaker, status, learningTrack });
     this.closeEditModal();
     this.renderStudentsTable();
     AppUI.updateDashboardStats();
@@ -472,17 +480,22 @@ const StudentsModule = {
     set("profile-student-language", student.isArabicSpeaker ? "ناطقة بالعربية" : "غير ناطقة");
     set("profile-student-mastery",  `${student.mastery}%`);
     set("profile-student-level",    student.masteryLevel);
-    set("profile-student-tajweed",  `${student.tajweedScore || 100}%`);
     set("profile-student-errors",   `${mistakes}/29 كلمة`);
     const trackLabels = {
       'both': 'حفظ وتفسير',
       'memorize': 'حفظ',
       'tafseer': 'تفسير'
     };
-    set("profile-student-track", trackLabels[student.learningTrack || 'memorize']);
+    const track = student.learningTrack || 'memorize';
+    set("profile-student-track", trackLabels[track]);
     const tErrors = Array.isArray(student.mistakeAyahTafseerNos) ? student.mistakeAyahTafseerNos.length : 0;
     const gErrors = Array.isArray(student.mistakeGhareebIds) ? student.mistakeGhareebIds.length : 0;
     set("profile-student-tafseer-errors", `${tErrors + gErrors}/18`);
+
+    const errCont = document.getElementById("profile-student-errors-container");
+    const tafErrCont = document.getElementById("profile-student-tafseer-errors-container");
+    if (errCont) errCont.style.display = (track === 'tafseer') ? 'none' : 'block';
+    if (tafErrCont) tafErrCont.style.display = (track === 'memorize') ? 'none' : 'block';
 
     const btnPromote = document.getElementById("btn-promote-teacher");
     const btnCert = document.getElementById("btn-issue-certificate");
@@ -793,14 +806,32 @@ const StudentsModule = {
     const teacherName = teacher ? teacher.name : "المبلّغة";
     const mistakes = Array.isArray(student.mistakeWordIds) ? student.mistakeWordIds.length : (student.errorsCount || 0);
 
-    const message = `*منظومة بلغوا عني ولو آية 📖*\n` +
-      `السلام عليكم ورحمة الله وبركاته،\n` +
-      `تقرير متابعة المتعلمة: *${student.name}*\n` +
-      `━━━━━━━━━━━━━━━\n` +
-      `🔹 *نسبة الإتقان:* ${student.mastery}%\n` +
-      `🔹 *التقييم اللفظي:* ${student.masteryLevel}\n` +
-      `🔹 *عدد أخطاء الكلمات:* ${mistakes} من 29 كلمة\n` +
-      `🔹 *درجة التجويد:* ${student.tajweedScore || 100}%\n` +
+    const trackLabels = {
+      'both': 'حفظ وتفسير',
+      'memorize': 'حفظ',
+      'tafseer': 'تفسير'
+    };
+    const track = student.learningTrack || 'memorize';
+    const tErrors = Array.isArray(student.mistakeAyahTafseerNos) ? student.mistakeAyahTafseerNos.length : 0;
+    const gErrors = Array.isArray(student.mistakeGhareebIds) ? student.mistakeGhareebIds.length : 0;
+    
+    let errorText = "";
+    if (track === 'tafseer') {
+      errorText = `🔹 *أخطاء التفسير والغريب:* ${tErrors + gErrors} من 18\\n`;
+    } else if (track === 'memorize') {
+      errorText = `🔹 *أخطاء كلمات التلاوة:* ${mistakes} من 29 كلمة\\n`;
+    } else {
+      errorText = `🔹 *أخطاء كلمات التلاوة:* ${mistakes} من 29 كلمة\\n🔹 *أخطاء التفسير:* ${tErrors + gErrors} من 18\\n`;
+    }
+
+    const message = `*منظومة بلغوا عني ولو آية 📖*\\n` +
+      `السلام عليكم ورحمة الله وبركاته،\\n` +
+      `تقرير متابعة المتعلمة: *${student.name}*\\n` +
+      `━━━━━━━━━━━━━━━\\n` +
+      `🔹 *نسبة الإتقان:* ${student.mastery}%\\n` +
+      `🔹 *مستوى الإتقان:* ${student.masteryLevel}\\n` +
+      `🔹 *المسار:* ${trackLabels[track]}\\n` +
+      errorText +
       `━━━━━━━━━━━━━━━\n` +
       `مشرفتكِ: *${teacherName}*\n` +
       `نسأل الله لكِ دوام التوفيق والبركة في حفظ كتابه الكريم.`;
@@ -845,9 +876,31 @@ const StudentsModule = {
     set("portal-teacher-name",    teacher ? teacher.name : "غير محددة");
     set("portal-student-region",  student.region);
     set("portal-student-mastery", `${student.mastery}%`);
-    set("portal-student-tajweed", `${student.tajweedScore || 100}%`);
     set("portal-student-level",   student.masteryLevel);
-    set("portal-student-errors",  `${mistakes}/29`);
+    
+    const track = student.learningTrack || 'memorize';
+    const errCard = document.getElementById("portal-errors-card");
+    const errLabel = document.getElementById("portal-errors-label");
+    const masterySub = document.getElementById("portal-mastery-sub");
+    
+    if (track === 'tafseer') {
+      const tErrors = Array.isArray(student.mistakeAyahTafseerNos) ? student.mistakeAyahTafseerNos.length : 0;
+      const gErrors = Array.isArray(student.mistakeGhareebIds) ? student.mistakeGhareebIds.length : 0;
+      set("portal-student-errors", `${tErrors + gErrors}/18`);
+      if (errLabel) errLabel.textContent = "تفسير يحتاج مراجعة";
+      if (errCard) errCard.style.display = 'block';
+      if (masterySub) masterySub.textContent = "من معاني وتفسير الفاتحة";
+    } else if (track === 'memorize') {
+      set("portal-student-errors",  `${mistakes}/29`);
+      if (errLabel) errLabel.textContent = "كلمات تحتاج مراجعة";
+      if (errCard) errCard.style.display = 'block';
+      if (masterySub) masterySub.textContent = "من كلمات الفاتحة";
+    } else {
+      set("portal-student-errors",  `${mistakes}/29`);
+      if (errLabel) errLabel.textContent = "كلمات تحتاج مراجعة";
+      if (errCard) errCard.style.display = 'block';
+      if (masterySub) masterySub.textContent = "من كلمات ومعاني الفاتحة";
+    }
 
     const statusEl = document.getElementById("portal-student-status");
     if (statusEl) statusEl.textContent = statusObj.label;

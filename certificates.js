@@ -54,106 +54,109 @@ const CertificatesModule = {
       : "جيد جداً مرتفع";
 
     return `
-      <div style="width:297mm; min-height:210mm; margin:auto; padding:0; background:#fffef8; font-family:'Cairo','Amiri',sans-serif; direction:rtl; position:relative; overflow:hidden; ${isMulti ? 'page-break-after:always; margin-bottom:2rem;' : ''}">
+      <div class="certificate-page" style="
+        width: 1122px;
+        height: 720px;
+        box-sizing: border-box;
+        margin: 0 auto 20px auto;
+        padding: 0;
+        background: linear-gradient(135deg, #fefcf6 0%, #f5f0e8 50%, #faf7f0 100%);
+        font-family: 'Amiri', 'Cairo', 'Arial', sans-serif;
+        direction: rtl;
+        position: relative;
+        overflow: hidden;
+        ${isMulti ? 'page-break-after: always;' : ''}
+      ">
         
-        <!-- خلفية زخرفية -->
-        <div style="position:absolute;inset:0;opacity:0.04;pointer-events:none;background:repeating-linear-gradient(45deg,#516447 0,#516447 1px,transparent 0,transparent 50%);background-size:30px 30px;"></div>
+        <!-- خلفية زخرفية ناعمة -->
+        <div style="position:absolute;inset:0;opacity:0.03;pointer-events:none;background-image:radial-gradient(circle at 20% 30%, #2e4f3a 1px, transparent 1px), radial-gradient(circle at 80% 70%, #bba36c 1px, transparent 1px);background-size:60px 60px;"></div>
         
-        <!-- الإطار الخارجي الذهبي -->
-        <div style="position:absolute;inset:8mm;border:3px solid #8B7D3C;border-radius:8px;pointer-events:none;"></div>
-        <div style="position:absolute;inset:11mm;border:1.5px solid #B8A95E;border-radius:6px;pointer-events:none;"></div>
+        <!-- إطار ثلاثي أنيق -->
+        <div style="position:absolute;inset:18px;border:3px solid #c9a84c;pointer-events:none;"></div>
+        <div style="position:absolute;inset:24px;border:1px solid #3a5a3e;pointer-events:none;"></div>
+        <div style="position:absolute;inset:28px;border:2px double #c9a84c;pointer-events:none;"></div>
         
-        <!-- الزوايا الذهبية -->
-        <div style="position:absolute;top:10mm;right:10mm;width:35px;height:35px;border-top:4px solid #8B7D3C;border-right:4px solid #8B7D3C;border-radius:0 8px 0 0;"></div>
-        <div style="position:absolute;top:10mm;left:10mm;width:35px;height:35px;border-top:4px solid #8B7D3C;border-left:4px solid #8B7D3C;border-radius:8px 0 0 0;"></div>
-        <div style="position:absolute;bottom:10mm;right:10mm;width:35px;height:35px;border-bottom:4px solid #8B7D3C;border-right:4px solid #8B7D3C;border-radius:0 0 8px 0;"></div>
-        <div style="position:absolute;bottom:10mm;left:10mm;width:35px;height:35px;border-bottom:4px solid #8B7D3C;border-left:4px solid #8B7D3C;border-radius:0 0 0 8px;"></div>
-        
+        <!-- زخارف ركنية -->
+        <div style="position:absolute;top:18px;right:18px;font-size:28px;color:#c9a84c;line-height:1;">❁</div>
+        <div style="position:absolute;top:18px;left:18px;font-size:28px;color:#c9a84c;line-height:1;">❁</div>
+        <div style="position:absolute;bottom:18px;right:18px;font-size:28px;color:#c9a84c;line-height:1;">❁</div>
+        <div style="position:absolute;bottom:18px;left:18px;font-size:28px;color:#c9a84c;line-height:1;">❁</div>
+
         <!-- المحتوى الرئيسي -->
-        <div style="position:relative;z-index:1;padding:18mm 25mm;">
+        <div style="position:relative;z-index:10;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:45px 60px;text-align:center;">
           
           <!-- البسملة -->
-          <div style="text-align:center;font-family:'Amiri',serif;font-size:1.6rem;color:#516447;margin-bottom:6px;letter-spacing:2px;">
+          <div style="font-family:'Amiri',serif;font-size:22px;color:#2e4f3a;font-weight:bold;margin-bottom:6px;">
             بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ
           </div>
           
-          <!-- خط فاصل ذهبي مزخرف -->
-          <div style="text-align:center;color:#B8A95E;font-size:1.2rem;letter-spacing:8px;margin-bottom:10px;">✦ ❋ ✦</div>
+          <!-- زخرفة فاصلة -->
+          <div style="color:#c9a84c;font-size:18px;margin-bottom:10px;letter-spacing:8px;">✦ ❋ ✦</div>
           
           <!-- اسم المبادرة -->
-          <div style="text-align:center;margin-bottom:4px;">
-            <div style="font-size:1.5rem;font-weight:900;color:#3A4A30;letter-spacing:3px;">مُبَادَرَةُ بَلِّغُوا عَنِّي وَلَوْ آيَة</div>
-            <div style="font-size:0.85rem;color:#6B7B5E;margin-top:4px;">منظومة إتقان وتدبر كتاب الله تعالى • ${student.region || 'مكتب معتمد'}</div>
+          <div style="font-size:18px;font-weight:700;color:#2e4f3a;font-family:'Cairo','Amiri',sans-serif;margin-bottom:3px;">
+            مُبادرة بلِّغوا عنِّي ولو آية
+          </div>
+          <div style="font-size:11px;color:#5a6e60;font-family:'Cairo',sans-serif;margin-bottom:14px;">
+            منظومة إتقان وتدبر كتاب الله تعالى • ${student.region || 'مكتب معتمد'}
           </div>
           
           <!-- عنوان الشهادة -->
-          <div style="text-align:center;margin:18px 0 14px;">
-            <div style="display:inline-block;background:linear-gradient(135deg,#516447 0%,#6B8A5E 50%,#516447 100%);color:#fff;padding:10px 50px;border-radius:50px;font-size:1.6rem;font-weight:900;letter-spacing:4px;box-shadow:0 4px 16px rgba(81,100,71,0.3);">
-              شَهَادَةُ إِتْقَانٍ وَتَمَيُّز
+          <div style="margin-bottom:14px;">
+            <div style="display:inline-block;background:linear-gradient(90deg,#2e4f3a,#3e6b4f,#2e4f3a);color:#fff;padding:8px 50px;border-radius:30px;font-size:22px;font-weight:bold;font-family:'Amiri',serif;">
+              شهادة إتقان وتميّز
             </div>
           </div>
           
-          <!-- النص التمهيدي -->
-          <div style="text-align:center;font-size:1rem;color:#4A5A3E;line-height:2;margin-bottom:8px;">
-            تَسُرُّ إدارة المبادرة ومكتب الحلقات النسائية أن تمنح هذه الشهادة للمتعلمة المباركة
+          <!-- المقدمة -->
+          <div style="font-size:16px;color:#445247;line-height:1.5;margin-bottom:8px;font-family:'Amiri',serif;">
+            تسرّ إدارة المبادرة أن تمنح هذه الشهادة للمتعلمة المباركة
           </div>
           
           <!-- اسم المتعلمة -->
-          <div style="text-align:center;margin:10px 0 14px;">
-            <div style="display:inline-block;position:relative;padding:8px 60px;">
-              <div style="font-family:'Amiri',serif;font-size:2.2rem;font-weight:700;color:#2C3E22;letter-spacing:2px;">${student.name}</div>
-              <div style="position:absolute;bottom:0;left:15%;right:15%;height:2px;background:linear-gradient(90deg,transparent,#B8A95E,transparent);"></div>
+          <div style="margin-bottom:10px;">
+            <div style="display:inline-block;border-bottom:2px solid #c9a84c;padding:0 35px 8px;">
+              <div style="font-family:'Amiri',serif;font-size:32px;font-weight:bold;color:#1e3325;">${student.name}</div>
             </div>
           </div>
           
-          <!-- تفاصيل الإنجاز -->
-          <div style="text-align:center;font-size:1rem;color:#4A5A3E;line-height:2.2;max-width:600px;margin:0 auto 10px;">
-            نظير جهودها المباركة واجتيازها بفضل الله تعالى متطلبات
-            <strong style="color:#3A4A30;"> ${trackLabel}</strong>
+          <!-- وصف الإنجاز -->
+          <div style="font-size:15px;color:#3b4d40;line-height:1.7;max-width:650px;margin:0 auto 12px;font-family:'Amiri',serif;">
+            نظير اجتيازها متطلبات
+            <strong style="color:#2e4f3a;"> ${trackLabel}</strong>
+            بنسبة إتقان <strong style="color:#c9a84c;font-size:18px;">${student.mastery}%</strong> 
+            وتقدير <strong style="color:#c9a84c;">${masteryLevel}</strong>
             <br/>
-            بنسبة إتقان بلغت 
-            <span style="display:inline-block;background:#516447;color:#fff;padding:2px 14px;border-radius:20px;font-weight:900;font-size:1.1rem;margin:0 4px;">${student.mastery}%</span>
-            وبتقدير 
-            <span style="font-weight:900;color:#8B7D3C;">(${masteryLevel})</span>
-            <br/>
-            تحت إشراف المبلّغة الفاضلة: <strong style="color:#3A4A30;">${teacher.name}</strong>
+            تحت إشراف المبلّغة الفاضلة: <strong style="color:#2e4f3a;">${teacher.name}</strong>
           </div>
           
-          <!-- الآية -->
-          <div style="text-align:center;font-family:'Amiri',serif;font-size:1.4rem;color:#516447;margin:14px 0 6px;letter-spacing:1px;">
+          <!-- آية -->
+          <div style="font-family:'Amiri',serif;font-size:17px;color:#2e4f3a;margin-bottom:4px;">
             ﴿ وَقُل رَّبِّ زِدۡنِي عِلۡمٗا ﴾
           </div>
-          <div style="text-align:center;font-size:0.85rem;color:#7A8B6E;margin-bottom:20px;line-height:1.8;">
-            سائلين المولى عز وجل أن يجعل القرآن العظيم ربيع قلبها ونور صدرها، وأن يبارك في جهودها.
+          
+          <!-- دعاء -->
+          <div style="font-size:12px;color:#6b7f70;line-height:1.5;font-family:'Cairo',sans-serif;margin-bottom:18px;">
+            نسأل الله أن يجعل القرآن ربيع قلبها ونور صدرها
           </div>
           
-          <!-- خط فاصل -->
-          <div style="text-align:center;color:#B8A95E;font-size:0.9rem;letter-spacing:12px;margin-bottom:16px;">✧ ✧ ✧</div>
-          
           <!-- التوقيعات -->
-          <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:30px;">
-            
-            <!-- المبلّغة المشرفة -->
-            <div style="text-align:center;flex:1;">
-              <div style="font-size:0.8rem;color:#7A8B6E;margin-bottom:6px;">المبلّغة المشرفة</div>
-              <div style="font-weight:700;color:#3A4A30;font-size:0.95rem;margin-bottom:8px;">${teacher.name}</div>
-              <div style="width:70%;margin:0 auto;border-top:1.5px dashed #B8A95E;"></div>
+          <div style="display:flex;justify-content:space-between;align-items:flex-end;width:100%;padding:0 30px;font-family:'Cairo',sans-serif;">
+            <div style="text-align:center;width:160px;">
+              <div style="font-size:11px;color:#6b7f70;margin-bottom:4px;">المبلّغة المشرفة</div>
+              <div style="font-weight:700;color:#2e4f3a;font-size:13px;margin-bottom:6px;">${teacher.name}</div>
+              <div style="border-top:1px solid #c9a84c;"></div>
             </div>
             
-            <!-- الختم المركزي -->
-            <div style="text-align:center;flex:0 0 auto;">
-              <div style="width:75px;height:75px;border-radius:50%;border:2.5px solid #516447;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto;background:rgba(81,100,71,0.05);">
-                <span class="material-symbols-outlined" style="font-size:1.8rem;color:#516447;font-variation-settings:'FILL' 1;">verified</span>
-                <div style="font-size:0.5rem;font-weight:900;color:#516447;margin-top:1px;">إتقان معتمد</div>
-              </div>
+            <div style="text-align:center; width: 65px;">
+              <!-- تمت إزالة الدائرة والنجمة حسب الطلب -->
             </div>
             
-            <!-- إدارة المبادرة -->
-            <div style="text-align:center;flex:1;">
-              <div style="font-size:0.8rem;color:#7A8B6E;margin-bottom:6px;">إدارة المبادرة والمكتب</div>
-              <div style="font-weight:700;color:#3A4A30;font-size:0.95rem;margin-bottom:8px;">المشرف العام</div>
-              <div style="width:70%;margin:0 auto;border-top:1.5px dashed #B8A95E;"></div>
-              <div style="font-size:0.7rem;color:#999;margin-top:5px;">تاريخ الإصدار: ${dateStr}</div>
+            <div style="text-align:center;width:160px;">
+              <div style="font-size:11px;color:#6b7f70;margin-bottom:4px;">إدارة المبادرة</div>
+              <div style="font-weight:700;color:#2e4f3a;font-size:13px;margin-bottom:6px;">المشرف العام</div>
+              <div style="border-top:1px solid #c9a84c;"></div>
+              <div style="font-size:10px;color:#888;margin-top:4px;">${dateStr}</div>
             </div>
           </div>
           
@@ -163,31 +166,33 @@ const CertificatesModule = {
   },
 
   /**
-   * تنزيل الشهادة المعروضة مباشرة كملف PDF
+   * تنزيل الشهادة المعروضة كملف PDF عند ضغط المستخدم
    */
   downloadCurrentPDF(filename = "شهادة_إتقان_الفاتحة.pdf") {
     const area = document.getElementById("certificate-preview-area");
     if (!area) return;
 
-    if (typeof html2pdf === "undefined") {
-      window.print();
+    const pages = area.querySelectorAll(".certificate-page");
+    if (pages.length === 0) {
+      AppUI.showToast("لا توجد شهادة للتنزيل", "warning");
       return;
     }
 
-    AppUI.showToast("جاري تجهيز وتنزيل الشهادة بصيغة PDF عالية الدقة...", "info");
+    AppUI.showToast("جاري تجهيز الشهادة بصيغة PDF...", "info");
 
     const opt = {
-      margin:       [6, 6, 6, 6],
+      margin:       0,
       filename:     filename,
-      image:        { type: 'jpeg', quality: 0.99 },
-      html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
-      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true, allowTaint: true, backgroundColor: '#fefcf6' },
+      jsPDF:        { unit: 'px', format: [1122, 720], orientation: 'landscape' }
     };
 
     html2pdf().set(opt).from(area).save().then(() => {
-      AppUI.showToast("تم تنزيل الشهادة بنجاح", "success");
+      AppUI.showToast("تم تنزيل الشهادة بنجاح ✓", "success");
     }).catch(err => {
-      console.error(err);
+      console.error("PDF error:", err);
+      AppUI.showToast("حدث خطأ. جاري فتح نافذة الطباعة كبديل...", "warning");
       window.print();
     });
   },
@@ -218,8 +223,8 @@ const CertificatesModule = {
     if (eligibleStudents.length === 0) {
       container.innerHTML = `
         <div style="text-align:center;padding:2rem;color:var(--color-on-surface-variant);">
-          <span class="material-symbols-outlined" style="font-size:2.5rem;opacity:0.4;">workspace_premium</span>
-          <div class="mt-2 font-bold">لا توجد متعلمات مؤهلات للشهادات حالياً (نسبة 85%+ أو متقنة)</div>
+          <span style="font-size:2.5rem;opacity:0.4;">🏅</span>
+          <div style="font-weight:bold;margin-top:0.5rem;">لا توجد متعلمات مؤهلات للشهادات حالياً (نسبة 85%+ أو متقنة)</div>
         </div>
       `;
     } else {
@@ -272,7 +277,7 @@ const CertificatesModule = {
   },
 
   /**
-   * توليد وتنزيل كافة الشهادات المحددة في ملف واحد مجمع
+   * توليد كافة الشهادات المحددة وعرضها - التنزيل عند ضغط المستخدم فقط
    */
   exportSelectedBatchPDF() {
     if (this.selectedStudentIds.size === 0) {
@@ -292,6 +297,6 @@ const CertificatesModule = {
     container.innerHTML = students.map(s => this.renderCertificateHTML(s, true)).join("");
     modal.classList.remove("hidden");
 
-    AppUI.showToast(`تم تجهيز ${students.length} شهادة. يمكنك الآن تنزيلها معاً في ملف واحد.`, "success");
+    AppUI.showToast(`تم تجهيز ${students.length} شهادة. اضغطي على "تنزيل PDF" للتحميل.`, "success");
   }
 };

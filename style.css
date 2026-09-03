@@ -733,3 +733,32 @@ input, select, textarea {
   font-weight: 700;
 }
 
+/* ==================== طباعة الشهادات ==================== */
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 0;
+  }
+  body * {
+    visibility: hidden;
+  }
+  #certificate-preview-area, #certificate-preview-area * {
+    visibility: visible;
+  }
+  #certificate-preview-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 297mm;
+    height: 190mm;
+    page-break-inside: avoid;
+  }
+  .certificate-page {
+    width: 297mm !important;
+    height: 190mm !important;
+    page-break-after: always;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+}

@@ -118,6 +118,14 @@ class DataStore {
     return list;
   }
 
+  isPhoneUnique(phone, currentUserId = null) {
+    if (!phone) return true;
+    const p = phone.trim();
+    if (this.data.students.some(s => s.phone === p && s.id !== currentUserId)) return false;
+    if (this.data.teachers.some(t => t.phone === p && t.id !== currentUserId)) return false;
+    return true;
+  }
+
   getTeachersByRegion(region) {
     if (!region) return this.getTeachers();
     return this.getTeachers((t) => t.region === region);
@@ -228,7 +236,6 @@ class DataStore {
       overallMastery = Math.round((recitationCalc.mastery + tafseerScore) / 2);
     }
 
-    const tajweedScore = studentData.tajweedScore !== undefined ? parseInt(studentData.tajweedScore, 10) : 100;
     const status = studentData.status || "in_progress";
 
     const newStudent = {
@@ -248,7 +255,6 @@ class DataStore {
       tafseerMastery: tafseerScore,
       mastery: overallMastery,
       masteryLevel: calculateMastery(29 - Math.round((overallMastery / 100) * 29)).level,
-      tajweedScore: tajweedScore,
       status: status,
       notes: studentData.initialNote ? [{ id: "note_" + Date.now(), text: studentData.initialNote, date: new Date().toISOString(), author: "المبلّغة" }] : [],
       promotedToTeacherId: null,
@@ -299,9 +305,6 @@ class DataStore {
       overallMastery = Math.round((recitationCalc.mastery + tafseerScore) / 2);
     }
 
-    let tajweedScore = updates.tajweedScore !== undefined ? parseInt(updates.tajweedScore, 10) : current.tajweedScore;
-    tajweedScore = Math.min(100, Math.max(0, tajweedScore || 0));
-
     let status = updates.status || current.status;
     if (overallMastery >= 95 && status !== "completed") {
       status = "completed";
@@ -321,7 +324,6 @@ class DataStore {
       tafseerMastery: tafseerScore,
       mastery: overallMastery,
       masteryLevel: calculateMastery(29 - Math.round((overallMastery / 100) * 29)).level,
-      tajweedScore,
       status,
       lastFollowUpDate: new Date().toISOString().split("T")[0]
     };
@@ -395,7 +397,7 @@ class DataStore {
     student.masteryLevel = calculateMastery(29 - Math.round((overallMastery / 100) * 29)).level;
     student.lastFollowUpDate = new Date().toISOString().split("T")[0];
 
-    if (overallMastery >= 95 && (student.tajweedScore || 100) >= 90) {
+    if (overallMastery >= 95) {
       student.status = "completed";
     } else if (overallMastery >= 80) {
       student.status = "near_completion";

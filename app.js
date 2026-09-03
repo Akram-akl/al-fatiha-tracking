@@ -270,6 +270,20 @@ const AppUI = {
     const adminInviteBtn = document.getElementById("admin-invite-btn");
     if (addTeacherBtn) addTeacherBtn.style.display = (isAdmin || isHead) ? "" : "none";
     if (adminInviteBtn) adminInviteBtn.style.display = (isAdmin || isHead) ? "" : "none";
+
+    // إخفاء فلتر المكتب/المنطقة لغير المشرف العام لمنع تشتت المبلّغات
+    const regionFilters = [
+      document.getElementById("students-region-filter"),
+      document.getElementById("report-region-select"),
+      document.getElementById("leaderboard-region-filter")
+    ];
+    regionFilters.forEach(rf => {
+      if (rf && rf.closest('.filter-item')) {
+        rf.closest('.filter-item').style.display = isAdmin ? "" : "none";
+      } else if (rf && rf.parentElement) {
+        rf.parentElement.style.display = isAdmin ? "" : "none";
+      }
+    });
   },
 
   // ==================== الإحصائيات ====================
@@ -466,9 +480,11 @@ const AppUI = {
             <div class="flex-between"><span>المتقنات</span><strong style="color:var(--color-success)">${completed}</strong></div>
             <div class="flex-between"><span>متوسط إتقان المكتب</span><strong style="color:var(--color-primary)">${avgMastery}%</strong></div>
           </div>
+          ${auth.isAdmin() ? `
           <button onclick="AppUI.navigateTo('students'); StudentsModule.setFilter('region','${region}')" class="btn btn-ghost btn-sm btn-full">
             استعراض متعلمات ${region}
           </button>
+          ` : ''}
         </div>
       `;
     }).join("");

@@ -107,6 +107,14 @@ const ReportsModule = {
             const teacher   = db.getTeacherById(s.teacherId);
             const statusObj = APP_CONFIG.studentStatuses.find(st => st.id === s.status) || { label: s.status };
             const mistakes  = Array.isArray(s.mistakeWordIds) ? s.mistakeWordIds.length : (s.errorsCount || 0);
+            const trackLabels = { 'both': 'حفظ وتفسير', 'memorize': 'حفظ', 'tafseer': 'تفسير' };
+            const track = s.learningTrack || 'memorize';
+            const tErrors = Array.isArray(s.mistakeAyahTafseerNos) ? s.mistakeAyahTafseerNos.length : 0;
+            const gErrors = Array.isArray(s.mistakeGhareebIds) ? s.mistakeGhareebIds.length : 0;
+            let errorsText = `${mistakes}/29`;
+            if (track === 'tafseer') errorsText = `${tErrors + gErrors}/18`;
+            else if (track === 'both') errorsText = `${mistakes}/29 | ${tErrors + gErrors}/18`;
+
             return `
               <tr>
                 <td style="font-family:monospace;color:var(--color-on-surface-variant);">${i + 1}</td>
@@ -114,9 +122,9 @@ const ReportsModule = {
                 <td style="color:var(--color-on-surface-variant);">${s.region}</td>
                 <td>${teacher ? teacher.name : "—"}</td>
                 <td>${s.isArabicSpeaker ? "ناطقة بالعربية" : "غير ناطقة"}</td>
-                <td style="text-align:center;font-family:monospace;">${mistakes}/29</td>
+                <td style="text-align:center;">${trackLabels[track]}</td>
+                <td style="text-align:center;font-family:monospace;">${errorsText}</td>
                 <td style="text-align:center;font-weight:700;color:var(--color-primary);">${s.mastery}%</td>
-                <td style="text-align:center;font-weight:700;">${s.tajweedScore || 100}%</td>
                 <td style="text-align:center;">${statusObj.label}</td>
               </tr>`;
           }).join("");
@@ -139,9 +147,9 @@ const ReportsModule = {
                   <th style="padding:8px;text-align:right;">المكتب</th>
                   <th style="padding:8px;text-align:right;">المبلّغة</th>
                   <th style="padding:8px;text-align:right;">اللغة</th>
+                  <th style="padding:8px;text-align:center;">المسار</th>
                   <th style="padding:8px;text-align:center;">أخطاء</th>
                   <th style="padding:8px;text-align:center;">الإتقان</th>
-                  <th style="padding:8px;text-align:center;">التجويد</th>
                   <th style="padding:8px;text-align:center;">الحالة</th>
                 </tr>
               </thead>
@@ -226,7 +234,6 @@ const ReportsModule = {
         "أخطاء الكلمات":   `${mistakes} من 29`,
         "نسبة الإتقان":     `${s.mastery}%`,
         "التقييم":          s.masteryLevel || "",
-        "درجة التجويد":     `${s.tajweedScore || 100}%`,
         "الحالة":           statusObj.label,
         "تاريخ الانضمام":  s.joinedDate || "",
         "آخر متابعة":       s.lastFollowUpDate || ""

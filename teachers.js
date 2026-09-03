@@ -352,6 +352,7 @@ const TeachersModule = {
 
     if (!name) { AppUI.showToast("يرجى إدخال اسم المبلّغة", "warning"); return; }
     if (!phone) { AppUI.showToast("يرجى إدخال رقم هاتف المبلّغة (مطلوب لتسجيل الدخول)", "warning"); return; }
+    if (!db.isPhoneUnique(phone, id)) { AppUI.showToast("رقم الهاتف مستخدم بالفعل لمستخدم آخر (مبلّغة أو متعلمة)، يرجى إدخال رقم مختلف.", "error"); return; }
 
     // إعادة تفعيل الحقول المقفولة قبل الحفظ
     ["teacher-supervisor-select", "teacher-role-select", "teacher-region-select"].forEach(id => {
