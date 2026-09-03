@@ -51,25 +51,92 @@ class AuthService {
   }
 
   /**
-   * تسجيل الدخول كمعلمة بالتحقق من كود المعلمة / كلمة المرور
+   * تسجيل الدخول كمبلّغة عن طريق رقم الهاتف + كلمة المرور
+   */
+  loginAsTeacherByPhone(phone, verificationCode) {
+    const cleanPhone = (phone || "").trim().replace(/\s/g, "");
+    const cleanCode  = (verificationCode || "").trim();
+
+    if (!cleanPhone) return { success: false, message: "يرجى إدخال رقم الهاتف" };
+    if (!cleanCode)  return { success: false, message: "يرجى إدخال كلمة المرور / كود التحقق" };
+
+    const teacher = db.getTeachers().find(t =>
+      (t.phone || "").trim().replace(/\s/g, "") === cleanPhone
+    );
+
+    if (!teacher) {
+      return { success: false, message: "لم يتم العثور على مبلّغة بهذا الرقم" };
+    }
+
+    const expectedCode = (teacher.verificationCode || teacher.password || "123456").trim();
+    if (cleanCode !== expectedCode) {
+      return { success: false, message: "كلمة المرور / كود التحقق غير صحيح" };
+    }
+
+    this.currentUser = {
+      id: teacher.id,
+      name: teacher.name,
+      role: teacher.role || APP_CONFIG.roles.TEACHER,
+      supervisorId: teacher.supervisorId || null,
+      specialization: teacher.specialization,
+      region: teacher.region
+    };
+    this.saveSession();
+    return { success: true, user: this.currentUser };
+  }
+
+  /**
+   * تسجيل الدخول كمتعلمة عن طريق رقم الهاتف + كلمة المرور
+   */
+  loginAsStudentByPhone(phone, password) {
+    const cleanPhone = (phone || "").trim().replace(/\s/g, "");
+    const cleanPass  = (password || "").trim();
+
+    if (!cleanPhone) return { success: false, message: "يرجى إدخال رقم الهاتف" };
+    if (!cleanPass)  return { success: false, message: "يرجى إدخال كلمة المرور" };
+
+    const student = db.getStudents().find(s =>
+      (s.phone || "").trim().replace(/\s/g, "") === cleanPhone
+    );
+
+    if (!student) {
+      return { success: false, message: "لم يتم العثور على متعلمة بهذا الرقم" };
+    }
+
+    const expectedPass = (student.password || "123456").trim();
+    if (cleanPass !== expectedPass) {
+      return { success: false, message: "كلمة المرور غير صحيحة" };
+    }
+
+    this.currentUser = {
+      id: student.id,
+      name: student.name,
+      role: APP_CONFIG.roles.STUDENT
+    };
+    this.saveSession();
+    return { success: true, user: this.currentUser };
+  }
+
+  /**
+   * تسجيل الدخول كمعلمة بالتحقق من كود المعلمة / كلمة المرور (بالـ ID - للاستخدام الداخلي)
    */
   loginAsTeacher(teacherId, verificationCode) {
     const teachers = db.getTeachers();
     const teacher = teachers.find((t) => t.id === teacherId);
 
     if (!teacher) {
-      return { success: false, message: "يرجى اختيار المعلمة من القائمة" };
+      return { success: false, message: "يرجى اختيار المبلّغة من القائمة" };
     }
 
     const expectedCode = (teacher.verificationCode || teacher.password || "123456").trim();
     const enteredCode = (verificationCode || "").trim();
 
     if (!enteredCode) {
-      return { success: false, message: "يرجى إدخال كود التحقق الخاص بالمعلمة (الافتراضي: 123456)" };
+      return { success: false, message: "يرجى إدخال كود التحقق" };
     }
 
     if (enteredCode !== expectedCode) {
-      return { success: false, message: "كود التحقق غير صحيح، يرجى التأكد من الكود المخصص للمعلمة" };
+      return { success: false, message: "كود التحقق غير صحيح" };
     }
 
     this.currentUser = {

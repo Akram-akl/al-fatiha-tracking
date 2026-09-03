@@ -351,6 +351,7 @@ const TeachersModule = {
     const supervisorId     = document.getElementById("teacher-supervisor-select")?.value || null;
 
     if (!name) { AppUI.showToast("يرجى إدخال اسم المبلّغة", "warning"); return; }
+    if (!phone) { AppUI.showToast("يرجى إدخال رقم هاتف المبلّغة (مطلوب لتسجيل الدخول)", "warning"); return; }
 
     // إعادة تفعيل الحقول المقفولة قبل الحفظ
     ["teacher-supervisor-select", "teacher-role-select", "teacher-region-select"].forEach(id => {

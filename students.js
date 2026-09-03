@@ -298,6 +298,7 @@ const StudentsModule = {
     const learningTrack = document.getElementById("student-add-track-select")?.value || "memorize";
 
     if (!name) { AppUI.showToast("يرجى إدخال اسم المتعلمة", "warning"); return; }
+    if (!phone) { AppUI.showToast("يرجى إدخال رقم هاتف المتعلمة (مطلوب لتسجيل الدخول)", "warning"); return; }
 
     // التحقق من توافق التخصص واللغة
     if (teacherId) {

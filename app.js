@@ -173,26 +173,24 @@ const AppUI = {
   },
 
   handleLoginTeacherFromPage() {
-    const select = document.getElementById("login-page-teacher-select");
-    const code   = document.getElementById("login-page-teacher-password").value;
-    if (!select || !select.value) { this.showToast("يرجى اختيار المبلّغة من القائمة", "warning"); return; }
+    const phone = document.getElementById("login-page-teacher-phone")?.value;
+    const code  = document.getElementById("login-page-teacher-password")?.value;
 
-    const res = auth.loginAsTeacher(select.value, code);
+    const res = auth.loginAsTeacherByPhone(phone, code);
     if (res.success) {
       this.showAppScreen();
       this.navigateTo("students");
-      this.showToast(`مرحباً بك يا أستاذة: ${res.user.name}`, "success");
+      this.showToast(`مرحباً بك يا مبلّغة: ${res.user.name}`, "success");
     } else {
       this.showToast(res.message, "error");
     }
   },
 
   handleLoginStudentFromPage() {
-    const select = document.getElementById("login-page-student-select");
-    const pass   = document.getElementById("login-page-student-password").value;
-    if (!select || !select.value) { this.showToast("يرجى اختيار اسم المتعلمة من القائمة", "warning"); return; }
+    const phone = document.getElementById("login-page-student-phone")?.value;
+    const pass  = document.getElementById("login-page-student-password")?.value;
 
-    const res = auth.loginAsStudent(select.value, pass);
+    const res = auth.loginAsStudentByPhone(phone, pass);
     if (res.success) {
       this.showAppScreen();
       this.navigateTo("student-portal");
@@ -237,24 +235,7 @@ const AppUI = {
       if (cur) el.value = cur;
     });
 
-    // قوائم صفحة الدخول
-    const teachers = db.getTeachers();
-    const teacherSelect = document.getElementById("login-page-teacher-select");
-    if (teacherSelect) {
-      teacherSelect.innerHTML = teachers.length
-        ? '<option value="">-- اختر حساب المبلّغة --</option>' +
-          teachers.map(t => `<option value="${t.id}">${t.name} (${t.region})</option>`).join("")
-        : '<option value="">-- لا توجد مبلّغات مسجلات --</option>';
-    }
-
-    const students = db.getStudents();
-    const studentSelect = document.getElementById("login-page-student-select");
-    if (studentSelect) {
-      studentSelect.innerHTML = students.length
-        ? '<option value="">-- اختر حساب المتعلمة --</option>' +
-          students.map(s => `<option value="${s.id}">${s.name} (${s.region})</option>`).join("")
-        : '<option value="">-- لا توجد متعلمات مسجلات --</option>';
-    }
+    // قوائم صفحة الدخول تم استبدالها بإدخال رقم الهاتف
   },
 
   // ==================== صلاحيات الدور ====================
