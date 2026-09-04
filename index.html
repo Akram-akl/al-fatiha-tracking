@@ -67,6 +67,7 @@
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
 
   <link rel="stylesheet" href="style.css"/>
 
@@ -1120,11 +1121,14 @@
               <button onclick="ReportsModule.exportToPDF()" class="btn btn-p btn-sm">
                 <span class="material-symbols-outlined" style="font-size:1rem;">download</span>تنزيل PDF
               </button>
+              <button onclick="ReportsModule.printReport()" class="btn btn-ghost btn-sm" title="طباعة مباشرة للتقرير">
+                <span class="material-symbols-outlined" style="font-size:1rem;">print</span>طباعة
+              </button>
             </div>
           </div>
 
           <div class="card mb-4">
-            <div class="grid-3 gap-3">
+            <div class="grid-4 gap-3">
               <div>
                 <label class="form-label">نوع التقرير</label>
                 <select id="report-type-select" onchange="ReportsModule.generateLiveReport()" class="form-input">
@@ -1142,6 +1146,15 @@
                 <label class="form-label">حالة الإنجاز</label>
                 <select id="report-status-select" onchange="ReportsModule.generateLiveReport()" class="form-input">
                   <option value="">-- كل الحالات --</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label">مسار التعلم</label>
+                <select id="report-track-select" onchange="ReportsModule.generateLiveReport()" class="form-input">
+                  <option value="">-- كل المسارات --</option>
+                  <option value="both">المسار الشامل (حفظ وتفسير)</option>
+                  <option value="memorize">مسار الحفظ فقط</option>
+                  <option value="tafseer">مسار التفسير والغريب فقط</option>
                 </select>
               </div>
             </div>
@@ -1563,6 +1576,10 @@
         <button onclick="CertificatesModule.downloadCurrentPDF()" class="btn btn-p btn-sm" style="display:flex; align-items:center; gap:0.4rem;">
           <span class="material-symbols-outlined">download</span>
           تنزيل PDF
+        </button>
+        <button onclick="CertificatesModule.printCertificate()" class="btn btn-ghost btn-sm" style="display:flex; align-items:center; gap:0.4rem;">
+          <span class="material-symbols-outlined">print</span>
+          طباعة
         </button>
         <button class="btn-icon" onclick="CertificatesModule.closeModal()"><span class="material-symbols-outlined">close</span></button>
       </div>

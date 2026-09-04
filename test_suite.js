@@ -460,6 +460,17 @@ test("تحديد وإلغاء تحديد كافة المؤهلات في الدف
   assert(CertificatesModule.selectedStudentIds.size === 0, "فشل تفريغ التحديد");
 });
 
+test("التحقق من توفر دالة طباعة الشهادة المباشرة وخصائص اتصال الخطوط العربية", () => {
+  assert(typeof CertificatesModule.printCertificate === "function", "دالة printCertificate غير معرفة");
+  const html = CertificatesModule.renderCertificateHTML(testStudent);
+  assert(html.includes("font-feature-settings"), "الشهادة لا تحتوي على إعدادات اتصال الحروف font-feature-settings");
+});
+
+test("التحقق من توفر دالة طباعة التقرير ودعم التفسير والغريب في وحدة التقارير", () => {
+  assert(typeof ReportsModule.printReport === "function", "دالة printReport غير معرفة");
+  assert(typeof ReportsModule.generateLiveReport === "function", "دالة generateLiveReport غير معرفة");
+});
+
 // -------------------------------------------------------------
 // القسم 7: التوزيع الجغرافي والمكاتب المعتمدة
 // -------------------------------------------------------------

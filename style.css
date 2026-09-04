@@ -733,32 +733,71 @@ input, select, textarea {
   font-weight: 700;
 }
 
-/* ==================== طباعة الشهادات ==================== */
+/* ==================== طباعة الشهادات والتقارير ==================== */
 @media print {
   @page {
-    size: A4 landscape;
-    margin: 0;
+    size: auto;
+    margin: 8mm;
   }
-  body * {
+  
+  /* في حالة طباعة الشهادات */
+  body.printing-certificate {
+    background: #fefcf6 !important;
+  }
+  body.printing-certificate * {
     visibility: hidden;
   }
-  #certificate-preview-area, #certificate-preview-area * {
+  body.printing-certificate #certificate-preview-area,
+  body.printing-certificate #certificate-preview-area * {
     visibility: visible;
   }
-  #certificate-preview-area {
+  body.printing-certificate #certificate-preview-area {
     position: absolute;
     left: 0;
     top: 0;
     width: 297mm;
-    height: 190mm;
-    page-break-inside: avoid;
+    margin: 0;
+    padding: 0;
+    background: transparent;
   }
-  .certificate-page {
-    width: 297mm !important;
-    height: 190mm !important;
+  body.printing-certificate .certificate-page {
+    width: 285mm !important;
+    height: 185mm !important;
     page-break-after: always;
-    margin: 0 !important;
+    margin: 0 auto !important;
     padding: 0 !important;
     box-shadow: none !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* في حالة طباعة التقارير */
+  body.printing-report {
+    background: #ffffff !important;
+  }
+  body.printing-report * {
+    visibility: hidden;
+  }
+  body.printing-report #pdf-report-content,
+  body.printing-report #pdf-report-content * {
+    visibility: visible;
+  }
+  body.printing-report #pdf-report-content {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background: #fff;
+  }
+  body.printing-report table {
+    width: 100% !important;
+    font-size: 11pt !important;
+  }
+
+  /* الوضع العام إذا تم استدعاء الطباعة مباشرة من المتصفح والشهادة مفتوحة */
+  #certificate-modal:not(.hidden) ~ * {
+    display: none !important;
   }
 }

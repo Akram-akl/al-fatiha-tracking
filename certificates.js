@@ -65,6 +65,10 @@ const CertificatesModule = {
         direction: rtl;
         position: relative;
         overflow: hidden;
+        word-break: keep-all;
+        word-wrap: normal;
+        font-feature-settings: 'liga' 1, 'calt' 1;
+        -webkit-font-smoothing: antialiased;
         ${isMulti ? 'page-break-after: always;' : ''}
       ">
         
@@ -166,9 +170,9 @@ const CertificatesModule = {
   },
 
   /**
-   * تنزيل الشهادة المعروضة كملف PDF عند ضغط المستخدم
+   * تنزيل الشهادة المعروضة كملف PDF عالي الدقة مع الحفاظ الكامل على اتصال الحروف العربية
    */
-  downloadCurrentPDF(filename = "شهادة_إتقان_الفاتحة.pdf") {
+  async downloadCurrentPDF(filename = "شهادة_إتقان_الفاتحة.pdf") {
     const area = document.getElementById("certificate-preview-area");
     if (!area) return;
 
@@ -178,23 +182,76 @@ const CertificatesModule = {
       return;
     }
 
-    AppUI.showToast("جاري تجهيز الشهادة بصيغة PDF...", "info");
+    AppUI.showToast("جاري تجهيز الشهادة بصيغة PDF عالية الدقة...", "info");
 
-    const opt = {
-      margin:       0,
-      filename:     filename,
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true, allowTaint: true, backgroundColor: '#fefcf6' },
-      jsPDF:        { unit: 'px', format: [1122, 720], orientation: 'landscape' }
-    };
+    try {
+      if (document.fonts && document.fonts.ready) {
+        await document.fonts.ready;
+      }
 
-    html2pdf().set(opt).from(area).save().then(() => {
-      AppUI.showToast("تم تنزيل الشهادة بنجاح ✓", "success");
-    }).catch(err => {
-      console.error("PDF error:", err);
-      AppUI.showToast("حدث خطأ. جاري فتح نافذة الطباعة كبديل...", "warning");
+      // الطريقة الأولى الأفضل: htmlToImage لرسم المحتوى بمحرك المتصفح الأصلي لحفظ اتصال الحروف 100%
+      if (typeof htmlToImage !== "undefined") {
+        const jsPdfClass = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+        if (jsPdfClass) {
+          const pdf = new jsPdfClass({
+            orientation: 'landscape',
+            unit: 'px',
+            format: [1122, 720],
+            hotfixes: ['px_scaling']
+          });
+
+          for (let i = 0; i < pages.length; i++) {
+            const page = pages[i];
+            const dataUrl = await htmlToImage.toJpeg(page, {
+              quality: 0.98,
+              pixelRatio: 2,
+              backgroundColor: '#fefcf6'
+            });
+
+            if (i > 0) {
+              pdf.addPage([1122, 720], 'landscape');
+            }
+            pdf.addImage(dataUrl, 'JPEG', 0, 0, 1122, 720);
+          }
+
+          pdf.save(filename);
+          AppUI.showToast("تم تنزيل الشهادة بنجاح ✓", "success");
+          return;
+        }
+      }
+
+      // الطريقة الثانية: html2pdf النظيفة
+      if (typeof html2pdf !== "undefined") {
+        const opt = {
+          margin:       0,
+          filename:     filename,
+          image:        { type: 'jpeg', quality: 0.98 },
+          html2canvas:  { scale: 2, useCORS: true, allowTaint: true, backgroundColor: '#fefcf6' },
+          jsPDF:        { unit: 'px', format: [1122, 720], orientation: 'landscape' }
+        };
+        await html2pdf().set(opt).from(area).save();
+        AppUI.showToast("تم تنزيل الشهادة بنجاح ✓", "success");
+        return;
+      }
+
+      // البديل: فتح نافذة الطباعة
       window.print();
-    });
+    } catch (err) {
+      console.error("PDF generation error:", err);
+      AppUI.showToast("حدث تنبيه أثناء التنزيل المباشر، جاري فتح الطباعة المباشرة...", "warning");
+      window.print();
+    }
+  },
+
+  /**
+   * طباعة الشهادة مباشرة من المتصفح بأعلى دقة متجهة
+   */
+  printCertificate() {
+    document.body.classList.add('printing-certificate');
+    window.print();
+    setTimeout(() => {
+      document.body.classList.remove('printing-certificate');
+    }, 1000);
   },
 
   /**
