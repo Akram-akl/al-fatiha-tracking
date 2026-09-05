@@ -37,8 +37,8 @@ const CertificatesModule = {
    * توليد كود HTML لشهادة متعلمة — تصميم A4 أفقي متناسق بصفحة واحدة
    */
   renderCertificateHTML(student, isMulti = false) {
-    const teacher = db.getTeacherById(student.teacherId) || { name: "مبلّغة معتمدة" };
-    const dateStr = new Date().toLocaleDateString("ar-SA", { year: "numeric", month: "long", day: "numeric" });
+    const teacher = db.getTeacherById(student.teacherId) || { name: 'مبلّغة معتمدة' };
+    const dateStr = new Date().toLocaleDateString('ar-SA', { year: 'numeric', month: 'long', day: 'numeric' });
 
     let trackLabel = "إتقان وتدبر سورة الفاتحة";
     if (student.learningTrack === "memorize") {
@@ -53,8 +53,7 @@ const CertificatesModule = {
       : student.mastery >= 90 ? "ممتاز بإتقان تام"
       : "جيد جداً مرتفع";
 
-    // A4 landscape: 297mm × 210mm → at 96dpi ≈ 1122px × 794px
-    // نستخدم 1122 × 720 لتناسب شاشات المعاينة مع ضبط مضبوط
+    // A4 landscape: 1122 x 720px — تخطيط ثابت لمنع كسر النصوص
     return `
       <div class="certificate-page" id="cert-render-${student.id || 'single'}" style="
         width: 1122px;
@@ -74,116 +73,173 @@ const CertificatesModule = {
         ${isMulti ? 'page-break-after: always; break-after: page;' : ''}
       ">
 
-        <!-- طبقة الخلفية: زخارف هندسية إسلامية -->
+        <!-- زخارف الخلفية -->
         <div style="position:absolute;inset:0;overflow:hidden;pointer-events:none;">
-          <!-- دائرة زخرفية كبيرة خلف يمين -->
-          <div style="position:absolute;right:-80px;top:-80px;width:400px;height:400px;border-radius:50%;border:2px solid rgba(201,168,76,0.15);"></div>
-          <div style="position:absolute;right:-60px;top:-60px;width:350px;height:350px;border-radius:50%;border:1px solid rgba(201,168,76,0.1);"></div>
-          <!-- دائرة زخرفية يسار -->
-          <div style="position:absolute;left:-80px;bottom:-80px;width:400px;height:400px;border-radius:50%;border:2px solid rgba(201,168,76,0.15);"></div>
-          <!-- خط أفقي مزخرف -->
-          <div style="position:absolute;top:50%;left:40px;right:40px;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.2),rgba(201,168,76,0.4),rgba(201,168,76,0.2),transparent);transform:translateY(-50%);"></div>
+          <div style="position:absolute;right:-80px;top:-80px;width:400px;height:400px;border-radius:50%;border:2px solid rgba(201,168,76,0.12);"></div>
+          <div style="position:absolute;left:-80px;bottom:-80px;width:400px;height:400px;border-radius:50%;border:2px solid rgba(201,168,76,0.12);"></div>
+          <div style="position:absolute;right:-50px;top:-50px;width:320px;height:320px;border-radius:50%;border:1px solid rgba(201,168,76,0.08);"></div>
         </div>
 
-        <!-- الشريط الجانبي الأيمن الذهبي -->
+        <!-- شرائط ذهبية جانبية -->
         <div style="position:absolute;right:0;top:0;bottom:0;width:8px;background:linear-gradient(180deg,#c9a84c,#f0d080,#c9a84c,#a07828,#c9a84c);"></div>
-        <!-- الشريط الجانبي الأيسر -->
         <div style="position:absolute;left:0;top:0;bottom:0;width:8px;background:linear-gradient(180deg,#c9a84c,#f0d080,#c9a84c,#a07828,#c9a84c);"></div>
 
-        <!-- الإطار الداخلي -->
+        <!-- إطار داخلي -->
         <div style="position:absolute;inset:20px;border:1px solid rgba(201,168,76,0.4);pointer-events:none;"></div>
-        <div style="position:absolute;inset:26px;border:1px solid rgba(201,168,76,0.2);pointer-events:none;"></div>
+        <div style="position:absolute;inset:27px;border:1px solid rgba(201,168,76,0.18);pointer-events:none;"></div>
 
-        <!-- زوايا ذهبية مزخرفة -->
-        <div style="position:absolute;top:14px;right:14px;font-size:22px;color:#c9a84c;line-height:1;text-shadow:0 0 10px rgba(201,168,76,0.5);">✦</div>
-        <div style="position:absolute;top:14px;left:14px;font-size:22px;color:#c9a84c;line-height:1;text-shadow:0 0 10px rgba(201,168,76,0.5);">✦</div>
-        <div style="position:absolute;bottom:14px;right:14px;font-size:22px;color:#c9a84c;line-height:1;text-shadow:0 0 10px rgba(201,168,76,0.5);">✦</div>
-        <div style="position:absolute;bottom:14px;left:14px;font-size:22px;color:#c9a84c;line-height:1;text-shadow:0 0 10px rgba(201,168,76,0.5);">✦</div>
+        <!-- زوايا ذهبية -->
+        <div style="position:absolute;top:13px;right:13px;font-size:20px;color:#c9a84c;line-height:1;">✦</div>
+        <div style="position:absolute;top:13px;left:13px;font-size:20px;color:#c9a84c;line-height:1;">✦</div>
+        <div style="position:absolute;bottom:13px;right:13px;font-size:20px;color:#c9a84c;line-height:1;">✦</div>
+        <div style="position:absolute;bottom:13px;left:13px;font-size:20px;color:#c9a84c;line-height:1;">✦</div>
 
-        <!-- المحتوى الرئيسي -->
-        <div style="position:relative;z-index:10;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:36px 70px 32px;text-align:center;">
+        <!-- ============ المحتوى بتخطيط عمودي مضبوط ============ -->
+        <div style="
+          position: absolute;
+          inset: 35px 50px 35px 50px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          gap: 0;
+        ">
 
-          <!-- الجزء العلوي -->
-          <div style="width:100%;">
-            <!-- البسملة -->
-            <div style="font-family:'Amiri',serif;font-size:20px;color:#f0d080;font-weight:bold;margin-bottom:6px;text-shadow:0 1px 8px rgba(0,0,0,0.4);">
-              بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ
-            </div>
-            <!-- فاصل ذهبي -->
-            <div style="color:#c9a84c;font-size:14px;letter-spacing:12px;margin-bottom:10px;opacity:0.8;">── ✦ ──</div>
-            <!-- اسم المبادرة -->
-            <div style="font-size:15px;font-weight:700;color:#f0d080;font-family:'Cairo','Amiri',sans-serif;margin-bottom:2px;letter-spacing:1px;">
-              مُبادرة بلِّغوا عنِّي ولو آية
-            </div>
-            <div style="font-size:10px;color:rgba(240,208,128,0.65);font-family:'Cairo',sans-serif;letter-spacing:0.5px;">
-              منظومة إتقان وتدبر كتاب الله تعالى &nbsp;•&nbsp; ${student.region || 'مكتب معتمد'}
-            </div>
+          <!-- البسملة -->
+          <div style="
+            font-family: 'Amiri', serif;
+            font-size: 19px;
+            color: #f0d080;
+            font-weight: bold;
+            white-space: nowrap;
+            margin-bottom: 4px;
+            text-shadow: 0 1px 8px rgba(0,0,0,0.4);
+          ">بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ</div>
+
+          <!-- فاصل -->
+          <div style="color:#c9a84c;font-size:12px;letter-spacing:10px;margin-bottom:6px;white-space:nowrap;">── ✦ ──</div>
+
+          <!-- اسم المبادرة -->
+          <div style="
+            font-size: 15px;
+            font-weight: 700;
+            color: #f0d080;
+            font-family: 'Cairo', sans-serif;
+            white-space: nowrap;
+            margin-bottom: 2px;
+          ">مُبادرة بلِّغوا عنِّي ولو آية</div>
+
+          <!-- المنطقة -->
+          <div style="
+            font-size: 10px;
+            color: rgba(240,208,128,0.6);
+            font-family: 'Cairo', sans-serif;
+            white-space: nowrap;
+            margin-bottom: 16px;
+          ">منظومة إتقان وتدبر كتاب الله تعالى &nbsp;•&nbsp; ${student.region || 'مكتب معتمد'}</div>
+
+          <!-- لوحة عنوان الشهادة —  white-space:nowrap يمنع الانكسار -->
+          <div style="
+            background: rgba(201,168,76,0.18);
+            border: 1px solid rgba(201,168,76,0.5);
+            border-radius: 4px;
+            padding: 9px 70px;
+            margin-bottom: 14px;
+            white-space: nowrap;
+          ">
+            <span style="
+              font-family: 'Amiri', serif;
+              font-size: 26px;
+              font-weight: bold;
+              color: #f5e8b0;
+              letter-spacing: 2px;
+              white-space: nowrap;
+            ">شهادة إتقان وتميّز</span>
           </div>
 
-          <!-- الجزء الوسط: المحتوى الرئيسي -->
-          <div style="width:100%;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;">
+          <!-- نص المقدمة —  nowrap يمنع التكسر -->
+          <div style="
+            font-family: 'Amiri', serif;
+            font-size: 14px;
+            color: rgba(255,255,255,0.82);
+            white-space: nowrap;
+            margin-bottom: 8px;
+          ">تُسرّ إدارة المبادرة أن تمنح هذه الشهادة للمتعلمة المباركة</div>
 
-            <!-- لوحة عنوان الشهادة -->
-            <div style="background:rgba(201,168,76,0.18);border:1px solid rgba(201,168,76,0.45);border-radius:4px;padding:10px 60px;backdrop-filter:blur(4px);">
-              <div style="font-family:'Amiri',serif;font-size:26px;font-weight:bold;color:#f5e8b0;letter-spacing:2px;text-shadow:0 1px 12px rgba(0,0,0,0.5);">
-                شهادة إتقان وتميّز
-              </div>
-            </div>
-
-            <!-- نص المقدمة -->
-            <div style="font-size:14px;color:rgba(255,255,255,0.82);line-height:1.6;font-family:'Amiri',serif;">
-              تُسرّ إدارة المبادرة أن تمنح هذه الشهادة للمتعلمة المباركة
-            </div>
-
-            <!-- اسم المتعلمة -->
-            <div style="position:relative;padding:8px 0 12px;">
-              <div style="font-family:'Amiri',serif;font-size:38px;font-weight:bold;color:#ffffff;text-shadow:0 2px 16px rgba(0,0,0,0.6);letter-spacing:1px;">${student.name}</div>
-              <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:200px;height:2px;background:linear-gradient(90deg,transparent,#c9a84c,transparent);"></div>
-            </div>
-
-            <!-- وصف الإنجاز -->
-            <div style="font-size:14px;color:rgba(255,255,255,0.85);line-height:1.8;max-width:680px;margin:0 auto;font-family:'Amiri',serif;">
-              نظير اجتيازها متطلبات
-              <span style="color:#f0d080;font-weight:bold;"> ${trackLabel}</span>
-              <br>
-              بنسبة إتقان <span style="color:#f0d080;font-size:20px;font-weight:bold;"> ${student.mastery}%</span>
-              &nbsp;— تقدير <span style="color:#f0d080;font-weight:bold;">${masteryLevel}</span>
-              <br>
-              <span style="color:rgba(255,255,255,0.65);font-size:12px;">بإشراف المبلّغة الفاضلة: <span style="color:#f0d080;">${teacher.name}</span></span>
-            </div>
-
-            <!-- الآية الكريمة -->
-            <div style="font-family:'Amiri',serif;font-size:15px;color:rgba(240,208,128,0.8);font-style:italic;">
-              ﴿ وَقُل رَّبِّ زِدۡنِي عِلۡمٗا ﴾
-            </div>
+          <!-- اسم المتعلمة -->
+          <div style="margin-bottom: 14px;">
+            <div style="
+              font-family: 'Amiri', serif;
+              font-size: 40px;
+              font-weight: bold;
+              color: #ffffff;
+              white-space: nowrap;
+              text-shadow: 0 2px 16px rgba(0,0,0,0.6);
+            ">${student.name}</div>
+            <div style="height:2px;background:linear-gradient(90deg,transparent,#c9a84c,transparent);margin-top:4px;"></div>
           </div>
 
-          <!-- الجزء السفلي: التوقيعات والتاريخ -->
-          <div style="width:100%;display:flex;justify-content:space-between;align-items:flex-end;padding:0 20px;">
+          <!-- وصف الإنجاز -->
+          <div style="
+            font-family: 'Amiri', serif;
+            font-size: 14px;
+            color: rgba(255,255,255,0.85);
+            line-height: 1.9;
+            margin-bottom: 10px;
+          ">
+            <span style="white-space:nowrap;">نظير اجتيازها متطلبات </span>
+            <span style="color:#f0d080;font-weight:bold;white-space:nowrap;">${trackLabel}</span>
+            <br>
+            <span style="white-space:nowrap;">بنسبة إتقان </span>
+            <span style="color:#f0d080;font-size:20px;font-weight:bold;white-space:nowrap;">${student.mastery}%</span>
+            <span style="white-space:nowrap;"> &mdash; تقدير </span>
+            <span style="color:#f0d080;font-weight:bold;white-space:nowrap;">${masteryLevel}</span>
+            <br>
+            <span style="font-size:12px;color:rgba(255,255,255,0.6);white-space:nowrap;">بإشراف المبلّغة الفاضلة: </span>
+            <span style="font-size:12px;color:#f0d080;white-space:nowrap;">${teacher.name}</span>
+          </div>
 
+          <!-- الآية الكريمة —  كتلة واحدة nowrap -->
+          <div style="
+            font-family: 'Amiri', serif;
+            font-size: 16px;
+            color: rgba(240,208,128,0.85);
+            white-space: nowrap;
+            margin-bottom: 0;
+          "><span style="unicode-bidi:embed;direction:rtl;">﴿ وَقُل رَّبِّ زِدۡنِي عِلۡمٗا ﴾</span></div>
+
+          <!-- spacer -->
+          <div style="flex:1;"></div>
+
+          <!-- قسم التوقيعات —  في أسفل الشهادة -->
+          <div style="
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding: 0 10px;
+          ">
             <!-- المبلغة المشرفة -->
-            <div style="text-align:center;min-width:160px;">
-              <div style="font-size:10px;color:rgba(240,208,128,0.6);margin-bottom:3px;font-family:'Cairo',sans-serif;">المبلّغة المشرفة</div>
-              <div style="font-weight:700;color:#f0d080;font-size:13px;margin-bottom:8px;font-family:'Cairo',sans-serif;">${teacher.name}</div>
+            <div style="text-align:center;min-width:170px;">
+              <div style="font-size:10px;color:rgba(240,208,128,0.6);margin-bottom:3px;font-family:'Cairo',sans-serif;white-space:nowrap;">المبلّغة المشرفة</div>
+              <div style="font-weight:700;color:#f0d080;font-size:13px;margin-bottom:7px;font-family:'Cairo',sans-serif;white-space:nowrap;">${teacher.name}</div>
               <div style="height:1px;background:linear-gradient(90deg,transparent,#c9a84c,transparent);"></div>
             </div>
 
-            <!-- الدعاء والختم -->
-            <div style="text-align:center;flex:1;padding:0 20px;">
-              <div style="font-size:10px;color:rgba(255,255,255,0.45);line-height:1.6;font-family:'Cairo',sans-serif;font-style:italic;">
-                نسأل الله أن يجعل القرآن ربيع قلبها ونور صدرها
-              </div>
+            <!-- الدعاء الوسط -->
+            <div style="text-align:center;flex:1;padding:0 15px;">
+              <div style="font-size:10px;color:rgba(255,255,255,0.4);font-family:'Cairo',sans-serif;">نسأل الله أن يجعل القرآن ربيع قلبها ونور صدرها</div>
             </div>
 
             <!-- إدارة المبادرة -->
-            <div style="text-align:center;min-width:160px;">
-              <div style="font-size:10px;color:rgba(240,208,128,0.6);margin-bottom:3px;font-family:'Cairo',sans-serif;">إدارة المبادرة</div>
-              <div style="font-weight:700;color:#f0d080;font-size:13px;margin-bottom:8px;font-family:'Cairo',sans-serif;">المشرف العام</div>
+            <div style="text-align:center;min-width:170px;">
+              <div style="font-size:10px;color:rgba(240,208,128,0.6);margin-bottom:3px;font-family:'Cairo',sans-serif;white-space:nowrap;">إدارة المبادرة</div>
+              <div style="font-weight:700;color:#f0d080;font-size:13px;margin-bottom:7px;font-family:'Cairo',sans-serif;white-space:nowrap;">المشرف العام</div>
               <div style="height:1px;background:linear-gradient(90deg,transparent,#c9a84c,transparent);"></div>
-              <div style="font-size:9px;color:rgba(240,208,128,0.5);margin-top:4px;font-family:'Cairo',sans-serif;">${dateStr}</div>
+              <div style="font-size:9px;color:rgba(240,208,128,0.5);margin-top:3px;font-family:'Cairo',sans-serif;">${dateStr}</div>
             </div>
-
           </div>
+
         </div>
       </div>
     `;
