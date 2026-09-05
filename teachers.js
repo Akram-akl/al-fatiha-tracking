@@ -60,9 +60,26 @@ const TeachersModule = {
                 </div>
               </div>
             </div>
-            <span class="badge ${isHead ? 'badge-secondary' : 'badge-neutral'}">
-              ${isHead ? 'مبلّغة رئيسية' : 'مبلّغة'}
-            </span>
+            <div class="flex-center gap-1" style="flex-wrap:wrap;justify-content:flex-end;">
+              ${teacher.promotedFromStudentId ? `
+                <button onclick="StudentsModule.openProfileModal('${teacher.promotedFromStudentId}')" class="badge badge-primary" style="cursor:pointer;border:none;display:inline-flex;align-items:center;gap:2px;" title="انقري لمراجعة ملف إتقانها وتسميعها الشخصي">
+                  <span class="material-symbols-outlined" style="font-size:0.8rem;">stars</span>
+                  <span>خريجة مرقاة</span>
+                </button>
+              ` : ''}
+              <span class="badge ${isHead ? 'badge-secondary' : 'badge-neutral'}">
+                ${isHead ? 'مبلّغة رئيسية' : 'مبلّغة'}
+              </span>
+              ${teacher.status === 'suspended' ? `
+                <span class="badge badge-error" title="تم تجميد حساب التبليغ لانتهاء مهلة الـ 7 أيام لتراجع الإتقان الشخصي">
+                  ⛔ مجمّدة (<95%)
+                </span>
+              ` : teacher.status === 'grace_period' ? `
+                <span class="badge badge-secondary" style="background:#fff3cd;color:#856404;border:1px solid #ffeeba;" title="مهلة 7 أيام لإعادة التسميع مع المشرفة">
+                  ⚠️ مهلة: ${teacher.graceRemainingDays} أيام
+                </span>
+              ` : ''}
+            </div>
           </div>
 
           <!-- تفاصيل -->
@@ -100,10 +117,17 @@ const TeachersModule = {
 
           <!-- روابط الدعوة -->
           <div style="display:flex;flex-direction:column;gap:0.4rem;">
-            <button onclick="StudentsModule.copyTeacherInviteLink('${teacher.id}')" class="btn btn-ghost btn-sm btn-full">
-              <span class="material-symbols-outlined" style="font-size:0.9rem;">link</span>
-              نسخ رابط تسجيل المتعلمات
-            </button>
+            ${teacher.status === 'suspended' ? `
+              <button disabled class="btn btn-ghost btn-sm btn-full" style="opacity:0.6;cursor:not-allowed;color:var(--color-error);border:1px dashed var(--color-error);" title="الرابط معطل مؤقتاً بسبب تجميد الحساب حتى إعادة التسميع بنسبة 95%+">
+                <span class="material-symbols-outlined" style="font-size:0.9rem;">block</span>
+                رابط التسجيل معطّل (الحساب مجمّد)
+              </button>
+            ` : `
+              <button onclick="StudentsModule.copyTeacherInviteLink('${teacher.id}')" class="btn btn-ghost btn-sm btn-full">
+                <span class="material-symbols-outlined" style="font-size:0.9rem;">link</span>
+                نسخ رابط تسجيل المتعلمات
+              </button>
+            `}
             ${isHead ? `
               <button onclick="StudentsModule.copyHeadTeacherInviteLink('${teacher.id}')" class="btn btn-ghost btn-sm btn-full" style="color:var(--color-secondary);">
                 <span class="material-symbols-outlined" style="font-size:0.9rem;">group_add</span>

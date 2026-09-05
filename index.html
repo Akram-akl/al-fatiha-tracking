@@ -1401,6 +1401,9 @@
       </div>
     </div>
 
+    <!-- تنبيه تراجع إتقان المبلّغة ومؤقت الـ 7 أيام -->
+    <div id="profile-grace-alert-container" style="display:none;margin-bottom:1rem;"></div>
+
     <!-- بطاقات الإتقان -->
     <div class="grid-3" style="margin-bottom:1rem;">
       <div class="card-sm text-center bg-surface-c">
@@ -1573,7 +1576,11 @@
     <div class="modal-header" style="position:sticky; top:0; background:var(--color-surface); z-index:10; padding:1.5rem; border-bottom:1px solid var(--color-outline-variant);">
       <div class="modal-title">معاينة وإصدار الشهادة</div>
       <div class="flex-center gap-2">
-        <button onclick="CertificatesModule.downloadCurrentPDF()" class="btn btn-p btn-sm" style="display:flex; align-items:center; gap:0.4rem;">
+        <button onclick="CertificatesModule.downloadCurrentImage()" class="btn btn-p btn-sm" style="display:flex; align-items:center; gap:0.4rem;">
+          <span class="material-symbols-outlined">image</span>
+          تنزيل كصورة (PNG)
+        </button>
+        <button onclick="CertificatesModule.downloadCurrentPDF()" class="btn btn-s btn-sm" style="display:flex; align-items:center; gap:0.4rem;">
           <span class="material-symbols-outlined">download</span>
           تنزيل PDF
         </button>

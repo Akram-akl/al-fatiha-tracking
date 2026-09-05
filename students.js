@@ -125,14 +125,14 @@ const StudentsModule = {
       else if (track === 'both') errorsText = `${mistakes}/29 | ${tErrors + gErrors}/18`;
 
       return `
-        <tr>
+        <tr onclick="StudentsModule.openProfileModal('${student.id}')" style="cursor:pointer;" title="انقري لاستعراض ملف المتعلمة والمتابعة والتسميع اللحظي">
           <td>
             <div class="flex-center gap-2">
               <div class="avatar-text">${(student.name || "ط").charAt(0)}</div>
               <div>
-                <button onclick="StudentsModule.openProfileModal('${student.id}')" style="background:none;border:none;cursor:pointer;font-weight:700;font-family:'Cairo',sans-serif;font-size:0.875rem;color:var(--color-on-surface);text-align:right;padding:0;">
+                <span style="font-weight:700;font-family:'Cairo',sans-serif;font-size:0.875rem;color:var(--color-on-surface);text-align:right;display:block;">
                   ${student.name}
-                </button>
+                </span>
                 <div class="text-xs text-muted">${student.phone || "بدون هاتف"}</div>
               </div>
             </div>
@@ -166,17 +166,17 @@ const StudentsModule = {
               ${statusObj.label}
             </span>
           </td>
-          <td style="text-align:center;">
+          <td style="text-align:center;" onclick="event.stopPropagation()">
             <div class="flex-center gap-1" style="justify-content:center;">
-              <button onclick="StudentsModule.openProfileModal('${student.id}')" class="btn btn-p btn-sm" title="المتابعة والتصحيح اللحظي">
+              <button onclick="event.stopPropagation(); StudentsModule.openProfileModal('${student.id}')" class="btn btn-p btn-sm" title="المتابعة والتصحيح اللحظي">
                 <span class="material-symbols-outlined" style="font-size:0.9rem;">edit_note</span>
                 <span class="hide-mobile">المتابعة</span>
               </button>
               ${!auth.isStudent() ? `
-                <button onclick="StudentsModule.openEditModal('${student.id}')" class="btn-icon" title="تعديل البيانات">
+                <button onclick="event.stopPropagation(); StudentsModule.openEditModal('${student.id}')" class="btn-icon" title="تعديل البيانات">
                   <span class="material-symbols-outlined" style="font-size:1.1rem;">edit</span>
                 </button>
-                <button onclick="StudentsModule.confirmDelete('${student.id}')" class="btn-icon" title="حذف" style="color:var(--color-error)">
+                <button onclick="event.stopPropagation(); StudentsModule.confirmDelete('${student.id}')" class="btn-icon" title="حذف" style="color:var(--color-error)">
                   <span class="material-symbols-outlined" style="font-size:1.1rem;">delete</span>
                 </button>
               ` : ""}
@@ -518,11 +518,60 @@ const StudentsModule = {
     const trackSelect = document.getElementById("profile-quick-track-select");
     if (trackSelect) trackSelect.value = student.learningTrack || "memorize";
 
+    this.renderGraceAlert(student);
     this.renderLiveInteractiveAyat(student, "profile-ayat-container");
     this.renderStudentNotes(student, "profile-notes-list");
 
     modal.dataset.studentId = student.id;
     modal.classList.remove("hidden");
+  },
+
+  renderGraceAlert(student) {
+    const graceEl = document.getElementById("profile-grace-alert-container");
+    if (!graceEl) return;
+
+    if (student.promotedToTeacherId && student.mastery < 95) {
+      const teacher = db.getTeacherById(student.promotedToTeacherId);
+      const supervisor = teacher?.supervisorId ? db.getTeacherById(teacher.supervisorId) : (student.teacherId ? db.getTeacherById(student.teacherId) : null);
+      const supervisorName = supervisor ? supervisor.name : "المشرفة المباشرة";
+      const remaining = teacher?.graceRemainingDays !== undefined ? teacher.graceRemainingDays : (student.teacherGraceInfo?.remainingDays || 7);
+      const isSuspended = teacher?.status === 'suspended' || remaining <= 0;
+
+      const recErrors = (student.mistakeWordIds || []).length;
+      const tafErrors = (student.mistakeAyahTafseerNos || []).length + (student.mistakeGhareebIds || []).length;
+
+      graceEl.style.display = "block";
+      graceEl.innerHTML = `
+        <div style="border-radius:1rem;padding:1rem 1.25rem;border:2px solid ${isSuspended ? '#ba1a1a' : '#d97706'};background:${isSuspended ? 'rgba(186,26,26,0.08)' : 'rgba(217,119,6,0.08)'};color:var(--color-on-surface);">
+          <div class="flex-between mb-2">
+            <div class="flex-center gap-2" style="font-weight:800;font-size:1rem;color:${isSuspended ? '#ba1a1a' : '#d97706'};">
+              <span class="material-symbols-outlined" style="font-size:1.4rem;">${isSuspended ? 'block' : 'timer'}</span>
+              <span>${isSuspended ? '⛔ تم تجميد حساب التبليغ لهذه المبلّغة' : `⚠️ إنذار إداري ومؤقت تجميد: متبقي ${remaining} أيام`}</span>
+            </div>
+            <span class="badge ${isSuspended ? 'badge-error' : 'badge-secondary'}" style="font-weight:bold;">
+              ${isSuspended ? 'مجمّد لعدم الإتقان' : `مهلة ${remaining} أيام`}
+            </span>
+          </div>
+
+          <div style="font-size:0.875rem;line-height:1.6;margin-bottom:0.75rem;">
+            <strong>📌 المشكلة:</strong> تراجعت نسبة الإتقان الشخصي في سورة الفاتحة إلى <strong style="color:${isSuspended ? '#ba1a1a' : '#d97706'};font-size:1rem;">${student.mastery}%</strong> (الحد الأدنى الشرعي والمنظومي للتبليغ هو <strong>95%</strong>).
+          </div>
+
+          <div style="font-size:0.82rem;background:var(--color-surface);padding:0.6rem 0.8rem;border-radius:0.75rem;margin-bottom:0.75rem;border:1px solid var(--color-outline-variant);">
+            <strong>🔍 تفاصيل التراجع:</strong>
+            أخطاء التلاوة والتجويد: <strong>${recErrors} كلمة</strong> من 29 &bull; أخطاء التفسير والغريب: <strong>${tafErrors} مفردة/آية</strong> من 18.
+          </div>
+
+          <div style="font-size:0.85rem;line-height:1.6;color:var(--color-primary);background:rgba(81,100,71,0.1);padding:0.6rem 0.8rem;border-radius:0.75rem;">
+            <strong>💡 الحل والإجراء المطلوب:</strong>
+            ${auth.isTeacher() ? 'يرجى إجراء جلسة تسميع وتثبيت مع المتعلمة، وتصحيح الأخطاء المحددة أدناه لتجاوز نسبة 95%؛ وسيتم رفع التجميد تلقائياً فور بلوغ النسبة المطلوبة.' : `يلزم عقد جلسة تسميع وتصحيح مع الأستاذة المشرفة (${supervisorName}) وتصحيح الأخطاء لبلوغ 95% فما فوق لرفع التجميد واستعادة النشاط فوراً.`}
+          </div>
+        </div>
+      `;
+    } else {
+      graceEl.style.display = "none";
+      graceEl.innerHTML = "";
+    }
   },
 
     renderLiveInteractiveAyat(student, containerId) {
@@ -714,6 +763,7 @@ const StudentsModule = {
       if (btnCert) btnCert.style.display = 'none';
     }
 
+    this.renderGraceAlert(updated);
     this.renderLiveInteractiveAyat(updated, "profile-ayat-container");
     this.renderStudentsTable();
     AppUI.updateDashboardStats();

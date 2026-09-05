@@ -120,9 +120,29 @@ class DataStore {
 
   isPhoneUnique(phone, currentUserId = null) {
     if (!phone) return true;
-    const p = phone.trim();
-    if (this.data.students.some(s => s.phone === p && s.id !== currentUserId)) return false;
-    if (this.data.teachers.some(t => t.phone === p && t.id !== currentUserId)) return false;
+    const p = phone.trim().replace(/\s/g, "");
+    if (!p) return true;
+
+    // فحص المتعلمات مع استثناء السجل المرتبط بالترقية لنفس الشخص
+    for (const s of (this.data.students || [])) {
+      const sp = (s.phone || "").trim().replace(/\s/g, "");
+      if (sp === p) {
+        if (s.id !== currentUserId && s.promotedToTeacherId !== currentUserId) {
+          return false;
+        }
+      }
+    }
+
+    // فحص المعلمات مع استثناء السجل المرتبط بالترقية لنفس الشخص
+    for (const t of (this.data.teachers || [])) {
+      const tp = (t.phone || "").trim().replace(/\s/g, "");
+      if (tp === p) {
+        if (t.id !== currentUserId && t.promotedFromStudentId !== currentUserId) {
+          return false;
+        }
+      }
+    }
+
     return true;
   }
 
@@ -344,7 +364,22 @@ class DataStore {
       return { success: false, message: "تمت ترقية هذه المتعلمة مسبقاً لمبلّغة" };
     }
 
+    // التحقق من أن رقم هاتف المتعلمة غير مسجل لمعلمة أخرى لمنع التكرار
+    if (student.phone) {
+      const cleanPhone = student.phone.trim().replace(/\s/g, "");
+      const existingTeacher = this.getTeachers().find(t =>
+        (t.phone || "").trim().replace(/\s/g, "") === cleanPhone && t.promotedFromStudentId !== student.id
+      );
+      if (existingTeacher) {
+        return {
+          success: false,
+          message: `لا يمكن الترقية: رقم الهاتف (${student.phone}) مسجل بالفعل لمبلّغة أخرى (${existingTeacher.name}). يرجى تعديل رقم هاتف المتعلمة أولاً.`
+        };
+      }
+    }
+
     const code = (student.password || "123456").trim();
+    const supervisor = this.getTeacherById(student.teacherId);
     const newTeacher = this.addTeacher({
       name: student.name,
       phone: student.phone || "",
@@ -354,12 +389,24 @@ class DataStore {
       specialization: student.isArabicSpeaker ? "arabic" : "both",
       role: APP_CONFIG.roles.TEACHER,
       supervisorId: student.teacherId || null,
-      promotedFromStudentId: student.id
+      promotedFromStudentId: student.id,
+      status: "active",
+      learnerProfile: {
+        recitationMastery: student.recitationMastery,
+        tafseerMastery: student.tafseerMastery,
+        mastery: student.mastery,
+        mistakeWordIds: [...(student.mistakeWordIds || [])],
+        mistakeAyahTafseerNos: [...(student.mistakeAyahTafseerNos || [])],
+        mistakeGhareebIds: [...(student.mistakeGhareebIds || [])],
+        graduatedDate: new Date().toISOString().split("T")[0],
+        supervisorName: supervisor ? supervisor.name : "المشرفة"
+      }
     });
 
     this.updateStudent(student.id, {
       promotedToTeacherId: newTeacher.id,
-      graduatedUnderTeacherId: student.teacherId
+      graduatedUnderTeacherId: student.teacherId,
+      status: "completed"
     });
 
     this.logAction("ترقية متعلمة لمبلّغة", `تمت ترقية المتعلمة: ${student.name} لتصبح مبلّغة مستقلة`);
@@ -405,6 +452,43 @@ class DataStore {
       student.status = "needs_help";
     } else {
       student.status = "in_progress";
+    }
+
+    // إدارة مؤقت التجميد 7 أيام إذا كانت الطالبة مبلّغة مرقاة وتراجع إتقانها عن 95%
+    if (student.promotedToTeacherId) {
+      const teacher = this.getTeacherById(student.promotedToTeacherId);
+      if (teacher) {
+        if (overallMastery < 95) {
+          if (!teacher.gracePeriodEndDate) {
+            teacher.gracePeriodStartDate = new Date().toISOString();
+            // مهلة 7 أيام كاملة
+            teacher.gracePeriodEndDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+          }
+          const now = Date.now();
+          const end = new Date(teacher.gracePeriodEndDate).getTime();
+          const diffMs = end - now;
+          const remainingDays = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+          teacher.graceRemainingDays = remainingDays;
+          teacher.status = remainingDays <= 0 ? "suspended" : "grace_period";
+
+          student.teacherGraceInfo = {
+            status: teacher.status,
+            remainingDays: remainingDays,
+            gracePeriodEndDate: teacher.gracePeriodEndDate,
+            mastery: overallMastery,
+            recitationErrors: (student.mistakeWordIds || []).length,
+            tafseerErrors: (student.mistakeAyahTafseerNos || []).length + (student.mistakeGhareebIds || []).length,
+            supervisorId: student.graduatedUnderTeacherId || student.teacherId || teacher.supervisorId
+          };
+        } else {
+          // استعادة الإتقان 95% فأعلى -> إلغاء التجميد فوراً
+          teacher.status = "active";
+          teacher.gracePeriodStartDate = null;
+          teacher.gracePeriodEndDate = null;
+          teacher.graceRemainingDays = null;
+          student.teacherGraceInfo = null;
+        }
+      }
     }
   }
 

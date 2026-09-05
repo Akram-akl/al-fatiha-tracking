@@ -170,7 +170,58 @@ const CertificatesModule = {
   },
 
   /**
-   * تنزيل الشهادة المعروضة كملف PDF عالي الدقة مع الحفاظ الكامل على اتصال الحروف العربية
+   * تنزيل الشهادة المعروضة مباشرة كملف صورة عالية الدقة (PNG) خالية تماماً من أي تقسيم صفحات
+   * باستخدام مكتبة html-to-image المعتمدة رسمياً
+   */
+  async downloadCurrentImage(filename = "شهادة_إتقان_الفاتحة.png") {
+    const area = document.getElementById("certificate-preview-area");
+    if (!area) return;
+
+    const page = area.querySelector(".certificate-page");
+    if (!page) {
+      AppUI.showToast("لا توجد شهادة للتنزيل", "warning");
+      return;
+    }
+
+    AppUI.showToast("جاري تجهيز الشهادة كصورة عالية الدقة...", "info");
+
+    try {
+      if (document.fonts && document.fonts.ready) {
+        await document.fonts.ready;
+      }
+
+      if (typeof htmlToImage !== "undefined") {
+        const dataUrl = await htmlToImage.toPng(page, {
+          quality: 1.0,
+          pixelRatio: 2,
+          backgroundColor: '#fefcf6',
+          style: {
+            margin: '0',
+            boxShadow: 'none'
+          }
+        });
+
+        const link = document.createElement("a");
+        link.download = filename;
+        link.href = dataUrl;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        AppUI.showToast("تم تنزيل الشهادة كصورة بنجاح ✓", "success");
+        return;
+      }
+
+      AppUI.showToast("تعذر تحميل محرك الصور، جاري التنزيل كـ PDF...", "warning");
+      this.downloadCurrentPDF();
+    } catch (err) {
+      console.error("Image export error:", err);
+      AppUI.showToast("حدث خطأ أثناء تنزيل الصورة، جاري التحويل للطباعة...", "error");
+    }
+  },
+
+  /**
+   * تنزيل الشهادة المعروضة كملف PDF في صفحة واحدة متناسقة تماماً
    */
   async downloadCurrentPDF(filename = "شهادة_إتقان_الفاتحة.pdf") {
     const area = document.getElementById("certificate-preview-area");
@@ -182,36 +233,44 @@ const CertificatesModule = {
       return;
     }
 
-    AppUI.showToast("جاري تجهيز الشهادة بصيغة PDF عالية الدقة...", "info");
+    AppUI.showToast("جاري تجهيز الشهادة بصيغة PDF صفحة واحدة...", "info");
 
     try {
       if (document.fonts && document.fonts.ready) {
         await document.fonts.ready;
       }
 
-      // الطريقة الأولى الأفضل: htmlToImage لرسم المحتوى بمحرك المتصفح الأصلي لحفظ اتصال الحروف 100%
+      // الطريقة المعتمدة الأولى: htmlToImage مع jsPDF بحجم الصفحة الفعلي بدقة 100%
       if (typeof htmlToImage !== "undefined") {
         const jsPdfClass = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
         if (jsPdfClass) {
+          const firstPage = pages[0];
+          const width = firstPage.offsetWidth || 1122;
+          const height = firstPage.offsetHeight || 720;
+
           const pdf = new jsPdfClass({
             orientation: 'landscape',
             unit: 'px',
-            format: [1122, 720],
+            format: [width, height],
             hotfixes: ['px_scaling']
           });
 
           for (let i = 0; i < pages.length; i++) {
             const page = pages[i];
-            const dataUrl = await htmlToImage.toJpeg(page, {
-              quality: 0.98,
+            const dataUrl = await htmlToImage.toPng(page, {
+              quality: 1.0,
               pixelRatio: 2,
-              backgroundColor: '#fefcf6'
+              backgroundColor: '#fefcf6',
+              style: {
+                margin: '0',
+                boxShadow: 'none'
+              }
             });
 
             if (i > 0) {
-              pdf.addPage([1122, 720], 'landscape');
+              pdf.addPage([width, height], 'landscape');
             }
-            pdf.addImage(dataUrl, 'JPEG', 0, 0, 1122, 720);
+            pdf.addImage(dataUrl, 'PNG', 0, 0, width, height, undefined, 'FAST');
           }
 
           pdf.save(filename);
@@ -220,25 +279,27 @@ const CertificatesModule = {
         }
       }
 
-      // الطريقة الثانية: html2pdf النظيفة
+      // البديل: html2pdf لعنصر الشهادة فقط بدون هوامش
       if (typeof html2pdf !== "undefined") {
+        const targetElement = pages.length === 1 ? pages[0] : area;
         const opt = {
           margin:       0,
           filename:     filename,
           image:        { type: 'jpeg', quality: 0.98 },
-          html2canvas:  { scale: 2, useCORS: true, allowTaint: true, backgroundColor: '#fefcf6' },
-          jsPDF:        { unit: 'px', format: [1122, 720], orientation: 'landscape' }
+          html2canvas:  { scale: 2, useCORS: true, allowTaint: true, backgroundColor: '#fefcf6', scrollY: 0 },
+          jsPDF:        { unit: 'px', format: [1122, 720], orientation: 'landscape' },
+          pagebreak:    { mode: 'avoid-all' }
         };
-        await html2pdf().set(opt).from(area).save();
+        await html2pdf().set(opt).from(targetElement).save();
         AppUI.showToast("تم تنزيل الشهادة بنجاح ✓", "success");
         return;
       }
 
-      // البديل: فتح نافذة الطباعة
+      // البديل الأخير
       window.print();
     } catch (err) {
       console.error("PDF generation error:", err);
-      AppUI.showToast("حدث تنبيه أثناء التنزيل المباشر، جاري فتح الطباعة المباشرة...", "warning");
+      AppUI.showToast("حدث تنبيه أثناء التنزيل، جاري فتح نافذة الطباعة...", "warning");
       window.print();
     }
   },

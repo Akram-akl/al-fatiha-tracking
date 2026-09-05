@@ -755,15 +755,19 @@ input, select, textarea {
     position: absolute;
     left: 0;
     top: 0;
-    width: 297mm;
+    width: 100%;
     margin: 0;
     padding: 0;
     background: transparent;
   }
   body.printing-certificate .certificate-page {
-    width: 285mm !important;
-    height: 185mm !important;
-    page-break-after: always;
+    width: 100% !important;
+    max-width: 1122px !important;
+    height: 720px !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
     margin: 0 auto !important;
     padding: 0 !important;
     box-shadow: none !important;

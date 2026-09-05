@@ -560,6 +560,43 @@ test("تحمل الأخطاء عند وجود بيانات تالفة في ال�
   assert(storeInitSafe, "التطبيق انهار عند قراءة JSON تالف في localStorage");
 });
 
+test("توفر دالة تنزيل الشهادة كصورة PNG واحدة عالية الدقة", () => {
+  assert(typeof CertificatesModule.downloadCurrentImage === "function", "دالة تنزيل الشهادة كصورة غير موجودة");
+});
+
+test("التوجيه الذكي عند محاولة الدخول برقم متعلمة في قسم المبلّغات", () => {
+  const res = auth.loginAsTeacherByPhone("0542706313", "123456");
+  assert(!res.success, "تم تسجيل الدخول بالخطأ");
+  assert(res.message.includes("متعلمة"), "لم تظهر رسالة التوجيه الذكية لقسم المتعلمات");
+});
+
+test("التوجيه الذكي عند محاولة الدخول برقم مبلّغة في قسم المتعلمات", () => {
+  const res = auth.loginAsStudentByPhone("0565933458", "123456");
+  assert(!res.success, "تم تسجيل الدخول بالخطأ");
+  assert(res.message.includes("مبلّغة"), "لم تظهر رسالة التوجيه الذكية لقسم المبلّغات");
+});
+
+test("تفعيل مؤقت الـ 7 أيام ووضع مهلة التثبيت عند هبوط إتقان مبلّغة مرقاة دون 95%", () => {
+  const testStudent = db.addStudent({
+    name: "مبلّغة مرقاة للاختبار",
+    phone: "0599999991",
+    password: "123",
+    learningTrack: "memorize",
+    mistakeWordIds: []
+  });
+  const promoRes = db.promoteStudentToTeacher(testStudent.id);
+  assert(promoRes.success, "فشلت الترقية");
+
+  // إضافة أخطاء تنزل النسبة إلى أقل من 95%
+  db.toggleStudentWordMistake(testStudent.id, "w_1");
+  db.toggleStudentWordMistake(testStudent.id, "w_2");
+  db.toggleStudentWordMistake(testStudent.id, "w_3");
+
+  const teacher = db.getTeacherById(promoRes.teacher.id);
+  assert(teacher.status === "grace_period", "لم تتحول المبلّغة إلى مهلة التثبيت grace_period");
+  assert(teacher.graceRemainingDays > 0, "لم يتم احتساب الأيام المتبقية في مؤقت الـ 7 أيام");
+});
+
 console.log("\\n=======================================================");
 console.log("  نتائج الفحص الشامل:");
 console.log("  - إجمالي الاختبارات: " + totalTests);

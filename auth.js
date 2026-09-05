@@ -65,6 +65,10 @@ class AuthService {
     );
 
     if (!teacher) {
+      const isStudentPhone = db.getStudents().some(s => (s.phone || "").trim().replace(/\s/g, "") === cleanPhone);
+      if (isStudentPhone) {
+        return { success: false, message: "هذا الرقم مسجل بحساب متعلمة، يرجى تسجيل الدخول من قسم (دخول المتعلمة)" };
+      }
       return { success: false, message: "لم يتم العثور على مبلّغة بهذا الرقم" };
     }
 
@@ -100,6 +104,10 @@ class AuthService {
     );
 
     if (!student) {
+      const isTeacherPhone = db.getTeachers().some(t => (t.phone || "").trim().replace(/\s/g, "") === cleanPhone);
+      if (isTeacherPhone) {
+        return { success: false, message: "هذا الرقم مسجل بحساب مبلّغة، يرجى تسجيل الدخول من قسم (دخول بحساب مبلّغة)" };
+      }
       return { success: false, message: "لم يتم العثور على متعلمة بهذا الرقم" };
     }
 
