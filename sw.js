@@ -2,7 +2,7 @@
  * Service Worker - استراتيجية ذكية: HTML دائماً من الإنترنت، باقي الملفات من الكاش
  */
 
-const CACHE_VERSION = "al-fatiha-v1788610630464";
+const CACHE_VERSION = "al-fatiha-v1788612210531";
 
 // الملفات التي تُخزّن مؤقتاً (الأصول الثابتة فقط - وليس HTML)
 const STATIC_ASSETS = [

@@ -34,7 +34,7 @@ const CertificatesModule = {
   },
 
   /**
-   * توليد كود HTML لشهادة متعلمة بتصميم نسائي وقفي إسلامي فاخر
+   * توليد كود HTML لشهادة متعلمة — تصميم A4 أفقي متناسق بصفحة واحدة
    */
   renderCertificateHTML(student, isMulti = false) {
     const teacher = db.getTeacherById(student.teacherId) || { name: "مبلّغة معتمدة" };
@@ -53,125 +53,144 @@ const CertificatesModule = {
       : student.mastery >= 90 ? "ممتاز بإتقان تام"
       : "جيد جداً مرتفع";
 
+    // A4 landscape: 297mm × 210mm → at 96dpi ≈ 1122px × 794px
+    // نستخدم 1122 × 720 لتناسب شاشات المعاينة مع ضبط مضبوط
     return `
-      <div class="certificate-page" style="
+      <div class="certificate-page" id="cert-render-${student.id || 'single'}" style="
         width: 1122px;
         height: 720px;
+        min-height: 720px;
+        max-height: 720px;
         box-sizing: border-box;
-        margin: 0 auto 20px auto;
+        margin: 0 auto;
         padding: 0;
-        background: linear-gradient(135deg, #fefcf6 0%, #f5f0e8 50%, #faf7f0 100%);
+        overflow: hidden;
+        background: linear-gradient(160deg, #1a3328 0%, #2e5440 40%, #1e3d2f 70%, #152a21 100%);
         font-family: 'Amiri', 'Cairo', 'Arial', sans-serif;
         direction: rtl;
         position: relative;
-        overflow: hidden;
-        word-break: keep-all;
-        word-wrap: normal;
         font-feature-settings: 'liga' 1, 'calt' 1;
         -webkit-font-smoothing: antialiased;
-        ${isMulti ? 'page-break-after: always;' : ''}
+        ${isMulti ? 'page-break-after: always; break-after: page;' : ''}
       ">
-        
-        <!-- خلفية زخرفية ناعمة -->
-        <div style="position:absolute;inset:0;opacity:0.03;pointer-events:none;background-image:radial-gradient(circle at 20% 30%, #2e4f3a 1px, transparent 1px), radial-gradient(circle at 80% 70%, #bba36c 1px, transparent 1px);background-size:60px 60px;"></div>
-        
-        <!-- إطار ثلاثي أنيق -->
-        <div style="position:absolute;inset:18px;border:3px solid #c9a84c;pointer-events:none;"></div>
-        <div style="position:absolute;inset:24px;border:1px solid #3a5a3e;pointer-events:none;"></div>
-        <div style="position:absolute;inset:28px;border:2px double #c9a84c;pointer-events:none;"></div>
-        
-        <!-- زخارف ركنية -->
-        <div style="position:absolute;top:18px;right:18px;font-size:28px;color:#c9a84c;line-height:1;">❁</div>
-        <div style="position:absolute;top:18px;left:18px;font-size:28px;color:#c9a84c;line-height:1;">❁</div>
-        <div style="position:absolute;bottom:18px;right:18px;font-size:28px;color:#c9a84c;line-height:1;">❁</div>
-        <div style="position:absolute;bottom:18px;left:18px;font-size:28px;color:#c9a84c;line-height:1;">❁</div>
+
+        <!-- طبقة الخلفية: زخارف هندسية إسلامية -->
+        <div style="position:absolute;inset:0;overflow:hidden;pointer-events:none;">
+          <!-- دائرة زخرفية كبيرة خلف يمين -->
+          <div style="position:absolute;right:-80px;top:-80px;width:400px;height:400px;border-radius:50%;border:2px solid rgba(201,168,76,0.15);"></div>
+          <div style="position:absolute;right:-60px;top:-60px;width:350px;height:350px;border-radius:50%;border:1px solid rgba(201,168,76,0.1);"></div>
+          <!-- دائرة زخرفية يسار -->
+          <div style="position:absolute;left:-80px;bottom:-80px;width:400px;height:400px;border-radius:50%;border:2px solid rgba(201,168,76,0.15);"></div>
+          <!-- خط أفقي مزخرف -->
+          <div style="position:absolute;top:50%;left:40px;right:40px;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.2),rgba(201,168,76,0.4),rgba(201,168,76,0.2),transparent);transform:translateY(-50%);"></div>
+        </div>
+
+        <!-- الشريط الجانبي الأيمن الذهبي -->
+        <div style="position:absolute;right:0;top:0;bottom:0;width:8px;background:linear-gradient(180deg,#c9a84c,#f0d080,#c9a84c,#a07828,#c9a84c);"></div>
+        <!-- الشريط الجانبي الأيسر -->
+        <div style="position:absolute;left:0;top:0;bottom:0;width:8px;background:linear-gradient(180deg,#c9a84c,#f0d080,#c9a84c,#a07828,#c9a84c);"></div>
+
+        <!-- الإطار الداخلي -->
+        <div style="position:absolute;inset:20px;border:1px solid rgba(201,168,76,0.4);pointer-events:none;"></div>
+        <div style="position:absolute;inset:26px;border:1px solid rgba(201,168,76,0.2);pointer-events:none;"></div>
+
+        <!-- زوايا ذهبية مزخرفة -->
+        <div style="position:absolute;top:14px;right:14px;font-size:22px;color:#c9a84c;line-height:1;text-shadow:0 0 10px rgba(201,168,76,0.5);">✦</div>
+        <div style="position:absolute;top:14px;left:14px;font-size:22px;color:#c9a84c;line-height:1;text-shadow:0 0 10px rgba(201,168,76,0.5);">✦</div>
+        <div style="position:absolute;bottom:14px;right:14px;font-size:22px;color:#c9a84c;line-height:1;text-shadow:0 0 10px rgba(201,168,76,0.5);">✦</div>
+        <div style="position:absolute;bottom:14px;left:14px;font-size:22px;color:#c9a84c;line-height:1;text-shadow:0 0 10px rgba(201,168,76,0.5);">✦</div>
 
         <!-- المحتوى الرئيسي -->
-        <div style="position:relative;z-index:10;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:45px 60px;text-align:center;">
-          
-          <!-- البسملة -->
-          <div style="font-family:'Amiri',serif;font-size:22px;color:#2e4f3a;font-weight:bold;margin-bottom:6px;">
-            بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ
-          </div>
-          
-          <!-- زخرفة فاصلة -->
-          <div style="color:#c9a84c;font-size:18px;margin-bottom:10px;letter-spacing:8px;">✦ ❋ ✦</div>
-          
-          <!-- اسم المبادرة -->
-          <div style="font-size:18px;font-weight:700;color:#2e4f3a;font-family:'Cairo','Amiri',sans-serif;margin-bottom:3px;">
-            مُبادرة بلِّغوا عنِّي ولو آية
-          </div>
-          <div style="font-size:11px;color:#5a6e60;font-family:'Cairo',sans-serif;margin-bottom:14px;">
-            منظومة إتقان وتدبر كتاب الله تعالى • ${student.region || 'مكتب معتمد'}
-          </div>
-          
-          <!-- عنوان الشهادة -->
-          <div style="margin-bottom:14px;">
-            <div style="display:inline-block;background:linear-gradient(90deg,#2e4f3a,#3e6b4f,#2e4f3a);color:#fff;padding:8px 50px;border-radius:30px;font-size:22px;font-weight:bold;font-family:'Amiri',serif;">
-              شهادة إتقان وتميّز
+        <div style="position:relative;z-index:10;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:36px 70px 32px;text-align:center;">
+
+          <!-- الجزء العلوي -->
+          <div style="width:100%;">
+            <!-- البسملة -->
+            <div style="font-family:'Amiri',serif;font-size:20px;color:#f0d080;font-weight:bold;margin-bottom:6px;text-shadow:0 1px 8px rgba(0,0,0,0.4);">
+              بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ
+            </div>
+            <!-- فاصل ذهبي -->
+            <div style="color:#c9a84c;font-size:14px;letter-spacing:12px;margin-bottom:10px;opacity:0.8;">── ✦ ──</div>
+            <!-- اسم المبادرة -->
+            <div style="font-size:15px;font-weight:700;color:#f0d080;font-family:'Cairo','Amiri',sans-serif;margin-bottom:2px;letter-spacing:1px;">
+              مُبادرة بلِّغوا عنِّي ولو آية
+            </div>
+            <div style="font-size:10px;color:rgba(240,208,128,0.65);font-family:'Cairo',sans-serif;letter-spacing:0.5px;">
+              منظومة إتقان وتدبر كتاب الله تعالى &nbsp;•&nbsp; ${student.region || 'مكتب معتمد'}
             </div>
           </div>
-          
-          <!-- المقدمة -->
-          <div style="font-size:16px;color:#445247;line-height:1.5;margin-bottom:8px;font-family:'Amiri',serif;">
-            تسرّ إدارة المبادرة أن تمنح هذه الشهادة للمتعلمة المباركة
-          </div>
-          
-          <!-- اسم المتعلمة -->
-          <div style="margin-bottom:10px;">
-            <div style="display:inline-block;border-bottom:2px solid #c9a84c;padding:0 35px 8px;">
-              <div style="font-family:'Amiri',serif;font-size:32px;font-weight:bold;color:#1e3325;">${student.name}</div>
+
+          <!-- الجزء الوسط: المحتوى الرئيسي -->
+          <div style="width:100%;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;">
+
+            <!-- لوحة عنوان الشهادة -->
+            <div style="background:rgba(201,168,76,0.18);border:1px solid rgba(201,168,76,0.45);border-radius:4px;padding:10px 60px;backdrop-filter:blur(4px);">
+              <div style="font-family:'Amiri',serif;font-size:26px;font-weight:bold;color:#f5e8b0;letter-spacing:2px;text-shadow:0 1px 12px rgba(0,0,0,0.5);">
+                شهادة إتقان وتميّز
+              </div>
+            </div>
+
+            <!-- نص المقدمة -->
+            <div style="font-size:14px;color:rgba(255,255,255,0.82);line-height:1.6;font-family:'Amiri',serif;">
+              تُسرّ إدارة المبادرة أن تمنح هذه الشهادة للمتعلمة المباركة
+            </div>
+
+            <!-- اسم المتعلمة -->
+            <div style="position:relative;padding:8px 0 12px;">
+              <div style="font-family:'Amiri',serif;font-size:38px;font-weight:bold;color:#ffffff;text-shadow:0 2px 16px rgba(0,0,0,0.6);letter-spacing:1px;">${student.name}</div>
+              <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:200px;height:2px;background:linear-gradient(90deg,transparent,#c9a84c,transparent);"></div>
+            </div>
+
+            <!-- وصف الإنجاز -->
+            <div style="font-size:14px;color:rgba(255,255,255,0.85);line-height:1.8;max-width:680px;margin:0 auto;font-family:'Amiri',serif;">
+              نظير اجتيازها متطلبات
+              <span style="color:#f0d080;font-weight:bold;"> ${trackLabel}</span>
+              <br>
+              بنسبة إتقان <span style="color:#f0d080;font-size:20px;font-weight:bold;"> ${student.mastery}%</span>
+              &nbsp;— تقدير <span style="color:#f0d080;font-weight:bold;">${masteryLevel}</span>
+              <br>
+              <span style="color:rgba(255,255,255,0.65);font-size:12px;">بإشراف المبلّغة الفاضلة: <span style="color:#f0d080;">${teacher.name}</span></span>
+            </div>
+
+            <!-- الآية الكريمة -->
+            <div style="font-family:'Amiri',serif;font-size:15px;color:rgba(240,208,128,0.8);font-style:italic;">
+              ﴿ وَقُل رَّبِّ زِدۡنِي عِلۡمٗا ﴾
             </div>
           </div>
-          
-          <!-- وصف الإنجاز -->
-          <div style="font-size:15px;color:#3b4d40;line-height:1.7;max-width:650px;margin:0 auto 12px;font-family:'Amiri',serif;">
-            نظير اجتيازها متطلبات
-            <strong style="color:#2e4f3a;"> ${trackLabel}</strong>
-            بنسبة إتقان <strong style="color:#c9a84c;font-size:18px;">${student.mastery}%</strong> 
-            وتقدير <strong style="color:#c9a84c;">${masteryLevel}</strong>
-            <br/>
-            تحت إشراف المبلّغة الفاضلة: <strong style="color:#2e4f3a;">${teacher.name}</strong>
-          </div>
-          
-          <!-- آية -->
-          <div style="font-family:'Amiri',serif;font-size:17px;color:#2e4f3a;margin-bottom:4px;">
-            ﴿ وَقُل رَّبِّ زِدۡنِي عِلۡمٗا ﴾
-          </div>
-          
-          <!-- دعاء -->
-          <div style="font-size:12px;color:#6b7f70;line-height:1.5;font-family:'Cairo',sans-serif;margin-bottom:18px;">
-            نسأل الله أن يجعل القرآن ربيع قلبها ونور صدرها
-          </div>
-          
-          <!-- التوقيعات -->
-          <div style="display:flex;justify-content:space-between;align-items:flex-end;width:100%;padding:0 30px;font-family:'Cairo',sans-serif;">
-            <div style="text-align:center;width:160px;">
-              <div style="font-size:11px;color:#6b7f70;margin-bottom:4px;">المبلّغة المشرفة</div>
-              <div style="font-weight:700;color:#2e4f3a;font-size:13px;margin-bottom:6px;">${teacher.name}</div>
-              <div style="border-top:1px solid #c9a84c;"></div>
+
+          <!-- الجزء السفلي: التوقيعات والتاريخ -->
+          <div style="width:100%;display:flex;justify-content:space-between;align-items:flex-end;padding:0 20px;">
+
+            <!-- المبلغة المشرفة -->
+            <div style="text-align:center;min-width:160px;">
+              <div style="font-size:10px;color:rgba(240,208,128,0.6);margin-bottom:3px;font-family:'Cairo',sans-serif;">المبلّغة المشرفة</div>
+              <div style="font-weight:700;color:#f0d080;font-size:13px;margin-bottom:8px;font-family:'Cairo',sans-serif;">${teacher.name}</div>
+              <div style="height:1px;background:linear-gradient(90deg,transparent,#c9a84c,transparent);"></div>
             </div>
-            
-            <div style="text-align:center; width: 65px;">
-              <!-- تمت إزالة الدائرة والنجمة حسب الطلب -->
+
+            <!-- الدعاء والختم -->
+            <div style="text-align:center;flex:1;padding:0 20px;">
+              <div style="font-size:10px;color:rgba(255,255,255,0.45);line-height:1.6;font-family:'Cairo',sans-serif;font-style:italic;">
+                نسأل الله أن يجعل القرآن ربيع قلبها ونور صدرها
+              </div>
             </div>
-            
-            <div style="text-align:center;width:160px;">
-              <div style="font-size:11px;color:#6b7f70;margin-bottom:4px;">إدارة المبادرة</div>
-              <div style="font-weight:700;color:#2e4f3a;font-size:13px;margin-bottom:6px;">المشرف العام</div>
-              <div style="border-top:1px solid #c9a84c;"></div>
-              <div style="font-size:10px;color:#888;margin-top:4px;">${dateStr}</div>
+
+            <!-- إدارة المبادرة -->
+            <div style="text-align:center;min-width:160px;">
+              <div style="font-size:10px;color:rgba(240,208,128,0.6);margin-bottom:3px;font-family:'Cairo',sans-serif;">إدارة المبادرة</div>
+              <div style="font-weight:700;color:#f0d080;font-size:13px;margin-bottom:8px;font-family:'Cairo',sans-serif;">المشرف العام</div>
+              <div style="height:1px;background:linear-gradient(90deg,transparent,#c9a84c,transparent);"></div>
+              <div style="font-size:9px;color:rgba(240,208,128,0.5);margin-top:4px;font-family:'Cairo',sans-serif;">${dateStr}</div>
             </div>
+
           </div>
-          
         </div>
       </div>
     `;
   },
 
   /**
-   * تنزيل الشهادة المعروضة مباشرة كملف صورة عالية الدقة (PNG) خالية تماماً من أي تقسيم صفحات
-   * باستخدام مكتبة html-to-image المعتمدة رسمياً
+   * تنزيل الشهادة كصورة PNG عالية الجودة (2x) — صورة واحدة متناسقة
    */
   async downloadCurrentImage(filename = "شهادة_إتقان_الفاتحة.png") {
     const area = document.getElementById("certificate-preview-area");
@@ -183,45 +202,41 @@ const CertificatesModule = {
       return;
     }
 
-    AppUI.showToast("جاري تجهيز الشهادة كصورة عالية الدقة...", "info");
+    AppUI.showToast("جاري تجهيز الصورة...", "info");
 
     try {
-      if (document.fonts && document.fonts.ready) {
-        await document.fonts.ready;
-      }
+      if (document.fonts && document.fonts.ready) await document.fonts.ready;
 
-      if (typeof htmlToImage !== "undefined") {
-        const dataUrl = await htmlToImage.toPng(page, {
-          quality: 1.0,
-          pixelRatio: 2,
-          backgroundColor: '#fefcf6',
-          style: {
-            margin: '0',
-            boxShadow: 'none'
-          }
-        });
-
-        const link = document.createElement("a");
-        link.download = filename;
-        link.href = dataUrl;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-
-        AppUI.showToast("تم تنزيل الشهادة كصورة بنجاح ✓", "success");
+      if (typeof htmlToImage === "undefined") {
+        AppUI.showToast("تعذر تحميل محرك الصور", "error");
         return;
       }
 
-      AppUI.showToast("تعذر تحميل محرك الصور، جاري التنزيل كـ PDF...", "warning");
-      this.downloadCurrentPDF();
+      const dataUrl = await htmlToImage.toPng(page, {
+        quality: 1.0,
+        pixelRatio: 2,
+        backgroundColor: '#1a3328',
+        skipFonts: false,
+        style: { margin: '0', boxShadow: 'none' }
+      });
+
+      const link = document.createElement("a");
+      link.download = filename;
+      link.href = dataUrl;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      AppUI.showToast("تم تنزيل الشهادة كصورة ✓", "success");
     } catch (err) {
       console.error("Image export error:", err);
-      AppUI.showToast("حدث خطأ أثناء تنزيل الصورة، جاري التحويل للطباعة...", "error");
+      AppUI.showToast("حدث خطأ أثناء تنزيل الصورة", "error");
     }
   },
 
   /**
-   * تنزيل الشهادة المعروضة كملف PDF في صفحة واحدة متناسقة تماماً
+   * تنزيل الشهادة كـ PDF — صفحة واحدة مضمونة بحجم الشهادة الفعلي
+   * الخطوات: htmlToImage → PNG → jsPDF بنفس الأبعاد بالضبط
    */
   async downloadCurrentPDF(filename = "شهادة_إتقان_الفاتحة.pdf") {
     const area = document.getElementById("certificate-preview-area");
@@ -233,79 +248,80 @@ const CertificatesModule = {
       return;
     }
 
-    AppUI.showToast("جاري تجهيز الشهادة بصيغة PDF صفحة واحدة...", "info");
+    AppUI.showToast("جاري تجهيز ملف PDF...", "info");
 
     try {
-      if (document.fonts && document.fonts.ready) {
-        await document.fonts.ready;
-      }
+      if (document.fonts && document.fonts.ready) await document.fonts.ready;
 
-      // الطريقة المعتمدة الأولى: htmlToImage مع jsPDF بحجم الصفحة الفعلي بدقة 100%
-      if (typeof htmlToImage !== "undefined") {
-        const jsPdfClass = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
-        if (jsPdfClass) {
-          const firstPage = pages[0];
-          const width = firstPage.offsetWidth || 1122;
-          const height = firstPage.offsetHeight || 720;
-
-          const pdf = new jsPdfClass({
-            orientation: 'landscape',
-            unit: 'px',
-            format: [width, height],
-            hotfixes: ['px_scaling']
-          });
-
-          for (let i = 0; i < pages.length; i++) {
-            const page = pages[i];
-            const dataUrl = await htmlToImage.toPng(page, {
-              quality: 1.0,
-              pixelRatio: 2,
-              backgroundColor: '#fefcf6',
-              style: {
-                margin: '0',
-                boxShadow: 'none'
-              }
-            });
-
-            if (i > 0) {
-              pdf.addPage([width, height], 'landscape');
-            }
-            pdf.addImage(dataUrl, 'PNG', 0, 0, width, height, undefined, 'FAST');
-          }
-
-          pdf.save(filename);
+      // تحقق من توفر المكتبات
+      const jsPdfClass = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+      if (typeof htmlToImage === "undefined" || !jsPdfClass) {
+        // بديل: html2pdf إن كان متوفراً
+        if (typeof html2pdf !== "undefined") {
+          const opt = {
+            margin: 0,
+            filename,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, backgroundColor: '#1a3328', scrollY: 0 },
+            jsPDF: { unit: 'px', format: [1122, 720], orientation: 'landscape' },
+            pagebreak: { mode: 'avoid-all' }
+          };
+          await html2pdf().set(opt).from(pages[0]).save();
           AppUI.showToast("تم تنزيل الشهادة بنجاح ✓", "success");
           return;
         }
-      }
-
-      // البديل: html2pdf لعنصر الشهادة فقط بدون هوامش
-      if (typeof html2pdf !== "undefined") {
-        const targetElement = pages.length === 1 ? pages[0] : area;
-        const opt = {
-          margin:       0,
-          filename:     filename,
-          image:        { type: 'jpeg', quality: 0.98 },
-          html2canvas:  { scale: 2, useCORS: true, allowTaint: true, backgroundColor: '#fefcf6', scrollY: 0 },
-          jsPDF:        { unit: 'px', format: [1122, 720], orientation: 'landscape' },
-          pagebreak:    { mode: 'avoid-all' }
-        };
-        await html2pdf().set(opt).from(targetElement).save();
-        AppUI.showToast("تم تنزيل الشهادة بنجاح ✓", "success");
+        AppUI.showToast("تعذر تحميل مكتبة PDF، جاري الطباعة...", "warning");
+        window.print();
         return;
       }
 
-      // البديل الأخير
-      window.print();
+      // الطريقة الأمثل: htmlToImage → jsPDF بأبعاد الشهادة بالضبط (صفحة واحدة فقط)
+      const certW = 1122; // px
+      const certH = 720;  // px
+
+      const pdf = new jsPdfClass({
+        orientation: 'landscape',
+        unit: 'px',
+        format: [certW, certH],
+        hotfixes: ['px_scaling']
+      });
+
+      // صفحة واحدة فقط — أول certificate-page
+      const firstPage = pages[0];
+      const dataUrl = await htmlToImage.toPng(firstPage, {
+        quality: 1.0,
+        pixelRatio: 2,
+        backgroundColor: '#1a3328',
+        style: { margin: '0', boxShadow: 'none' }
+      });
+
+      // إضافة الصورة لتملأ الصفحة كاملاً بدون هوامش
+      pdf.addImage(dataUrl, 'PNG', 0, 0, certW, certH, undefined, 'FAST');
+
+      // في حالة شهادات متعددة: صفحة منفصلة لكل شهادة
+      for (let i = 1; i < pages.length; i++) {
+        pdf.addPage([certW, certH], 'landscape');
+        const url = await htmlToImage.toPng(pages[i], {
+          quality: 1.0,
+          pixelRatio: 2,
+          backgroundColor: '#1a3328',
+          style: { margin: '0', boxShadow: 'none' }
+        });
+        pdf.addImage(url, 'PNG', 0, 0, certW, certH, undefined, 'FAST');
+      }
+
+      pdf.save(filename);
+      AppUI.showToast("تم تنزيل الشهادة بنجاح ✓", "success");
+
     } catch (err) {
       console.error("PDF generation error:", err);
-      AppUI.showToast("حدث تنبيه أثناء التنزيل، جاري فتح نافذة الطباعة...", "warning");
+      AppUI.showToast("حدث خطأ أثناء إنشاء PDF", "error");
       window.print();
     }
   },
 
   /**
-   * طباعة الشهادة مباشرة من المتصفح بأعلى دقة متجهة
+   * طباعة الشهادة مباشرة
    */
   printCertificate() {
     document.body.classList.add('printing-certificate');
@@ -316,7 +332,7 @@ const CertificatesModule = {
   },
 
   /**
-   * فتح نافذة التصدير المجمّع لشهادات أكثر من متعلمة في ملف واحد
+   * فتح نافذة التصدير المجمّع
    */
   openBatchExportModal() {
     const modal = document.getElementById("batch-certificates-modal");
@@ -327,7 +343,6 @@ const CertificatesModule = {
     const currentUser = auth.getCurrentUser();
     let eligibleStudents = db.getStudents().filter(s => s.mastery >= 85 || s.status === "completed" || s.promotedToTeacherId);
 
-    // تصفية حسب الصلاحية
     if (auth.isTeacher() && !auth.isHeadTeacher() && !auth.isAdmin()) {
       eligibleStudents = eligibleStudents.filter(s => s.teacherId === currentUser.id);
     } else if (auth.isHeadTeacher()) {
@@ -395,7 +410,7 @@ const CertificatesModule = {
   },
 
   /**
-   * توليد كافة الشهادات المحددة وعرضها - التنزيل عند ضغط المستخدم فقط
+   * توليد كافة الشهادات المحددة وعرضها
    */
   exportSelectedBatchPDF() {
     if (this.selectedStudentIds.size === 0) {

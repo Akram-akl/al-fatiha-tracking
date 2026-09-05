@@ -805,3 +805,51 @@ input, select, textarea {
     display: none !important;
   }
 }
+
+/* ======================================================
+   شهادة الإتقان — ضمان صفحة واحدة فقط عند الطباعة
+   ====================================================== */
+@media print {
+  body.printing-certificate * {
+    visibility: hidden !important;
+  }
+  body.printing-certificate .certificate-page,
+  body.printing-certificate .certificate-page * {
+    visibility: visible !important;
+  }
+  body.printing-certificate .certificate-page {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  @page {
+    size: A4 landscape;
+    margin: 0;
+  }
+}
+
+/* معاينة الشهادة في الموديل — مساحة عرض صحيحة */
+#certificate-preview-area {
+  overflow-x: auto;
+  overflow-y: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0f1f18;
+  padding: 20px;
+  min-height: 400px;
+}
+#certificate-preview-area .certificate-page {
+  flex-shrink: 0;
+  transform-origin: top center;
+  box-shadow: 0 8px 48px rgba(0,0,0,0.6);
+}
